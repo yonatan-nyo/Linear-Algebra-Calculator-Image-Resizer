@@ -17,6 +17,30 @@ public class RegresiBergandaController {
     }
 
     @FXML
+    private void switchToSistemPersamaanLinear() {
+        try {
+            Router.navigateToSistemPersamaanLinear(); // Change to the desired navigation method
+        } catch (IOException e) {
+            e.printStackTrace(); // Handle exception
+        }
+    }    
+    @FXML
+    private void switchToInterpolasiPolinomial() {
+        try {
+            Router.navigateToInterpolasiPolinomial(); // Change to the desired navigation method
+        } catch (IOException e) {
+            e.printStackTrace(); // Handle exception
+        }
+    }
+    @FXML
+    private void switchToRegresiBerganda() {
+        try {
+            Router.navigateToRegresiBerganda(); // Change to the desired navigation method
+        } catch (IOException e) {
+            e.printStackTrace(); // Handle exception
+        }
+    }
+    @FXML
     private void switchToBicubicSplineInterpolation() {
         try {
             Router.navigateToBicubicSplineInterpolation(); // Change to the desired navigation method
