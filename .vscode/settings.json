@@ -2,6 +2,6 @@
   "files.associations": {
     "*.css": "css"
   },
-  "css.validate": false,
-  "javafx-css.validate": true
+  "css.lint.vendorPrefix": "ignore",
+  "css.lint.unknownVendorSpecificProperties": "error"
 }
