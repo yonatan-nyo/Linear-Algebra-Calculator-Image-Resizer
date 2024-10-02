@@ -18,8 +18,8 @@ public class App extends Application {
     @Override
     public void start(Stage stage) throws IOException {
         System.out.println();
-        scene = new Scene(loadFXML("primary"), 640, 480);
-        loadCSS("primary");
+        scene = new Scene(loadFXML("sistem-persamaan-linear"), 640, 480);
+        loadCSS("sistem-persamaan-linear");
         stage.setScene(scene);
         stage.show();
     }
