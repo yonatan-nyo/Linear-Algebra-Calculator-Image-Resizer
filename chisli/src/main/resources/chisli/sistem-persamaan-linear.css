@@ -1,3 +1,43 @@
 .root {
   -fx-background-color: white;
+  -fx-font-family: "Arial";
+}
+
+.sidebar {
+  -fx-background-color: #f0f0f0;
+  -fx-padding: 20px;
+  -fx-spacing: 20px;
+}
+
+.title-label {
+  -fx-font-size: 24px;
+  -fx-font-weight: bold;
+}
+
+.output-label,
+.steps-label {
+  -fx-font-size: 18px;
+  -fx-font-weight: bold;
+}
+
+.button-action {
+  -fx-background-color: #0078d7;
+  -fx-text-fill: white;
+  -fx-font-size: 14px;
+  -fx-padding: 10px 20px;
+  -fx-background-radius: 5px;
+}
+
+.button-action:hover {
+  -fx-background-color: #005a9e;
+}
+
+.text-field {
+  -fx-padding: 5px;
+  -fx-font-size: 14px;
+}
+
+.text-area {
+  -fx-padding: 10px;
+  -fx-font-size: 14px;
 }

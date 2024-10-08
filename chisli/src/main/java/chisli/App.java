@@ -20,6 +20,7 @@ public class App extends Application {
         System.out.println();
         scene = new Scene(loadFXML("sistem-persamaan-linear"), 640, 480);
         loadCSS("sistem-persamaan-linear");
+        stage.setMaximized(true);
         stage.setScene(scene);
         stage.show();
     }

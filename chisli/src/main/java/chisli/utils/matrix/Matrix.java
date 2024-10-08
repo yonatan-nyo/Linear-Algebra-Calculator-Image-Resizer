@@ -131,6 +131,25 @@ public class Matrix {
         return determinant(data);
     }
 
+    public String getString() {
+        Matrix matrix = new Matrix(data);
+        StringBuilder sb = new StringBuilder();
+        int rows = matrix.getRowCount();
+        int cols = matrix.getColumnCount();
+
+        for (int i = 0; i < rows; i++) {
+            for (int j = 0; j < cols; j++) {
+                sb.append(String.format("%10.4f", matrix.get(i, j)));
+                if (j < cols - 1) {
+                    sb.append(" ");
+                }
+            }
+            sb.append("\n");
+        }
+
+        return sb.toString();
+    }
+
     // Recursive method to calculate determinant
     private double determinant(double[][] matrix) {
         int n = matrix.length;
