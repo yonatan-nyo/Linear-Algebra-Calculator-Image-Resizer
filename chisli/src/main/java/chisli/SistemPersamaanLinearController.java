@@ -1,17 +1,17 @@
 package chisli;
 
 import java.io.IOException;
-
-
-
 import chisli.utils.matrix.Matrix;
 import chisli.utils.spl.Gauss;
+import chisli.utils.spl.GaussJordan; // Import GaussJordan class
+import chisli.utils.matrix.MatrixSteps;
 import javafx.fxml.FXML;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.GridPane;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.Button;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -29,40 +29,42 @@ public class SistemPersamaanLinearController {
     @FXML
     private void switchToSistemPersamaanLinear() {
         try {
-            Router.navigateToSistemPersamaanLinear(); // Change to the desired navigation method
+            Router.navigateToSistemPersamaanLinear();
         } catch (IOException e) {
-            e.printStackTrace(); // Handle exception
+            e.printStackTrace();
         }
-    }    
+    }
+
     @FXML
     private void switchToInterpolasiPolinomial() {
         try {
-            Router.navigateToInterpolasiPolinomial(); // Change to the desired navigation method
+            Router.navigateToInterpolasiPolinomial();
         } catch (IOException e) {
-            e.printStackTrace(); // Handle exception
+            e.printStackTrace();
         }
     }
+
     @FXML
     private void switchToRegresiBerganda() {
         try {
-            Router.navigateToRegresiBerganda(); // Change to the desired navigation method
+            Router.navigateToRegresiBerganda();
         } catch (IOException e) {
-            e.printStackTrace(); // Handle exception
+            e.printStackTrace();
         }
     }
+
     @FXML
     private void switchToBicubicSplineInterpolation() {
         try {
-            Router.navigateToBicubicSplineInterpolation(); // Change to the desired navigation method
+            Router.navigateToBicubicSplineInterpolation();
         } catch (IOException e) {
-            e.printStackTrace(); // Handle exception
+            e.printStackTrace();
         }
     }
 
-
     @FXML
     private TextField rowsInput;
-    
+
     @FXML
     private TextField columnsInput;
 
@@ -79,27 +81,27 @@ public class SistemPersamaanLinearController {
 
     @FXML
     public void generateMatrix() {
-        matrixGrid.getChildren().clear(); // Clear previous fields
-        matrixFields.clear(); // Clear list of previous fields
-        
+        matrixGrid.getChildren().clear();
+        matrixFields.clear();
+
         int rows = Integer.parseInt(rowsInput.getText());
         int columns = Integer.parseInt(columnsInput.getText());
 
-        // Create TextFields for the matrix input
         for (int row = 0; row < rows; row++) {
             for (int col = 0; col < columns; col++) {
                 TextField field = new TextField();
                 field.setPrefWidth(50);
                 matrixFields.add(field);
-                matrixGrid.add(field, col, row); // Add TextField to the GridPane
+                matrixGrid.add(field, col, row);
             }
         }
     }
+
     @FXML
     public void solveGauss() {
         int rows = Integer.parseInt(rowsInput.getText());
         int columns = Integer.parseInt(columnsInput.getText());
-    
+
         // Prepare the matrix data
         double[][] matrixData = new double[rows][columns];
         Matrix matrix = new Matrix(matrixData);
@@ -110,24 +112,53 @@ public class SistemPersamaanLinearController {
                 matrix.set(row, col, value);
             }
         }
-    
+
         // Solve using Gaussian elimination
         try {
             double[] solution = Gauss.solve(matrix);
+            MatrixSteps matrixSteps = Gauss.getMatrixSteps(); // Get the steps from Gauss class
             displaySolution(solution);
-            displaySteps(Gauss.getSteps()); // Display steps
+            displaySteps(matrixSteps.getSteps()); // Display steps
         } catch (IllegalArgumentException e) {
             displayError("Error: " + e.getMessage());
         }
     }
 
-    // Updated method to display steps in the stepsTextArea
+    @FXML
+    public void solveGaussJordan() {
+        int rows = Integer.parseInt(rowsInput.getText());
+        int columns = Integer.parseInt(columnsInput.getText());
+
+        // Prepare the matrix data
+        double[][] matrixData = new double[rows][columns];
+        Matrix matrix = new Matrix(matrixData);
+        for (int row = 0; row < rows; row++) {
+            for (int col = 0; col < columns; col++) {
+                TextField field = matrixFields.get(row * columns + col);
+                double value = Double.parseDouble(field.getText());
+                matrix.set(row, col, value);
+            }
+        }
+
+        // Solve using Gauss-Jordan elimination
+        try {
+            GaussJordan.reduce(matrix); // Perform reduction
+            double[] solution = GaussJordan.solve(matrix); // Get solution
+            displaySolution(solution);
+            
+            // Retrieve the matrix steps after reduction
+            MatrixSteps matrixSteps = GaussJordan.getMatrixSteps(); 
+            displaySteps(matrixSteps.getSteps()); // Display steps
+        } catch (IllegalArgumentException e) {
+            displayError("Error: " + e.getMessage());
+        }
+    }
+
     private void displaySteps(List<String> steps) {
         stepsTextArea.clear();
         for (String step : steps) {
-            stepsTextArea.appendText(step + "\n"); // Append each step with a new line
+            stepsTextArea.appendText(step + "\n");
         }
-        Gauss.clearSteps();
     }
 
     private void displaySolution(double[] solution) {
