@@ -1,10 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
-<?import javafx.scene.control.Label?>
-<?import javafx.scene.control.Button?>
 <?import javafx.geometry.Insets?>
+<?import javafx.geometry.Pos?>
+<?import javafx.scene.layout.GridPane?>
 
 <HBox xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="chisli.SistemPersamaanLinearController">
     <!-- Sidebar with buttons -->
@@ -21,11 +24,30 @@
         </padding>
     </VBox>
 
-    <!-- Main content area -->
     <VBox alignment="CENTER" spacing="20.0" HBox.hgrow="ALWAYS">
         <children>
             <Label text="Sistem Persamaan Linear" style="-fx-font-size: 24px;" />
-            <!-- Additional content goes here -->
+            
+            <HBox alignment="CENTER" spacing="10.0">
+                <children>
+                    <Label text="Rows:" />
+                    <TextField fx:id="rowsInput" prefWidth="50" />
+                    <Label text="Columns:" />
+                    <TextField fx:id="columnsInput" prefWidth="50" />
+                    <Button text="Generate Matrix" onAction="#generateMatrix" />
+                </children>
+            </HBox>
+
+            <GridPane fx:id="matrixGrid" alignment="CENTER" hgap="10" vgap="10" />
+
+            <HBox alignment="CENTER" spacing="10.0">
+                <Button text="Solve Gauss" onAction="#solveGauss"/>
+            </HBox>
+
+            <VBox alignment="CENTER" spacing="10.0">
+                <Label text="Output" style="-fx-font-size: 18px;" />
+                <GridPane fx:id="outputGrid" alignment="CENTER" hgap="10" vgap="10"/>
+            </VBox>
         </children>
     </VBox>
 </HBox>
