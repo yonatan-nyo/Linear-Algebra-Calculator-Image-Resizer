@@ -10,7 +10,7 @@ import javafx.fxml.FXML;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.GridPane;
 import javafx.scene.control.Label;
-import javafx.scene.layout.VBox;
+import javafx.scene.control.TextArea;
 import javafx.scene.control.Button;
 import java.util.ArrayList;
 import java.util.List;
@@ -67,6 +67,9 @@ public class SistemPersamaanLinearController {
     private TextField columnsInput;
 
     @FXML
+    private TextArea stepsTextArea;
+
+    @FXML
     private GridPane matrixGrid;
 
     @FXML
@@ -92,12 +95,11 @@ public class SistemPersamaanLinearController {
             }
         }
     }
-
     @FXML
     public void solveGauss() {
         int rows = Integer.parseInt(rowsInput.getText());
         int columns = Integer.parseInt(columnsInput.getText());
-
+    
         // Prepare the matrix data
         double[][] matrixData = new double[rows][columns];
         Matrix matrix = new Matrix(matrixData);
@@ -108,14 +110,24 @@ public class SistemPersamaanLinearController {
                 matrix.set(row, col, value);
             }
         }
-
+    
         // Solve using Gaussian elimination
         try {
             double[] solution = Gauss.solve(matrix);
             displaySolution(solution);
+            displaySteps(Gauss.getSteps()); // Display steps
         } catch (IllegalArgumentException e) {
             displayError("Error: " + e.getMessage());
         }
+    }
+
+    // Updated method to display steps in the stepsTextArea
+    private void displaySteps(List<String> steps) {
+        stepsTextArea.clear();
+        for (String step : steps) {
+            stepsTextArea.appendText(step + "\n"); // Append each step with a new line
+        }
+        Gauss.clearSteps();
     }
 
     private void displaySolution(double[] solution) {

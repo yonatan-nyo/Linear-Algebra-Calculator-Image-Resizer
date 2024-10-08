@@ -3,5 +3,7 @@
     "*.css": "css"
   },
   "css.lint.vendorPrefix": "ignore",
-  "css.lint.unknownVendorSpecificProperties": "error"
+  "css.lint.unknownVendorSpecificProperties": "error",
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
+  "editor.tabSize": 4
 }
