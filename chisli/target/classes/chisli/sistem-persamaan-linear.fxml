@@ -12,48 +12,47 @@
 
 <HBox xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="chisli.SistemPersamaanLinearController">
     <!-- Sidebar with buttons -->
-    <VBox alignment="TOP_LEFT" spacing="20.0" style="-fx-background-color: #f0f0f0; -fx-padding: 20px;" maxWidth="200">
+    <VBox alignment="TOP_LEFT" spacing="20.0" styleClass="sidebar">
         <children>
-            <Label text="Menu" style="-fx-font-size: 18px;" />
-            <Button fx:id="primaryButton" text="Sistem Persamaan Linear" onAction="#switchToSistemPersamaanLinear"/>
-            <Button fx:id="primaryButton" text="Interpolasi Polinomial" onAction="#switchToInterpolasiPolinomial"/>
-            <Button fx:id="primaryButton" text="Regresi Berganda" onAction="#switchToRegresiBerganda"/>
-            <Button fx:id="primaryButton" text="Bicubic Spline Interpolation" onAction="#switchToBicubicSplineInterpolation"/>
+            <Label text="Menu" styleClass="sidebar-title" />
+            <Button fx:id="primaryButton" text="Sistem Persamaan Linear" onAction="#switchToSistemPersamaanLinear" styleClass="sidebar-button-nav"/>
+            <Button fx:id="primaryButton" text="Interpolasi Polinomial" onAction="#switchToInterpolasiPolinomial" styleClass="sidebar-button-nav"/>
+            <Button fx:id="primaryButton" text="Regresi Berganda" onAction="#switchToRegresiBerganda" styleClass="sidebar-button-nav"/>
+            <Button fx:id="primaryButton" text="Bicubic Spline Interpolation" onAction="#switchToBicubicSplineInterpolation" styleClass="sidebar-button-nav"/>
         </children>
     </VBox>
 
     <VBox alignment="CENTER" spacing="20.0" HBox.hgrow="ALWAYS">
         <children>
-            <Label text="Sistem Persamaan Linear" style="-fx-font-size: 24px; -fx-padding: 20px;" />
+            <Label text="Sistem Persamaan Linear" styleClass="title-label" />
             
             <HBox alignment="CENTER" spacing="10.0">
                 <children>
-                    <Label text="Rows:" />
-                    <TextField fx:id="rowsInput" prefWidth="50" />
-                    <Label text="Columns:" />
-                    <TextField fx:id="columnsInput" prefWidth="50" />
-                    <Button text="Generate Matrix" onAction="#generateMatrix" />
+                    <Label text="Rows:" styleClass="text-white"/>
+                    <TextField fx:id="rowsInput" prefWidth="50" styleClass="text-field"/>
+                    <Label text="Columns:" styleClass="text-white"/>
+                    <TextField fx:id="columnsInput" prefWidth="50" styleClass="text-field"/>
+                    <Button text="Generate Matrix" onAction="#generateMatrix" styleClass="button-action"/>
                 </children>
             </HBox>
 
             <GridPane fx:id="matrixGrid" alignment="CENTER" hgap="10" vgap="10" />
 
             <HBox alignment="CENTER" spacing="10.0">
-                <Button text="Solve with Gauss" onAction="#solveGauss"/>
-                <Button text="Solve with Gauss-Jordan" onAction="#solveGaussJordan"/>
-                <Button text="Solve with cramer" onAction="#solveCramer"/>
-                <Button text="Inverse matrix" onAction="#inverse"/>
+                <Button text="Solve with Gauss" onAction="#solveGauss" styleClass="button-action"/>
+                <Button text="Solve with Gauss-Jordan" onAction="#solveGaussJordan" styleClass="button-action"/>
+                <Button text="Solve with cramer" onAction="#solveCramer" styleClass="button-action"/>
+                <Button text="Inverse matrix" onAction="#inverse" styleClass="button-action"/>
             </HBox>
 
             <VBox alignment="CENTER" spacing="10.0">
-                <Label text="Output" style="-fx-font-size: 18px;" />
-                <GridPane fx:id="outputGrid" alignment="CENTER" hgap="10" vgap="10"/>
+                <Label text="Output" styleClass="output-label"/>
+                <GridPane fx:id="outputGrid" alignment="CENTER" hgap="10" vgap="10" styleClass="grid-pane"/>
             </VBox>
             
-            
             <VBox alignment="CENTER" spacing="10.0" VBox.vgrow="ALWAYS" style="-fx-padding: 20px;">
-                <Label text="Steps" style="-fx-font-size: 18px;" />
-                <TextArea fx:id="stepsTextArea" prefWidth="400" prefHeight="200" wrapText="true" editable="false" VBox.vgrow="ALWAYS"/>
+                <Label text="Steps" styleClass="steps-label"/>
+                <TextArea fx:id="stepsTextArea" prefWidth="400" prefHeight="200" wrapText="true" editable="false" VBox.vgrow="ALWAYS" styleClass="text-area" />
             </VBox>
         </children>
     </VBox>
