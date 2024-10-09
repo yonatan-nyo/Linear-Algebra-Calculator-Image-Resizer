@@ -15,8 +15,8 @@
     <VBox alignment="TOP_LEFT" spacing="20.0" styleClass="sidebar">
         <children>
             <Label text="Menu" styleClass="sidebar-title" />
-            <Button fx:id="primaryButton" text="Sistem Persamaan Linear" onAction="#switchToSistemPersamaanLinear" styleClass="sidebar-button-nav"/>
-            <Button fx:id="primaryButton" text="Interpolasi Polinomial" onAction="#switchToInterpolasiPolinomial" styleClass="sidebar-button-nav"/>
+            <Button fx:id="primaryButton" text="Sistem Persamaan Linear" onAction="#switchToSistemPersamaanLinear" styleClass="sidebar-button-nav" />
+            <Button fx:id="primaryButton" text="Interpolasi Polinomial" onAction="#switchToInterpolasiPolinomial" styleClass="sidebar-button-nav" />
             <Button fx:id="primaryButton" text="Regresi Berganda" onAction="#switchToRegresiBerganda" styleClass="sidebar-button-nav"/>
             <Button fx:id="primaryButton" text="Bicubic Spline Interpolation" onAction="#switchToBicubicSplineInterpolation" styleClass="sidebar-button-nav"/>
         </children>

@@ -20,12 +20,13 @@ public class App extends Application {
     public void start(Stage stage) throws IOException {
         System.out.println();
         stage.getIcons().add(new Image(App.class.getResourceAsStream("app-icon.png")));
+        
+        stage.setTitle("Chisli");
     
         scene = new Scene(loadFXML("sistem-persamaan-linear"), 640, 480);
         loadCSS("sistem-persamaan-linear");
         stage.setMaximized(true);
     
-
         stage.setScene(scene);
         stage.show();
     }
