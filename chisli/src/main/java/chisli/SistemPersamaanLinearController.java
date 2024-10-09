@@ -3,7 +3,7 @@ package chisli;
 import java.io.IOException;
 import chisli.utils.matrix.Matrix;
 import chisli.utils.spl.Gauss;
-import chisli.utils.spl.GaussJordan; // Import GaussJordan class
+import chisli.utils.spl.GaussJordan; 
 import chisli.utils.spl.Cramer;
 import chisli.utils.spl.SplInverse;
 import chisli.utils.matrix.MatrixSteps;

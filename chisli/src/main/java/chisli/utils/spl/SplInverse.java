@@ -6,34 +6,41 @@ import chisli.utils.matrix.MatrixSteps;
 
 public class SplInverse {
     private static MatrixSteps matrixSteps;
-    
-    public static double[] solve(Matrix A, Matrix B) {
+
+    public static double[] solve(Matrix coefficientMatrix, Matrix constantMatrix) {
         matrixSteps = new MatrixSteps();
-        Matrix A_inv = A.inverse();
-        matrixSteps.addStep("Matrix A");
-        matrixSteps.addMatrixState(A.getString());
-        matrixSteps.addStep("Inverse of matrix A");
-        matrixSteps.addMatrixState(A_inv.getString());
-        matrixSteps.addStep("Matrix B");
-        matrixSteps.addMatrixState(B.getString());
 
-        Matrix X = Matrix.multiply(A_inv, B);
-        matrixSteps.addStep("Multiply Inverse of matrix A with matrix B");
-        matrixSteps.addMatrixState(X.getString());
+        // Calculate the inverse of the coefficient matrix
+        Matrix inverseMatrix = coefficientMatrix.inverse();
+        matrixSteps.addStep("Coefficient Matrix A");
+        matrixSteps.addMatrixState(coefficientMatrix.getString());
 
-        double[] solution = new double[X.getRowCount()];
-        for (int i = 0; i < X.getRowCount(); i++) {
-            solution[i] = X.get(i, 0); 
-            solution[i]=SmallFloat.handleMinus0(solution[i]);
+        matrixSteps.addStep("Inverse of Matrix A");
+        matrixSteps.addMatrixState(inverseMatrix.getString());
+
+        matrixSteps.addStep("Constant Matrix B");
+        matrixSteps.addMatrixState(constantMatrix.getString());
+
+        // Multiply the inverse of the coefficient matrix by the constant matrix to find the solution
+        Matrix solutionMatrix = Matrix.multiply(inverseMatrix, constantMatrix);
+        matrixSteps.addStep("Multiply Inverse of Matrix A with Matrix B");
+        matrixSteps.addMatrixState(solutionMatrix.getString());
+
+        // Extract the solution from the resulting matrix
+        double[] solutions = new double[solutionMatrix.getRowCount()];
+        for (int rowIndex = 0; rowIndex < solutionMatrix.getRowCount(); rowIndex++) {
+            solutions[rowIndex] = solutionMatrix.get(rowIndex, 0); 
+            solutions[rowIndex] = SmallFloat.handleMinus0(solutions[rowIndex]);
         }
 
         matrixSteps.addStep("Final solution:");
-        for (int i = 0; i < solution.length; i++) {
-            matrixSteps.addStep(String.format("x%d = %.4f", i + 1, solution[i]));
+        for (int i = 0; i < solutions.length; i++) {
+            matrixSteps.addStep(String.format("x%d = %.4f", i + 1, solutions[i]));
         }
 
-        return solution;
+        return solutions;
     }
+
     public static MatrixSteps getMatrixSteps() {
         return matrixSteps;
     }
