@@ -4,7 +4,6 @@ import chisli.utils.floats.SmallFloat;
 import chisli.utils.matrix.Matrix;
 import chisli.utils.matrix.MatrixSteps;
 
-
 public class GaussJordan {
     private static MatrixSteps matrixSteps;
 
@@ -12,8 +11,10 @@ public class GaussJordan {
         matrixSteps = new MatrixSteps(); // Initialize MatrixSteps
         int rows = matrix.getRowCount();
         int cols = matrix.getColumnCount();
+        int variables = cols - 1;  // Number of variables (cols - 1 for augmented matrix)
 
-        for (int i = 0; i < rows; i++) {
+        // Gauss-Jordan Elimination Process
+        for (int i = 0; i < Math.min(rows, variables); i++) {
             double pivot = matrix.get(i, i);
             if (Math.abs(pivot) < 1e-10) {
                 throw new IllegalArgumentException("Matrix is singular or system has no unique solution.");
@@ -43,15 +44,15 @@ public class GaussJordan {
     }
 
     public static double[] solve(Matrix matrix) {
-        reduce(matrix); // Call the reduce method to perform Gauss-Jordan elimination
-        int rows = matrix.getRowCount();
+        reduce(matrix); // Perform Gauss-Jordan elimination
         int cols = matrix.getColumnCount();
+        int variables = cols - 1;  // Only focus on variables, ignore extra equations
 
-        double[] solution = new double[rows];
-        for (int i = 0; i < rows; i++) {
-            solution[i] = matrix.get(i, cols - 1);  
+        double[] solution = new double[variables];
+        for (int i = 0; i < variables; i++) {
+            solution[i] = matrix.get(i, cols - 1);  // Extract the solution from the last column
             // Set to 0 if the result is below 1e-4
-            solution[i]=SmallFloat.handleMinus0(solution[i]);
+            solution[i] = SmallFloat.handleMinus0(solution[i]);
         }
 
         // Log final solution

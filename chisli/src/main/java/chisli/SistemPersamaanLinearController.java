@@ -107,6 +107,10 @@ public class SistemPersamaanLinearController {
             displayError("Invalid matrix: At least 2 columns are required");
             return;
         }
+        if(rows < columns-1){
+            displayError("Invalid matrix: Not enough equations");
+            return;
+        }
 
         // Prepare the matrix data
         double[][] matrixData = new double[rows][columns];
@@ -136,6 +140,10 @@ public class SistemPersamaanLinearController {
         int columns = Integer.parseInt(columnsInput.getText());
         if (columns < 2) {
             displayError("Invalid matrix: At least 2 columns are required");
+            return;
+        }
+        if(rows < columns-1){
+            displayError("Invalid matrix: Not enough equations");
             return;
         }
 
@@ -254,6 +262,7 @@ public class SistemPersamaanLinearController {
     }
 
     private void displayError(String message) {
+        stepsTextArea.clear();
         outputGrid.getChildren().clear();
         Label errorLabel = new Label(message);
         outputGrid.add(errorLabel, 0, 0);

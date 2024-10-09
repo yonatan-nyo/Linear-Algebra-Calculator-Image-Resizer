@@ -11,8 +11,10 @@ public class Gauss {
         matrixSteps = new MatrixSteps(); // Initialize MatrixSteps
         int rows = matrix.getRowCount();
         int cols = matrix.getColumnCount();
+        int variables = cols - 1;  // Number of variables (cols - 1 for augmented matrix)
 
-        for (int i = 0; i < rows; i++) {
+        // Forward elimination
+        for (int i = 0; i < Math.min(rows, variables); i++) {
             int maxRow = i;
             for (int k = i + 1; k < rows; k++) {
                 if (Math.abs(matrix.get(k, i)) > Math.abs(matrix.get(maxRow, i))) {
@@ -27,18 +29,20 @@ public class Gauss {
                 matrixSteps.addMatrixState(matrix.getString());
             }
 
-            // Check if matrix is singular
-            if (Math.abs(matrix.get(i, i)) < 1e-10) {
+            // Check if matrix is singular or system has no unique solution
+            if (i < variables && Math.abs(matrix.get(i, i)) < 1e-10) {
                 throw new IllegalArgumentException("Matrix is singular or system has no unique solution.");
             }
 
             // Normalize row
             double pivot = matrix.get(i, i);
-            for (int j = i; j < cols; j++) {
-                matrix.set(i, j, matrix.get(i, j) / pivot);
+            if (pivot != 0) {
+                for (int j = i; j < cols; j++) {
+                    matrix.set(i, j, matrix.get(i, j) / pivot);
+                }
+                matrixSteps.addStep(String.format("Normalize row %d by dividing by %.4f", i + 1, pivot));
+                matrixSteps.addMatrixState(matrix.getString());
             }
-            matrixSteps.addStep(String.format("Normalize row %d by dividing by %.4f", i + 1, pivot));
-            matrixSteps.addMatrixState(matrix.getString());
 
             // Elimination process
             for (int k = i + 1; k < rows; k++) {
@@ -49,20 +53,42 @@ public class Gauss {
                 }
                 matrixSteps.addMatrixState(matrix.getString());
             }
-
-            // Log matrix state after row operation
-            matrixSteps.addStep("Matrix after row operation " + (i + 1) + ":");
-            matrixSteps.addMatrixState(matrix.getString());
         }
 
         // Back substitution
-        double[] solution = new double[rows];
-        for (int i = rows - 1; i >= 0; i--) {
-            solution[i] = matrix.get(i, cols - 1);
-            for (int j = i + 1; j < rows; j++) {
+        double[] solution = new double[variables];
+        for (int i = variables - 1; i >= 0; i--) {
+            solution[i] = matrix.get(i, cols - 1);  // Right-hand side of the equation
+
+            // Check if the current row is inconsistent (all coefficients are 0 but the constant is non-zero)
+            boolean allZeroCoefficients = true;
+            for (int j = 0; j < variables; j++) {
+                if (Math.abs(matrix.get(i, j)) > 1e-10) {
+                    allZeroCoefficients = false;
+                    break;
+                }
+            }
+            if (allZeroCoefficients && Math.abs(solution[i]) > 1e-10) {
+                throw new IllegalArgumentException("The system has no solution due to inconsistency.");
+            }
+
+            for (int j = i + 1; j < variables; j++) {
                 solution[i] -= matrix.get(i, j) * solution[j];
             }
-            solution[i]=SmallFloat.handleMinus0(solution[i]);
+            solution[i] = SmallFloat.handleMinus0(solution[i]);  // Handle -0 case
+        }
+
+        // Check when coefficients 0 and value is not 0
+        for (int i=0;i<rows;i++){
+            boolean areCoefficientsZero = true;
+            for(int j=0;j<cols;j++){
+                if(j<cols-1 && matrix.get(i, j)!=0){
+                    areCoefficientsZero=false;
+                }
+                if(areCoefficientsZero && j==cols-1 && matrix.get(i, j)!=0){
+                    throw new IllegalArgumentException("The system has no solution due to inconsistency.");
+                }
+            }
         }
 
         // Log final solution
