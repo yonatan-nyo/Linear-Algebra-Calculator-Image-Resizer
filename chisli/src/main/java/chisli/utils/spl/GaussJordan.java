@@ -7,61 +7,63 @@ import chisli.utils.matrix.MatrixSteps;
 public class GaussJordan {
     private static MatrixSteps matrixSteps;
 
-    public static void reduce(Matrix matrix) {
-        matrixSteps = new MatrixSteps(); // Initialize MatrixSteps
-        int rows = matrix.getRowCount();
-        int cols = matrix.getColumnCount();
-        int variables = cols - 1;  // Number of variables (cols - 1 for augmented matrix)
+    public static void reduce(Matrix augmentedMatrix) {
+        matrixSteps = new MatrixSteps(); 
+        int rowCount = augmentedMatrix.getRowCount();
+        int columnCount = augmentedMatrix.getColumnCount();
+        int variableCount = columnCount - 1;  // Number of variables (column - 1 for augmented matrix)
 
         // Gauss-Jordan Elimination Process
-        for (int i = 0; i < Math.min(rows, variables); i++) {
-            double pivot = matrix.get(i, i);
-            if (Math.abs(pivot) < 1e-10) {
+        for (int pivotRow = 0; pivotRow < Math.min(rowCount, variableCount); pivotRow++) {
+            double pivotValue = augmentedMatrix.get(pivotRow, pivotRow);
+            if (Math.abs(pivotValue) < 1e-10) {
                 throw new IllegalArgumentException("Matrix is singular or system has no unique solution.");
             }
 
             // Normalize the pivot row
-            for (int j = i; j < cols; j++) {
-                matrix.set(i, j, matrix.get(i, j) / pivot);
+            for (int col = pivotRow; col < columnCount; col++) {
+                augmentedMatrix.set(pivotRow, col, augmentedMatrix.get(pivotRow, col) / pivotValue);
             }
-            matrixSteps.addStep(String.format("Normalize row %d by dividing by %.4f", i + 1, pivot));
-            matrixSteps.addMatrixState(matrix.getString()); // Log the matrix state
+            matrixSteps.addStep(String.format("Normalize row %d by dividing by %.4f", pivotRow + 1, pivotValue));
+            matrixSteps.addMatrixState(augmentedMatrix.getString()); 
 
             // Eliminate the other rows
-            for (int k = 0; k < rows; k++) {
-                if (k != i) {  // Don't eliminate the pivot row itself
-                    double factor = matrix.get(k, i);
-                    for (int j = i; j < cols; j++) {
-                        matrix.set(k, j, matrix.get(k, j) - factor * matrix.get(i, j));
+            for (int targetRow = 0; targetRow < rowCount; targetRow++) {
+                if (targetRow != pivotRow) {  // Don't eliminate the pivot row itself
+                    double eliminationFactor = augmentedMatrix.get(targetRow, pivotRow);
+                    for (int col = pivotRow; col < columnCount; col++) {
+                        augmentedMatrix.set(targetRow, col, augmentedMatrix.get(targetRow, col) - eliminationFactor * augmentedMatrix.get(pivotRow, col));
                     }
-                    matrixSteps.addStep(String.format("Eliminating row %d using row %d with factor %.4f", k + 1, i + 1, factor));
-                    matrixSteps.addMatrixState(matrix.getString()); // Log the matrix state after elimination
+                    matrixSteps.addStep(String.format("Eliminating row %d using row %d with factor %.4f", targetRow + 1, pivotRow + 1, eliminationFactor));
+                    matrixSteps.addMatrixState(augmentedMatrix.getString()); 
                 }
             }
-            matrixSteps.addStep("Matrix after row operation " + (i + 1) + ":");
-            matrixSteps.addMatrixState(matrix.getString()); // Log the matrix state after row operation
         }
     }
 
-    public static double[] solve(Matrix matrix) {
-        reduce(matrix); // Perform Gauss-Jordan elimination
-        int cols = matrix.getColumnCount();
-        int variables = cols - 1;  // Only focus on variables, ignore extra equations
+    public static double[] solve(Matrix augmentedMatrix) {
+        // Perform Gauss-Jordan elimination
+        reduce(augmentedMatrix); 
 
-        double[] solution = new double[variables];
-        for (int i = 0; i < variables; i++) {
-            solution[i] = matrix.get(i, cols - 1);  // Extract the solution from the last column
+        int columnCount = augmentedMatrix.getColumnCount();
+
+        // Only focus on variables, ignore extra equations
+        int variableCount = columnCount - 1;  
+
+        double[] solutionVector = new double[variableCount];
+        for (int i = 0; i < variableCount; i++) {
+            solutionVector[i] = augmentedMatrix.get(i, columnCount - 1);  // Extract the solution from the last column
             // Set to 0 if the result is below 1e-4
-            solution[i] = SmallFloat.handleMinus0(solution[i]);
+            solutionVector[i] = SmallFloat.handleMinus0(solutionVector[i]);
         }
 
         // Log final solution
         matrixSteps.addStep("Final solution:");
-        for (int i = 0; i < solution.length; i++) {
-            matrixSteps.addStep(String.format("x%d = %.4f", i + 1, solution[i]));
+        for (int i = 0; i < solutionVector.length; i++) {
+            matrixSteps.addStep(String.format("x%d = %.4f", i + 1, solutionVector[i]));
         }
 
-        return solution;
+        return solutionVector;
     }
 
     public static MatrixSteps getMatrixSteps() {

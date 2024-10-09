@@ -3,11 +3,11 @@ package chisli.utils.floats;
 public class SmallFloat {
 
     public static double handleMinus0(double val) {
-        // Check if val is -0.0 or a small negative value close to -0
-        if (val < 0 && val > -1e-2) {
-            return -1 * val;  // Convert it to a positive value
+        // Check if val is exactly -0.0
+        if (Double.doubleToRawLongBits(val) == Double.doubleToRawLongBits(-0.0)) {
+            return 0.0;  
         }
 
-        return val;  // Return the original value if it's not a small negative value
+        return val;  
     }
 }

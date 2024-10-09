@@ -160,7 +160,6 @@ public class SistemPersamaanLinearController {
 
         // Solve using Gauss-Jordan elimination
         try {
-            GaussJordan.reduce(matrix); // Perform reduction
             double[] solution = GaussJordan.solve(matrix); // Get solution
             displaySolution(solution, columns - 1);
             
