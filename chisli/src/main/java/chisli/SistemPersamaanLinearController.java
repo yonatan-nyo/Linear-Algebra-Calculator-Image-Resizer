@@ -107,10 +107,6 @@ public class SistemPersamaanLinearController {
             displayError("Invalid matrix: At least 2 columns are required");
             return;
         }
-        if(rows < columns-1){
-            displayError("Invalid matrix: Not enough equations");
-            return;
-        }
 
         // Prepare the matrix data
         double[][] matrixData = new double[rows][columns];
@@ -125,12 +121,14 @@ public class SistemPersamaanLinearController {
 
         // Solve using Gaussian elimination
         try {
-            double[] solution = Gauss.solve(matrix);
-            MatrixSteps matrixSteps = Gauss.getMatrixSteps(); // Get the steps from Gauss class
-            displaySolution(solution, columns-1);
-            displaySteps(matrixSteps.getSteps()); // Display steps
+            String[] solution = Gauss.solve(matrix);
+            MatrixSteps matrixSteps = Gauss.getMatrixSteps(); 
+            displayStringSolution(solution);
+            displaySteps(matrixSteps.getSteps()); 
         } catch (IllegalArgumentException e) {
+            MatrixSteps matrixSteps = Gauss.getMatrixSteps(); 
             displayError("Error: " + e.getMessage());
+            displaySteps(matrixSteps.getSteps()); 
         }
     }
 
@@ -256,6 +254,14 @@ public class SistemPersamaanLinearController {
         outputGrid.getChildren().clear();
         for (int i = 0; i < numVariables; i++) {
             Label resultLabel = new Label(String.format("x%d = %.2f", i + 1, solution[i]));
+            outputGrid.add(resultLabel, 0, i);
+        }
+    }
+
+    private void displayStringSolution(String[] solution){
+        outputGrid.getChildren().clear();
+        for (int i = 0; i < solution.length; i++) {
+            Label resultLabel = new Label(solution[i]);
             outputGrid.add(resultLabel, 0, i);
         }
     }
