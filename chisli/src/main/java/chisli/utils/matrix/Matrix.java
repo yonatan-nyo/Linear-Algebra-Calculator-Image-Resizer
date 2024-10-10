@@ -1,6 +1,10 @@
 package chisli.utils.matrix;
 
 public class Matrix {
+
+    public static Matrix transpose(Matrix XMatrix) {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
     double[][] data;
     int rows, cols;
 

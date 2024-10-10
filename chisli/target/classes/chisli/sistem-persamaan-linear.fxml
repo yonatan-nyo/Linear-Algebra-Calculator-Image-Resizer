@@ -52,7 +52,7 @@
             
             <VBox alignment="CENTER" spacing="10.0" VBox.vgrow="ALWAYS" style="-fx-padding: 20px;">
                 <Label text="Steps" styleClass="steps-label"/>
-                <TextArea fx:id="stepsTextArea" prefWidth="400" prefHeight="200" wrapText="true" editable="false" VBox.vgrow="ALWAYS" styleClass="text-area" />
+                <TextArea fx:id="stepsTextArea" prefWidth="400" prefHeight="200" wrapText="true" editable="false" focusTraversable="true" VBox.vgrow="ALWAYS" styleClass="text-area" />
             </VBox>
         </children>
     </VBox>
