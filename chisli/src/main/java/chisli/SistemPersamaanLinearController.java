@@ -140,10 +140,6 @@ public class SistemPersamaanLinearController {
             displayError("Invalid matrix: At least 2 columns are required");
             return;
         }
-        if(rows < columns-1){
-            displayError("Invalid matrix: Not enough equations");
-            return;
-        }
 
         // Prepare the matrix data
         double[][] matrixData = new double[rows][columns];
@@ -158,14 +154,16 @@ public class SistemPersamaanLinearController {
 
         // Solve using Gauss-Jordan elimination
         try {
-            double[] solution = GaussJordan.solve(matrix); // Get solution
-            displaySolution(solution, columns - 1);
+            String[] solution = GaussJordan.solve(matrix); // Get solution
+            displayStringSolution(solution);
             
             // Retrieve the matrix steps after reduction
             MatrixSteps matrixSteps = GaussJordan.getMatrixSteps(); 
             displaySteps(matrixSteps.getSteps()); // Display steps
         } catch (IllegalArgumentException e) {
+            MatrixSteps matrixSteps = GaussJordan.getMatrixSteps(); 
             displayError("Error: " + e.getMessage());
+            displaySteps(matrixSteps.getSteps()); 
         }
     }
 
