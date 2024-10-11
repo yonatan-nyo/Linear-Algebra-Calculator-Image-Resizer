@@ -190,9 +190,11 @@ public class Gauss {
     // Complete solve method using both steps
     public static String[] solve(Matrix augmentedMatrix) {
         matrixSteps = new MatrixSteps();
-        matrixSteps.addStep("======== Gaussian Elimination (Row Echelon Form) ========");
+        matrixSteps.addStep("======================= Matrix given ======================");
+        matrixSteps.addMatrixState(augmentedMatrix.getString());
+        matrixSteps.addStep("\n======== Gaussian Elimination (Row Echelon Form) ========");
         Matrix echelonMatrix = getEchelon(augmentedMatrix);
-        matrixSteps.addStep("=================== Back Substitution ===================");
+        matrixSteps.addStep("\n=================== Back Substitution ===================");
         return getResultFromEchelon(echelonMatrix);
     }
 

@@ -144,7 +144,9 @@ public class Matrix {
                     sb.append(" ");
                 }
             }
-            sb.append("\n");
+            if(i < rows - 1){
+                sb.append("\n");
+            }
         }
 
         return sb.toString();
