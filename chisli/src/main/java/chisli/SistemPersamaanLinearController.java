@@ -47,11 +47,20 @@ public class SistemPersamaanLinearController {
     }
 
     @FXML
-    private void switchToRegresiBerganda() {
+    private void switchToRegresiLinierBerganda() {
         try {
-            Router.navigateToRegresiBerganda();
+            Router.navigateToRegresiLinierBerganda(); // Change to the desired navigation method
         } catch (IOException e) {
-            e.printStackTrace();
+            e.printStackTrace(); // Handle exception
+        }
+    }
+    
+    @FXML
+    private void switchToRegresiKuadratikBerganda() {
+        try {
+            Router.navigateToRegresiKuadratikBerganda(); // Change to the desired navigation method
+        } catch (IOException e) {
+            e.printStackTrace(); // Handle exception
         }
     }
 

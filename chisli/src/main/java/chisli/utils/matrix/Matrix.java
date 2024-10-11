@@ -1,10 +1,6 @@
 package chisli.utils.matrix;
 
 public class Matrix {
-
-    public static Matrix transpose(Matrix XMatrix) {
-        throw new UnsupportedOperationException("Not supported yet.");
-    }
     double[][] data;
     int rows, cols;
 
@@ -107,6 +103,18 @@ public class Matrix {
 
         return new Matrix(inverseData);
     }
+    
+    public static double[][] transpose(double[][] matrix) {
+            int rows = matrix.length;
+            int cols = matrix[0].length;
+            double[][] transposed = new double[cols][rows];
+            for (int i = 0; i < rows; i++) {
+                for (int j = 0; j < cols; j++) {
+                    transposed[j][i] = matrix[i][j];
+                }
+            }
+            return transposed;
+        }
 
     // Matrix multiplication method
     public static Matrix multiply(Matrix A, Matrix B) {

@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.control.TextArea?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.geometry.Insets?>
+
+<HBox xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="chisli.RegresiBergandaController">
+    <!-- Sidebar with buttons -->
+    <VBox alignment="TOP_LEFT" spacing="20.0" styleClass="sidebar">
+        <children>
+            <Label text="Menu" styleClass="sidebar-title" />
+            <Button fx:id="primaryButton" text="Sistem Persamaan Linear" onAction="#switchToSistemPersamaanLinear" styleClass="sidebar-button-nav"/>
+            <Button fx:id="primaryButton" text="Interpolasi Polinomial" onAction="#switchToInterpolasiPolinomial" styleClass="sidebar-button-nav"/>
+            <Button fx:id="primaryButton" text="Regresi Linier Berganda" onAction="#switchToRegresiLinierBerganda" styleClass="sidebar-button-nav"/>
+            <Button fx:id="primaryButton" text="Regresi Kuadratik Berganda" onAction="#switchToRegresiKuadratikBerganda" styleClass="sidebar-button-nav"/>
+            <Button fx:id="primaryButton" text="Bicubic Spline Interpolation" onAction="#switchToBicubicSplineInterpolation" styleClass="sidebar-button-nav"/>
+        </children>
+    </VBox>
+
+    <!-- Main content area -->
+    <VBox alignment="CENTER" spacing="20.0" HBox.hgrow="ALWAYS">
+        <children>
+            <Label text="Regresi Linier Berganda" styleClass="title-label" />
+
+            <!-- Instructions Label -->
+            <Label text="Masukkan x dan y (pisahkan dengan baris), Contoh:" styleClass="text-white" />
+            <VBox alignment="TOP_LEFT" spacing="5.0" maxWidth="200.0" styleClass="reference-box">
+                <HBox spacing="10.0">
+                    <Label text="x1" styleClass="text-white"/>
+                    <Label text="..." styleClass="text-white"/>
+                    <Label text="xn" styleClass="text-white"/>
+                    <Label text="y" styleClass="text-white"/>
+                </HBox>
+
+                <HBox spacing="10.0">
+                    <Label text="1" styleClass="text-white"/>
+                    <Label text="..." styleClass="text-white"/>
+                    <Label text="3" styleClass="text-white"/>
+                    <Label text="4" styleClass="text-white"/>
+                </HBox>
+
+                <HBox spacing="10.0">
+                    <Label text="2" styleClass="text-white"/>
+                    <Label text="..." styleClass="text-white"/>
+                    <Label text="4" styleClass="text-white"/>
+                    <Label text="5" styleClass="text-white"/>
+                </HBox>
+
+                <HBox spacing="10.0">
+                    <Label text="3" styleClass="text-white"/>
+                    <Label text="..." styleClass="text-white"/>
+                    <Label text="5" styleClass="text-white"/>
+                    <Label text="6" styleClass="text-white"/>
+                </HBox>
+
+                <HBox spacing="10.0">
+                    <Label text="4" styleClass="text-white"/>
+                    <Label text="..." styleClass="text-white"/>
+                    <Label text="6" styleClass="text-white"/>
+                    <Label text="7" styleClass="text-white"/>
+                </HBox>
+
+                <Label text="Baris terakhir untuk xk (tanpa y)" styleClass="text-white"/>
+
+                <HBox spacing="10.0">
+                    <Label text="10" styleClass="text-white"/>
+                    <Label text="..." styleClass="text-white"/>
+                    <Label text="12" styleClass="text-white"/>
+                </HBox>
+            </VBox>
+
+
+            <!-- Input for x-values and y-values -->
+            <TextArea fx:id="dataInputField" wrapText="true" prefHeight="200.0" maxWidth="300.0"  />
+
+            <!-- Button to perform interpolation -->
+            <Button text="Hitung Regresi Linier Berganda" onAction="#performRegresiLinier" styleClass="button-action" prefWidth="200"/>
+
+            <!-- Result display -->
+            <Label fx:id="resultLabel" text="" style="-fx-font-size: 18px; -fx-text-fill: lightblue;" />
+        </children>
+    </VBox>
+</HBox>

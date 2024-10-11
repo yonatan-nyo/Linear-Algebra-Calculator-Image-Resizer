@@ -41,9 +41,17 @@ public class InterpolasiPolinomialController {
         }
     }
     @FXML
-    private void switchToRegresiBerganda() {
+    private void switchToRegresiLinierBerganda() {
         try {
-            Router.navigateToRegresiBerganda(); // Change to the desired navigation method
+            Router.navigateToRegresiLinierBerganda(); // Change to the desired navigation method
+        } catch (IOException e) {
+            e.printStackTrace(); // Handle exception
+        }
+    }
+    @FXML
+    private void switchToRegresiKuadratikBerganda() {
+        try {
+            Router.navigateToRegresiKuadratikBerganda(); // Change to the desired navigation method
         } catch (IOException e) {
             e.printStackTrace(); // Handle exception
         }

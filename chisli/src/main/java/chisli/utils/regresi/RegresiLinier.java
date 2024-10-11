@@ -2,12 +2,14 @@ package chisli.utils.regresi;
 
 import java.util.Arrays;
 
+import chisli.utils.matrix.Matrix;
+
 public class RegresiLinier {
 
     // Method to perform multiple linear regression using the Normal Estimation Equation
     public static double[][] solve(double[][] x, double[] y) {
-        System.out.println("xValues: " + Arrays.deepToString(x));
-        System.out.println("yValues: " + Arrays.toString(y));
+        // System.out.println("xValues: " + Arrays.deepToString(x));
+        // System.out.println("yValues: " + Arrays.toString(y));
         int n = x.length; // Number of samples
         int m = x[0].length; // Number of features
         
@@ -19,36 +21,24 @@ public class RegresiLinier {
                 xWithIntercept[i][j + 1] = x[i][j]; // Features
             }
         }
-        System.out.println("xWithIntercept: " + Arrays.deepToString(xWithIntercept));
+        // System.out.println("xWithIntercept: " + Arrays.deepToString(xWithIntercept));
         
         // Calculate coefficients using Normal Equation: (X^T * X)^-1 * X^T * Y
-        double[][] xTransposed = transpose(xWithIntercept);
-        System.out.println("xTransposed: " + Arrays.deepToString(xTransposed));
+        double[][] xTransposed = Matrix.transpose(xWithIntercept);
+        // System.out.println("xTransposed: " + Arrays.deepToString(xTransposed));
         double[][] xTx = multiply(xTransposed, xWithIntercept);
-        System.out.println("xTx: " + Arrays.deepToString(xTx));
+        // System.out.println("xTx: " + Arrays.deepToString(xTx));
         double[][] xTxInverse = invert(xTx);
-        System.out.println("xTxInverse: " + Arrays.deepToString(xTxInverse));
+        // System.out.println("xTxInverse: " + Arrays.deepToString(xTxInverse));
         double[][] yMatrix = transformToColumnMatrix(y);
-        System.out.println("yMatrix: " + Arrays.deepToString(yMatrix));
+        // System.out.println("yMatrix: " + Arrays.deepToString(yMatrix));
         double[][] xTy = multiply(xTransposed, yMatrix);
-        System.out.println("xTy: " + Arrays.deepToString(xTy));
+        // System.out.println("xTy: " + Arrays.deepToString(xTy));
     
         double[][] coefficients = multiply(xTxInverse, xTy);
-        System.out.println("coefficients: " + Arrays.deepToString(coefficients));
+        // System.out.println("coefficients: " + Arrays.deepToString(coefficients));
         return coefficients;
     }    
-
-    private static double[][] transpose(double[][] matrix) {
-        int rows = matrix.length;
-        int cols = matrix[0].length;
-        double[][] transposed = new double[cols][rows];
-        for (int i = 0; i < rows; i++) {
-            for (int j = 0; j < cols; j++) {
-                transposed[j][i] = matrix[i][j];
-            }
-        }
-        return transposed;
-    }
 
     private static double[][] multiply(double[][] a, double[][] b) {
         int rowsA = a.length;
