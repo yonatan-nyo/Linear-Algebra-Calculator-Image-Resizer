@@ -144,12 +144,16 @@ public class Gauss {
                     equationBuilder.append(String.format(" - (%.4f * (%s))", coefficient, strSolution[col]));
                     if(!isVariablesCalculated[col]){
                         isDependantVarCalculated[firstColIdxNot0]=false;
+                        isVariablesCalculated[col]=true;
+                        isFreeVariable[col] = true;
+                        strSolution[col] = String.format("x%d (free variable)", col + 1);
+                        matrixSteps.addStep(String.format("x%d is a free variable", col + 1));
                     }
                 }
 
                 if(!isFreeVariable[col] && coefficient != 0){
                     backSubstitutionValue -= coefficient * doubleSolution[col]; 
-                }else if(firstColIdxNot0!=-1){
+                }else if(firstColIdxNot0!=-1 && coefficient != 0){
                     isFreeVariable[firstColIdxNot0] = true;
                 }
             }
