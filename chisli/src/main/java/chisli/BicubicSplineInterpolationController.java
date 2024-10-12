@@ -24,6 +24,7 @@ public class BicubicSplineInterpolationController {
             e.printStackTrace(); // Handle exception
         }
     }    
+    
     @FXML
     private void switchToInterpolasiPolinomial() {
         try {
@@ -32,14 +33,25 @@ public class BicubicSplineInterpolationController {
             e.printStackTrace(); // Handle exception
         }
     }
+
     @FXML
-    private void switchToRegresiBerganda() {
+    private void switchToRegresiLinierBerganda() {
         try {
-            Router.navigateToRegresiBerganda(); // Change to the desired navigation method
+            Router.navigateToRegresiLinierBerganda();
         } catch (IOException e) {
-            e.printStackTrace(); // Handle exception
+            e.printStackTrace();
         }
     }
+
+    @FXML
+    private void switchToRegresiKuadratikBerganda() {
+        try {
+            Router.navigateToRegresiKuadratikBerganda();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
     @FXML
     private void switchToBicubicSplineInterpolation() {
         try {
