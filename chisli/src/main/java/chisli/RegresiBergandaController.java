@@ -80,6 +80,24 @@ public class RegresiBergandaController {
     public void performRegresiLinier() {
         try {
             String[] lines = dataInputField.getText().split("\n");
+    
+            // Check if each row from 0 to lines.length - 2 has the same number of columns as the first row
+            int expectedColumns = lines[0].trim().split("\\s+").length;
+            for (int i = 0; i < lines.length - 1; i++) {
+                String[] columns = lines[i].trim().split("\\s+");
+                if (columns.length != expectedColumns) {
+                    resultLabel.setText("Error: Row " + (i + 1) + " must contain exactly " + expectedColumns + " columns.");
+                    return;
+                }
+            }
+    
+            // Check if the last row has one less column than the first row
+            String[] lastLineNumbers = lines[lines.length - 1].trim().split("\\s+");
+            if (lastLineNumbers.length != expectedColumns - 1) {
+                resultLabel.setText("Error: The last row must contain exactly " + (expectedColumns - 1) + " columns.");
+                return;
+            }
+    
             List<double[]> xValuesList = new ArrayList<>();
             List<Double> yValuesList = new ArrayList<>();
     
@@ -97,8 +115,7 @@ public class RegresiBergandaController {
             double[] yValues = yValuesList.stream().mapToDouble(Double::doubleValue).toArray();
     
             // Parse xk from the last row
-            String[] xkString = lines[lines.length - 1].trim().split("\\s+");
-            double[] xk = Arrays.stream(xkString).mapToDouble(Double::parseDouble).toArray();
+            double[] xk = Arrays.stream(lastLineNumbers).mapToDouble(Double::parseDouble).toArray();
     
             // Call the regression method to get the function and predicted value
             RegresiLinier regresiLinier = new RegresiLinier();
@@ -119,7 +136,7 @@ public class RegresiBergandaController {
                 }
                 equation.append("x").append(i); // x1, x2, ..., xn
             }
-
+    
             // Check if all coefficients are zero
             if (Arrays.stream(coefficients).allMatch(coef -> coef == 0)) {
                 resultLabel.setText(String.format("The system has free variables. Please try making at least %d dependent equations.", coefficients.length));
@@ -152,9 +169,27 @@ public class RegresiBergandaController {
         }
     }
     
+    @FXML
     public void performRegresiKuadratik() {
         try {
             String[] lines = dataInputField.getText().split("\n");
+    
+            // Check if each row from 0 to lines.length - 2 has exactly 3 columns
+            for (int i = 0; i < lines.length - 1; i++) {
+                String[] columns = lines[i].trim().split("\\s+");
+                if (columns.length != 3) {
+                    resultLabel.setText("Error: Row " + (i + 1) + " must contain exactly 3 columns.");
+                    return;
+                }
+            }
+    
+            // Check if the last row has exactly 2 columns
+            String[] lastLineNumbers = lines[lines.length - 1].trim().split("\\s+");
+            if (lastLineNumbers.length != 2) {
+                resultLabel.setText("Error: The last row must contain exactly 2 columns.");
+                return;
+            }
+    
             List<double[]> xValuesList = new ArrayList<>();
             List<Double> yValuesList = new ArrayList<>();
     
@@ -172,8 +207,7 @@ public class RegresiBergandaController {
             double[] yValues = yValuesList.stream().mapToDouble(Double::doubleValue).toArray();
     
             // Parse xk from the last row
-            String[] xkString = lines[lines.length - 1].trim().split("\\s+");
-            double[] xk = Arrays.stream(xkString).mapToDouble(Double::parseDouble).toArray();
+            double[] xk = Arrays.stream(lastLineNumbers).mapToDouble(Double::parseDouble).toArray();
     
             // Call the regression method to get the function and predicted value
             RegresiKuadratik regresiKuadratik = new RegresiKuadratik();
