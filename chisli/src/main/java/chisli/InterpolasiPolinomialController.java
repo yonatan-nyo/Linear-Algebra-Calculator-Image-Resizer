@@ -74,28 +74,43 @@ public class InterpolasiPolinomialController {
     public void performInterpolation() {
         try {
             String[] lines = dataInputField.getText().split("\n");
-            double[] xValues = new double[lines.length];
-            double[] yValues = new double[lines.length];
-
-            // Parse each line to get x and y values
-            for (int i = 0; i < lines.length-1; i++) {
-                String[] parts = lines[i].trim().split(" ");
-                if (parts.length != 2) {
-                    throw new IllegalArgumentException("Setiap baris harus berisi dua angka (x dan y).");
+    
+            // Check if each row from 0 to lines.length - 2 has exactly 2 columns
+            for (int i = 0; i < lines.length - 1; i++) {
+                String[] columns = lines[i].trim().split("\\s+");
+                if (columns.length != 2) {
+                    resultLabel.setText("Error: Row " + (i + 1) + " must contain exactly 2 columns.");
+                    return;
                 }
+            }
+    
+            // Check if the last row has exactly 1 column
+            String[] lastLineNumbers = lines[lines.length - 1].trim().split("\\s+");
+            if (lastLineNumbers.length != 1) {
+                resultLabel.setText("Error: The last row must contain exactly 1 column.");
+                return;
+            }
+    
+            double[] xValues = new double[lines.length - 1];
+            double[] yValues = new double[lines.length - 1];
+    
+            // Parse each line to get x and y values
+            for (int i = 0; i < lines.length - 1; i++) {
+                String[] parts = lines[i].trim().split(" ");
                 xValues[i] = Double.parseDouble(parts[0]);
                 yValues[i] = Double.parseDouble(parts[1]);
             }
-
-            double xToEvaluate = Double.parseDouble(lines[lines.length-1].trim());
-
+    
+            double xToEvaluate = Double.parseDouble(lines[lines.length - 1].trim());
+    
             // Call the interpolation method
-            double result = InterpolasiPolinomial.solve(xValues, yValues, xToEvaluate);
-            resultLabel.setText("Hasil interpolasi: " + result);
+            String result = InterpolasiPolinomial.solve(xValues, yValues, xToEvaluate);
+            resultLabel.setText(result);
         } catch (NumberFormatException e) {
             resultLabel.setText("Error: Please enter valid numbers.");
         } catch (IllegalArgumentException e) {
             resultLabel.setText(e.getMessage());
         }
     }
+    
 }
