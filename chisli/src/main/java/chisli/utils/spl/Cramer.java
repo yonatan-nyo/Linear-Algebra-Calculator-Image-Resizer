@@ -7,7 +7,7 @@ import chisli.utils.matrix.MatrixSteps;
 public class Cramer {
     private static MatrixSteps matrixSteps;
 
-    public static double[] solve(Matrix coefficientMatrix, Matrix constantMatrix) {
+    public static double[] solve(Matrix coefficientMatrix, Matrix constantMatrix, boolean isDeterminantModeAdjoint) {
         matrixSteps = new MatrixSteps();
 
         matrixSteps.addStep("======================= Matrix given ======================");
@@ -27,7 +27,7 @@ public class Cramer {
         matrixSteps.addStep("");
 
         matrixSteps.addStep("======================= Calculate determinant ======================");
-        double determinantOfA = coefficientMatrix.determinant();
+        double determinantOfA = coefficientMatrix.determinant(isDeterminantModeAdjoint);
 
         matrixSteps.addStep("Coefficient Matrix A");
         matrixSteps.addMatrixState(coefficientMatrix.getString());
@@ -66,9 +66,8 @@ public class Cramer {
             Matrix modifiedMatrix = new Matrix(modifiedMatrixData);
 
             // Step 3: Calculate the determinant of Ai
-            double determinantOfModifiedMatrix = modifiedMatrix.determinant();
-
             matrixSteps.addStep("Modified Matrix A_" + (variableIndex + 1) + " (replacing column " + (variableIndex + 1) + " of A with B):");
+            double determinantOfModifiedMatrix = modifiedMatrix.determinant(isDeterminantModeAdjoint);
             matrixSteps.addMatrixState(modifiedMatrix.getString());  // Assuming Matrix has a toString() method to display the matrix
             matrixSteps.addStep("Determinant of A_" + (variableIndex + 1) + ": " + determinantOfModifiedMatrix);
 

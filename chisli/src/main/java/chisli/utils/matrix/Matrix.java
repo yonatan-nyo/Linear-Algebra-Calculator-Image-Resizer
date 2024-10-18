@@ -123,14 +123,7 @@ public class Matrix {
         return new Matrix(result);
     }
 
-    // Helper method to calculate determinant using recursion
-    public double determinant() {
-        if (rows != cols) {
-            throw new IllegalArgumentException("Matrix must be square to calculate determinant.");
-        }
-        return determinant(data);
-    }
-
+    
     public String getString() {
         Matrix matrix = new Matrix(data);
         StringBuilder sb = new StringBuilder();
@@ -152,33 +145,18 @@ public class Matrix {
         return sb.toString();
     }
 
-    // Recursive method to calculate determinant
-    private double determinant(double[][] matrix) {
-        int n = matrix.length;
-        if (n == 1) {
-            return matrix[0][0];
-        }
-        if (n == 2) {
-            return matrix[0][0] * matrix[1][1] - matrix[0][1] * matrix[1][0];
-        }
-
-        double det = 0;
-        for (int col = 0; col < n; col++) {
-            double[][] subMatrix = new double[n - 1][n - 1];
-            for (int i = 1; i < n; i++) {
-                for (int j = 0; j < n; j++) {
-                    if (j < col) {
-                        subMatrix[i - 1][j] = matrix[i][j];
-                    } else if (j > col) {
-                        subMatrix[i - 1][j - 1] = matrix[i][j];
-                    }
-                }
-            }
-            det += (col % 2 == 0 ? 1 : -1) * matrix[0][col] * determinant(subMatrix);
-        }
-        return det;
+    public double determinant() {
+        return determinant(true); // Default to using Laplace expansion
     }
 
+    // Helper method to calculate determinant using recursion
+    public double determinant(boolean isByAdjoint) {
+        if (rows != cols) {
+            throw new IllegalArgumentException("Matrix must be square to calculate determinant.");
+        }
+        Matrix matrix = new Matrix(data);
+        return isByAdjoint? MatrixDeterminant.determinantByAdjoint(matrix): MatrixDeterminant.determinantByElementaryRowOperation(matrix);
+    }
     
     // Helper method to check if two rows are proportional (identical up to a scalar multiple)
     private boolean areRowsIdentical(int row1, int row2) {

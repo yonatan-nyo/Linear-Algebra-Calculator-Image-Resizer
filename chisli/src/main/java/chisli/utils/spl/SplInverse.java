@@ -7,7 +7,7 @@ import chisli.utils.matrix.MatrixSteps;
 public class SplInverse {
     private static MatrixSteps matrixSteps;
 
-    public static double[] solve(Matrix coefficientMatrix, Matrix constantMatrix) {
+    public static double[] solve(Matrix coefficientMatrix, Matrix constantMatrix, boolean isDeterminantModeAdjoint) {
         matrixSteps = new MatrixSteps();
 
         matrixSteps.addStep("======================= Matrix given ======================");
@@ -22,7 +22,7 @@ public class SplInverse {
         matrixSteps.addStep("Coefficient Matrix A");
         matrixSteps.addMatrixState(coefficientMatrix.getString());
         
-        double determinantOfA = coefficientMatrix.determinant();
+        double determinantOfA = coefficientMatrix.determinant(isDeterminantModeAdjoint);
         matrixSteps.addStep("Determinant of A: " + determinantOfA + "\n");
         if (Math.abs(determinantOfA) < 1e-10) {
             matrixSteps.addStep("The determinant of A is 0, the system does not have a unique solution.");

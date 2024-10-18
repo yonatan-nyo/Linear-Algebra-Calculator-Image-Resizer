@@ -10,3 +10,7 @@
   -fx-padding: 5px;
   -fx-font-size: 14px;
 }
+
+.combo-box .text {
+  -fx-opacity: 1; /* Ensure text is visible */
+}

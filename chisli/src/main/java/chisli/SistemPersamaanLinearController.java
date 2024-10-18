@@ -9,9 +9,11 @@ import chisli.utils.spl.SplInverse;
 import chisli.utils.matrix.MatrixSteps;
 import javafx.fxml.FXML;
 import javafx.scene.control.TextField;
+import javafx.scene.control.ToggleButton;
 import javafx.scene.layout.GridPane;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextArea;
+import javafx.scene.control.ComboBox;
 import javafx.scene.control.Button;
 
 import java.util.ArrayList;
@@ -22,10 +24,44 @@ public class SistemPersamaanLinearController {
     @FXML
     private Button primaryButton;
 
+    @FXML
+    private ToggleButton standardModeToggle;
+
+    @FXML
+    private ToggleButton adjointModeToggle;
+
+    @FXML
+    private Label selectedModeLabel;
+
+    private boolean isDeterminantModeAdjoint;
+
+    private void updateModeLabel() {
+        String mode = isDeterminantModeAdjoint ? "Adjoint" : "Standard";
+        selectedModeLabel.setText("Selected Mode: " + mode);
+    }
+
     // Initialize method (optional)
     @FXML
     public void initialize() {
-        // Any initialization if needed
+        // Set up the toggle buttons
+        standardModeToggle.setSelected(true); // Set the default selection
+        updateModeLabel(); // Update the label initially
+        
+        standardModeToggle.setOnAction(event -> {
+            if (standardModeToggle.isSelected()) {
+                adjointModeToggle.setSelected(false);
+                isDeterminantModeAdjoint = false;
+                updateModeLabel();
+            }
+        });
+
+        adjointModeToggle.setOnAction(event -> {
+            if (adjointModeToggle.isSelected()) {
+                standardModeToggle.setSelected(false);
+                isDeterminantModeAdjoint = true;
+                updateModeLabel();
+            }
+        });
     }
 
     @FXML
@@ -78,6 +114,9 @@ public class SistemPersamaanLinearController {
 
     @FXML
     private GridPane outputGrid;
+
+    @FXML
+    private ComboBox<String> determinantModeComboBox;
 
     private List<TextField> matrixFields = new ArrayList<>();
     
@@ -218,7 +257,7 @@ public class SistemPersamaanLinearController {
         Matrix matrix2 = new Matrix(matrixData2);
 
         try {
-            double[] solution = Cramer.solve(matrix1, matrix2); // Get solution
+            double[] solution = Cramer.solve(matrix1, matrix2, isDeterminantModeAdjoint);
             displaySolution(solution, columns - 1);
         } catch (IllegalArgumentException e) {
             displayError("Error: " + e.getMessage());
@@ -263,7 +302,7 @@ public class SistemPersamaanLinearController {
         Matrix matrix2 = new Matrix(matrixData2);
 
         try {
-            double[] solution = SplInverse.solve(matrix1, matrix2); // Get solution
+            double[] solution = SplInverse.solve(matrix1, matrix2, isDeterminantModeAdjoint); // Get solution
             displaySolution(solution, columns - 1);
         } catch (IllegalArgumentException e) {
             displayError("Error: " + e.getMessage());
