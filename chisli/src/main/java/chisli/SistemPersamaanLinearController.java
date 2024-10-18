@@ -1,21 +1,21 @@
 package chisli;
 
 import java.io.IOException;
-import chisli.utils.matrix.Matrix;
-import chisli.utils.spl.Gauss;
-import chisli.utils.spl.GaussJordan; 
-import chisli.utils.spl.Cramer;
-import chisli.utils.spl.SplInverse;
-import chisli.utils.matrix.MatrixSteps;
-import javafx.fxml.FXML;
-import javafx.scene.control.TextField;
-import javafx.scene.layout.GridPane;
-import javafx.scene.control.Label;
-import javafx.scene.control.TextArea;
-import javafx.scene.control.Button;
-
 import java.util.ArrayList;
 import java.util.List;
+
+import chisli.utils.matrix.Matrix;
+import chisli.utils.matrix.MatrixSteps; 
+import chisli.utils.spl.Cramer;
+import chisli.utils.spl.Gauss;
+import chisli.utils.spl.GaussJordan;
+import chisli.utils.spl.SplInverse;
+import javafx.fxml.FXML;
+import javafx.scene.control.Button;
+import javafx.scene.control.Label;
+import javafx.scene.control.TextArea;
+import javafx.scene.control.TextField;
+import javafx.scene.layout.GridPane;
 
 public class SistemPersamaanLinearController {
 
@@ -108,6 +108,22 @@ public class SistemPersamaanLinearController {
         }
     }
 
+    // Helper method to parse fractions
+    private double parseFraction(String input) {
+        if (input.contains("/")) {
+            String[] parts = input.split("/");
+            if (parts.length == 2) {
+                double numerator = Double.parseDouble(parts[0]);
+                double denominator = Double.parseDouble(parts[1]);
+                return numerator / denominator;
+            } else {
+                throw new IllegalArgumentException("Invalid fraction format");
+            }
+        } else {
+            return Double.parseDouble(input);
+        }
+    }
+    
     @FXML
     public void solveGauss() {
         int rows = Integer.parseInt(rowsInput.getText());
@@ -116,18 +132,18 @@ public class SistemPersamaanLinearController {
             displayError("Invalid matrix: At least 2 columns are required");
             return;
         }
-
+    
         // Prepare the matrix data
         double[][] matrixData = new double[rows][columns];
         Matrix matrix = new Matrix(matrixData);
         for (int row = 0; row < rows; row++) {
             for (int col = 0; col < columns; col++) {
                 TextField field = matrixFields.get(row * columns + col);
-                double value = Double.parseDouble(field.getText());
+                double value = parseFraction(field.getText());
                 matrix.set(row, col, value);
             }
         }
-
+    
         // Solve using Gaussian elimination
         try {
             String[] solution = Gauss.solve(matrix);
@@ -149,18 +165,18 @@ public class SistemPersamaanLinearController {
             displayError("Invalid matrix: At least 2 columns are required");
             return;
         }
-
+    
         // Prepare the matrix data
         double[][] matrixData = new double[rows][columns];
         Matrix matrix = new Matrix(matrixData);
         for (int row = 0; row < rows; row++) {
             for (int col = 0; col < columns; col++) {
                 TextField field = matrixFields.get(row * columns + col);
-                double value = Double.parseDouble(field.getText());
+                double value = parseFraction(field.getText());
                 matrix.set(row, col, value);
             }
         }
-
+    
         // Solve using Gauss-Jordan elimination
         try {
             String[] solution = GaussJordan.solve(matrix); // Get solution
@@ -175,16 +191,16 @@ public class SistemPersamaanLinearController {
             displaySteps(matrixSteps.getSteps()); 
         }
     }
-
+    
     @FXML
-    public void solveCramer(){
+    public void solveCramer() {
         int rows = Integer.parseInt(rowsInput.getText());
         int columns = Integer.parseInt(columnsInput.getText());
         if (columns < 2) {
             displayError("Invalid matrix: At least 2 columns are required");
             return;
         }
-
+    
         double[][] matrixData1 = new double[rows][columns-1];
         double[][] matrixData2 = new double[rows][1];
         Matrix matrix1 = new Matrix(matrixData1);
@@ -192,7 +208,7 @@ public class SistemPersamaanLinearController {
         for (int row = 0; row < rows; row++) {
             for (int col = 0; col < columns; col++) {
                 TextField field = matrixFields.get(row * columns + col);
-                double value = Double.parseDouble(field.getText());
+                double value = parseFraction(field.getText());
                 if (col == columns-1) {
                     matrix2.set(row, 0, value);
                 } else {
@@ -200,7 +216,7 @@ public class SistemPersamaanLinearController {
                 }
             }
         }
-
+    
         try {
             double[] solution = Cramer.solve(matrix1, matrix2); // Get solution
             displaySolution(solution, columns - 1);
@@ -212,16 +228,16 @@ public class SistemPersamaanLinearController {
             displayError("Error: " + e.getMessage());
         }
     }
-
+    
     @FXML
-    public void inverse(){
+    public void inverse() {
         int rows = Integer.parseInt(rowsInput.getText());
         int columns = Integer.parseInt(columnsInput.getText());
         if (columns < 2) {
             displayError("Invalid matrix: At least 2 columns are required");
             return;
         }
-
+    
         double[][] matrixData1 = new double[rows][columns-1];
         double[][] matrixData2 = new double[rows][1];
         Matrix matrix1 = new Matrix(matrixData1);
@@ -229,7 +245,7 @@ public class SistemPersamaanLinearController {
         for (int row = 0; row < rows; row++) {
             for (int col = 0; col < columns; col++) {
                 TextField field = matrixFields.get(row * columns + col);
-                double value = Double.parseDouble(field.getText());
+                double value = parseFraction(field.getText());
                 if (col == columns-1) {
                     matrix2.set(row, 0, value);
                 } else {
@@ -237,7 +253,7 @@ public class SistemPersamaanLinearController {
                 }
             }
         }
-
+    
         try {
             double[] solution = SplInverse.solve(matrix1, matrix2); // Get solution
             displaySolution(solution, columns - 1);

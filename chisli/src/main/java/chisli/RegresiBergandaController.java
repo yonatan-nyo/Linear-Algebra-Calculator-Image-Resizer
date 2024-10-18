@@ -2,16 +2,15 @@ package chisli;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
-import chisli.utils.regresi.RegresiLinier;
 import chisli.utils.regresi.RegresiKuadratik;
+import chisli.utils.regresi.RegresiLinier;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextArea;
-
-import java.util.Arrays;
 
 
 public class RegresiBergandaController {
@@ -76,6 +75,22 @@ public class RegresiBergandaController {
     }
     
 
+    // Helper method to parse fractions
+    private double parseFraction(String input) {
+        if (input.contains("/")) {
+            String[] parts = input.split("/");
+            if (parts.length == 2) {
+                double numerator = Double.parseDouble(parts[0]);
+                double denominator = Double.parseDouble(parts[1]);
+                return numerator / denominator;
+            } else {
+                throw new IllegalArgumentException("Invalid fraction format");
+            }
+        } else {
+            return Double.parseDouble(input);
+        }
+    }
+    
     @FXML
     public void performRegresiLinier() {
         try {
@@ -104,7 +119,7 @@ public class RegresiBergandaController {
             // Extract x values and y values from input
             for (int i = 0; i < lines.length - 1; i++) {
                 String[] numbers = lines[i].trim().split("\\s+");
-                double[] numbersArray = Arrays.stream(numbers).mapToDouble(Double::parseDouble).toArray();
+                double[] numbersArray = Arrays.stream(numbers).mapToDouble(this::parseFraction).toArray();
                 double[] xValuesRow = Arrays.copyOfRange(numbersArray, 0, numbersArray.length - 1);
                 xValuesList.add(xValuesRow);
                 yValuesList.add(numbersArray[numbersArray.length - 1]);
@@ -115,7 +130,7 @@ public class RegresiBergandaController {
             double[] yValues = yValuesList.stream().mapToDouble(Double::doubleValue).toArray();
     
             // Parse xk from the last row
-            double[] xk = Arrays.stream(lastLineNumbers).mapToDouble(Double::parseDouble).toArray();
+            double[] xk = Arrays.stream(lastLineNumbers).mapToDouble(this::parseFraction).toArray();
     
             // Call the regression method to get the function and predicted value
             RegresiLinier regresiLinier = new RegresiLinier();
@@ -196,7 +211,7 @@ public class RegresiBergandaController {
             // Extract x values and y values from input
             for (int i = 0; i < lines.length - 1; i++) {
                 String[] numbers = lines[i].trim().split("\\s+");
-                double[] numbersArray = Arrays.stream(numbers).mapToDouble(Double::parseDouble).toArray();
+                double[] numbersArray = Arrays.stream(numbers).mapToDouble(this::parseFraction).toArray();
                 double[] xValuesRow = Arrays.copyOfRange(numbersArray, 0, numbersArray.length - 1);
                 xValuesList.add(xValuesRow);
                 yValuesList.add(numbersArray[numbersArray.length - 1]);
@@ -207,7 +222,7 @@ public class RegresiBergandaController {
             double[] yValues = yValuesList.stream().mapToDouble(Double::doubleValue).toArray();
     
             // Parse xk from the last row
-            double[] xk = Arrays.stream(lastLineNumbers).mapToDouble(Double::parseDouble).toArray();
+            double[] xk = Arrays.stream(lastLineNumbers).mapToDouble(this::parseFraction).toArray();
     
             // Call the regression method to get the function and predicted value
             RegresiKuadratik regresiKuadratik = new RegresiKuadratik();
