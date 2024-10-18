@@ -69,24 +69,27 @@ public class BicubicSplineInterpolation {
         matrixSteps.addMatrixState(new Matrix(column17).getString());
 
         Matrix mtxMatrix = new Matrix(mtx);
-        System.out.println("Matrix after gety:");
+
+        // for testing
+        /* System.out.println("Matrix after gety:");
         for (double[] rowArray : mtx) {
             for (double value : rowArray) {
                 System.out.print(value + " ");
             }
             System.out.println();
-        }
+        } */
 
         String[] solution = Gauss.solve(mtxMatrix);
-
-        for (int i=0;i<16;i++) {
+        
+        // for testing
+        /* for (int i=0;i<16;i++) {
             System.out.println(solution[i]);
-        }
+        } */
 
-        System.out.println("Solution from Gauss.solve:");
+        /* System.out.println("Solution from Gauss.solve:");
         for (String sol : solution) {
             System.out.println(sol);
-        }
+        } */
 
         double[] doubleSolution = new double[solution.length];
         for (int i = 0; i < solution.length; i++) {

@@ -2,7 +2,6 @@ package chisli;
 
 import java.io.IOException;
 import chisli.utils.bicubicSplineInterpolation.BicubicSplineInterpolation;
-import chisli.utils.matrix.MatrixSteps;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -17,7 +16,7 @@ public class BicubicSplineInterpolationController {
     // Initialize method (optional)
     @FXML
     public void initialize() {
-        // Any initialization if needed
+        generateSpline();
     }
 
     @FXML
@@ -81,34 +80,38 @@ public class BicubicSplineInterpolationController {
     private List<TextField> matrixFields = new ArrayList<>();
 
     @FXML
+
     public void generateSpline() {
-    matrixGrid.getChildren().clear();
-    matrixFields.clear();
-
-    int rows = 4;
-    int columns = 4;
-
-    // Add column headers (0 to 4)
-    for (int col = 0; col <= columns; col++) {
-        Label colLabel = new Label(col == 0 ? "" : String.valueOf(col - 2));
-        colLabel.setPrefWidth(50);
-        matrixGrid.add(colLabel, col, 0);
-    }
-
-    // Add row headers (0 to 4) and text fields
-    for (int row = 0; row < rows; row++) {
-        Label rowLabel = new Label(String.valueOf(row-1));
-        rowLabel.setPrefWidth(50);
-        matrixGrid.add(rowLabel, 0, row + 1);
-
-        for (int col = 0; col < columns; col++) {
-            TextField field = new TextField();
-            field.setPrefWidth(50);
-            matrixFields.add(field);
-            matrixGrid.add(field, col + 1, row + 1);
+        matrixGrid.getChildren().clear();
+        matrixFields.clear();
+        
+        int rows = 4;
+        int columns = 4;
+        
+        // Add column headers (0 to 4)
+        for (int col = 0; col <= columns; col++) {
+            Label colLabel = new Label(col == 0 ? "" : String.valueOf(col - 2));
+            colLabel.setPrefWidth(50);
+            colLabel.setStyle("-fx-text-fill: white;");
+            matrixGrid.add(colLabel, col, 0);
+        }
+    
+        // Add row headers (0 to 4) and text fields
+        for (int row = 0; row < rows; row++) {
+            Label rowLabel = new Label(String.valueOf(row-1));
+            rowLabel.setPrefWidth(50);
+            rowLabel.setStyle("-fx-text-fill: white;");
+            matrixGrid.add(rowLabel, 0, row + 1);
+        
+            for (int col = 0; col < columns; col++) {
+                TextField field = new TextField();
+                field.setPrefWidth(50);
+                field.setStyle("-fx-text-fill: white;");
+                matrixFields.add(field);
+                matrixGrid.add(field, col + 1, row + 1);
+            }
         }
     }
-}
 
     @FXML
     public void solveSpline() {
