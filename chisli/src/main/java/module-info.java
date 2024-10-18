@@ -6,4 +6,7 @@ module chisli {
 
     opens chisli to javafx.fxml;
     exports chisli;
+
+    requires javafx.swing;
+    requires java.desktop; 
 }

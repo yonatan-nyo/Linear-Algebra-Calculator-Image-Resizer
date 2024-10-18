@@ -48,4 +48,12 @@ public class RegresiBergandaController {
             e.printStackTrace(); // Handle exception
         }
     }
+    @FXML
+    private void switchToImageResize() {
+        try {
+            Router.navigateToImageResize();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 }
