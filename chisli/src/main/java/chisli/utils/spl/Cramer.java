@@ -7,8 +7,15 @@ import chisli.utils.matrix.MatrixSteps;
 public class Cramer {
     private static MatrixSteps matrixSteps;
 
-    public static double[] solve(Matrix coefficientMatrix, Matrix constantMatrix) {
+    public static double[] solve(Matrix coefficientMatrix, Matrix constantMatrix, boolean isDeterminantModeAdjoint) {
         matrixSteps = new MatrixSteps();
+
+        matrixSteps.addStep("======================= Matrix given ======================");
+        matrixSteps.addStep("Coefficient Matrix");
+        matrixSteps.addMatrixState(coefficientMatrix.getString());
+        matrixSteps.addStep("Constant Matrix");
+        matrixSteps.addMatrixState(constantMatrix.getString());
+
         int numberOfEquations = coefficientMatrix.getRowCount();
         int numberOfVariables = coefficientMatrix.getColumnCount();
 
@@ -17,21 +24,25 @@ public class Cramer {
             matrixSteps.addStep("Warning: The number of equations is greater than the number of variables. There may be extra equations.");
             throw new IllegalArgumentException("The number of equations is greater than the number of variables. Please provide a valid system.");
         }
+        matrixSteps.addStep("");
 
-        double determinantOfA = coefficientMatrix.determinant();
+        matrixSteps.addStep("======================= Calculate determinant ======================");
+        double determinantOfA = coefficientMatrix.determinant(isDeterminantModeAdjoint);
 
         matrixSteps.addStep("Coefficient Matrix A");
         matrixSteps.addMatrixState(coefficientMatrix.getString());
         matrixSteps.addStep("Determinant of A: " + determinantOfA + "\n");
-
-        matrixSteps.addStep("Constant Matrix B");
-        matrixSteps.addMatrixState(constantMatrix.getString());
 
         if (Math.abs(determinantOfA) < 1e-10) {
             matrixSteps.addStep("The determinant of A is 0, the system does not have a unique solution.");
             throw new IllegalArgumentException("The determinant of A is 0, the system does not have a unique solution.");
         }
 
+        matrixSteps.addStep("Constant Matrix B");
+        matrixSteps.addMatrixState(constantMatrix.getString());
+        matrixSteps.addStep("");
+
+        matrixSteps.addStep("======================= Calculate Solution ======================");
         // Prepare an array to store solutions
         double[] solutions = new double[numberOfEquations];
 
@@ -55,15 +66,15 @@ public class Cramer {
             Matrix modifiedMatrix = new Matrix(modifiedMatrixData);
 
             // Step 3: Calculate the determinant of Ai
-            double determinantOfModifiedMatrix = modifiedMatrix.determinant();
-
             matrixSteps.addStep("Modified Matrix A_" + (variableIndex + 1) + " (replacing column " + (variableIndex + 1) + " of A with B):");
+            double determinantOfModifiedMatrix = modifiedMatrix.determinant(isDeterminantModeAdjoint);
             matrixSteps.addMatrixState(modifiedMatrix.getString());  // Assuming Matrix has a toString() method to display the matrix
-            matrixSteps.addStep("Determinant of A_" + (variableIndex + 1) + ": " + determinantOfModifiedMatrix + "\n");
+            matrixSteps.addStep("Determinant of A_" + (variableIndex + 1) + ": " + determinantOfModifiedMatrix);
 
             // Step 4: Solve for the variable
             solutions[variableIndex] = determinantOfModifiedMatrix / determinantOfA;
             solutions[variableIndex] = SmallFloat.handleMinus0(solutions[variableIndex]);
+            matrixSteps.addStep(String.format("x%d = %.4f / %.4f = %.4f\n", variableIndex+1, determinantOfModifiedMatrix, determinantOfA,solutions[variableIndex]));
         }
 
         matrixSteps.addStep("Final solution:");
