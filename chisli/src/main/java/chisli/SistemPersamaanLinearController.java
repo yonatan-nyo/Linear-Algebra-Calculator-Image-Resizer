@@ -80,6 +80,7 @@ public class SistemPersamaanLinearController {
     private GridPane outputGrid;
 
     private List<TextField> matrixFields = new ArrayList<>();
+    
 
     @FXML
     public void generateMatrix() {
@@ -99,145 +100,176 @@ public class SistemPersamaanLinearController {
         }
     }
 
-    @FXML
-    public void solveGauss() {
-        int rows = Integer.parseInt(rowsInput.getText());
-        int columns = Integer.parseInt(columnsInput.getText());
+    // Utility function to check input validity
+    private boolean isValidInput() {
+        String rowsInpuString = rowsInput.getText();
+        String columnsInputString = columnsInput.getText();
+        if (rowsInpuString.isEmpty() || columnsInputString.isEmpty()) {
+            displayError("Invalid matrix: Rows and columns must be filled");
+            return false;
+        }
+        int columns = Integer.parseInt(columnsInputString);
         if (columns < 2) {
             displayError("Invalid matrix: At least 2 columns are required");
-            return;
+            return false;
         }
 
-        // Prepare the matrix data
+        return true;
+    }
+
+     // Utility function to prepare the matrix
+     private Matrix prepareMatrix(int rows, int columns) {
         double[][] matrixData = new double[rows][columns];
         Matrix matrix = new Matrix(matrixData);
         for (int row = 0; row < rows; row++) {
             for (int col = 0; col < columns; col++) {
+                if (matrixFields.size() != rows * columns) {
+                    displayError("Invalid matrix: Matrix fields have not been generated");
+                    return null;
+                }
                 TextField field = matrixFields.get(row * columns + col);
+                if (field.getText().isEmpty()) {
+                    displayError("Invalid matrix: All fields must be filled");
+                    return null;
+                }
                 double value = Double.parseDouble(field.getText());
                 matrix.set(row, col, value);
             }
         }
+        return matrix;
+    }
+
+    @FXML
+    public void solveGauss() {
+        if (!isValidInput()) return;
+        
+        int rows = Integer.parseInt(rowsInput.getText());
+        int columns = Integer.parseInt(columnsInput.getText());
+
+        Matrix matrix = prepareMatrix(rows, columns);
+        if (matrix == null) return;
 
         // Solve using Gaussian elimination
         try {
             String[] solution = Gauss.solve(matrix);
-            MatrixSteps matrixSteps = Gauss.getMatrixSteps(); 
             displayStringSolution(solution);
-            displaySteps(matrixSteps.getSteps()); 
         } catch (IllegalArgumentException e) {
-            MatrixSteps matrixSteps = Gauss.getMatrixSteps(); 
             displayError("Error: " + e.getMessage());
-            displaySteps(matrixSteps.getSteps()); 
+        } finally {
+            MatrixSteps matrixSteps = Gauss.getMatrixSteps(); 
+            displaySteps(matrixSteps.getSteps());
         }
     }
 
     @FXML
     public void solveGaussJordan() {
+        if (!isValidInput()) return;
+        
         int rows = Integer.parseInt(rowsInput.getText());
         int columns = Integer.parseInt(columnsInput.getText());
-        if (columns < 2) {
-            displayError("Invalid matrix: At least 2 columns are required");
-            return;
-        }
 
-        // Prepare the matrix data
-        double[][] matrixData = new double[rows][columns];
-        Matrix matrix = new Matrix(matrixData);
-        for (int row = 0; row < rows; row++) {
-            for (int col = 0; col < columns; col++) {
-                TextField field = matrixFields.get(row * columns + col);
-                double value = Double.parseDouble(field.getText());
-                matrix.set(row, col, value);
-            }
-        }
+        Matrix matrix = prepareMatrix(rows, columns);
+        if (matrix == null) return;
 
         // Solve using Gauss-Jordan elimination
         try {
             String[] solution = GaussJordan.solve(matrix); // Get solution
             displayStringSolution(solution);
-            
-            // Retrieve the matrix steps after reduction
-            MatrixSteps matrixSteps = GaussJordan.getMatrixSteps(); 
-            displaySteps(matrixSteps.getSteps()); // Display steps
         } catch (IllegalArgumentException e) {
-            MatrixSteps matrixSteps = GaussJordan.getMatrixSteps(); 
             displayError("Error: " + e.getMessage());
-            displaySteps(matrixSteps.getSteps()); 
+        } finally {
+            MatrixSteps matrixSteps = GaussJordan.getMatrixSteps(); 
+            displaySteps(matrixSteps.getSteps());
         }
     }
 
     @FXML
     public void solveCramer(){
+        if (!isValidInput()) return;
+        
         int rows = Integer.parseInt(rowsInput.getText());
         int columns = Integer.parseInt(columnsInput.getText());
-        if (columns < 2) {
-            displayError("Invalid matrix: At least 2 columns are required");
+        
+        if(rows < (columns-1)){
+            displayError("Invalid matrix: Number of rows must ≥ (columns-1)");
             return;
         }
 
-        double[][] matrixData1 = new double[rows][columns-1];
-        double[][] matrixData2 = new double[rows][1];
-        Matrix matrix1 = new Matrix(matrixData1);
-        Matrix matrix2 = new Matrix(matrixData2);
-        for (int row = 0; row < rows; row++) {
+        // take from matrix first then split into matrix1 and matrix2
+        Matrix matrix = prepareMatrix(rows, columns);
+        if (matrix == null) return;
+        matrix = matrix.getCleanedMatrix();
+
+        double[][] matrixData1 = new double[columns-1][columns-1];
+        double[][] matrixData2 = new double[columns-1][1];
+
+        // set matrixData1 and matrixData2 from matrix
+        for (int row = 0; row < columns-1; row++) {
             for (int col = 0; col < columns; col++) {
-                TextField field = matrixFields.get(row * columns + col);
-                double value = Double.parseDouble(field.getText());
                 if (col == columns-1) {
-                    matrix2.set(row, 0, value);
+                    matrixData2[row][0] = matrix.get(row, col);
                 } else {
-                    matrix1.set(row, col, value);
+                    matrixData1[row][col] = matrix.get(row, col);
                 }
             }
         }
 
+        Matrix matrix1 = new Matrix(matrixData1);
+        Matrix matrix2 = new Matrix(matrixData2);
+
         try {
             double[] solution = Cramer.solve(matrix1, matrix2); // Get solution
             displaySolution(solution, columns - 1);
-            
-            // Retrieve the matrix steps after reduction
-            MatrixSteps matrixSteps = Cramer.getMatrixSteps(); 
-            displaySteps(matrixSteps.getSteps());
         } catch (IllegalArgumentException e) {
             displayError("Error: " + e.getMessage());
+        } finally {
+            MatrixSteps matrixSteps = Cramer.getMatrixSteps(); 
+            displaySteps(matrixSteps.getSteps());
         }
     }
 
     @FXML
     public void inverse(){
+        if (!isValidInput()) return;
+        
         int rows = Integer.parseInt(rowsInput.getText());
         int columns = Integer.parseInt(columnsInput.getText());
-        if (columns < 2) {
-            displayError("Invalid matrix: At least 2 columns are required");
+        
+        if(rows < (columns-1)){
+            displayError("Invalid matrix: Number of rows must ≥ (columns-1)");
             return;
         }
 
-        double[][] matrixData1 = new double[rows][columns-1];
-        double[][] matrixData2 = new double[rows][1];
-        Matrix matrix1 = new Matrix(matrixData1);
-        Matrix matrix2 = new Matrix(matrixData2);
-        for (int row = 0; row < rows; row++) {
+        // take from matrix first then split into matrix1 and matrix2
+        Matrix matrix = prepareMatrix(rows, columns);
+        if (matrix == null) return;
+        matrix = matrix.getCleanedMatrix();
+
+        double[][] matrixData1 = new double[columns-1][columns-1];
+        double[][] matrixData2 = new double[columns-1][1];
+
+        // set matrixData1 and matrixData2 from matrix
+        for (int row = 0; row < columns-1; row++) {
             for (int col = 0; col < columns; col++) {
-                TextField field = matrixFields.get(row * columns + col);
-                double value = Double.parseDouble(field.getText());
                 if (col == columns-1) {
-                    matrix2.set(row, 0, value);
+                    matrixData2[row][0] = matrix.get(row, col);
                 } else {
-                    matrix1.set(row, col, value);
+                    matrixData1[row][col] = matrix.get(row, col);
                 }
             }
         }
 
+        Matrix matrix1 = new Matrix(matrixData1);
+        Matrix matrix2 = new Matrix(matrixData2);
+
         try {
             double[] solution = SplInverse.solve(matrix1, matrix2); // Get solution
             displaySolution(solution, columns - 1);
-            
-            // Retrieve the matrix steps after reduction
-            MatrixSteps matrixSteps = SplInverse.getMatrixSteps(); 
-            displaySteps(matrixSteps.getSteps());
         } catch (IllegalArgumentException e) {
             displayError("Error: " + e.getMessage());
+        } finally {
+            MatrixSteps matrixSteps = SplInverse.getMatrixSteps(); 
+            displaySteps(matrixSteps.getSteps());
         }
     }
 
@@ -251,7 +283,7 @@ public class SistemPersamaanLinearController {
     private void displaySolution(double[] solution, int numVariables) {
         outputGrid.getChildren().clear();
         for (int i = 0; i < numVariables; i++) {
-            Label resultLabel = new Label(String.format("x%d = %.2f", i + 1, solution[i]));
+            Label resultLabel = new Label(String.format("x%d = %.4f", i + 1, solution[i]));
             outputGrid.add(resultLabel, 0, i);
         }
     }

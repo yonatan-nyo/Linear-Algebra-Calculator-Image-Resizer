@@ -10,21 +10,39 @@ public class SplInverse {
     public static double[] solve(Matrix coefficientMatrix, Matrix constantMatrix) {
         matrixSteps = new MatrixSteps();
 
+        matrixSteps.addStep("======================= Matrix given ======================");
+        matrixSteps.addStep("Coefficient Matrix");
+        matrixSteps.addMatrixState(coefficientMatrix.getString());
+        matrixSteps.addStep("Constant Matrix");
+        matrixSteps.addMatrixState(constantMatrix.getString());
+        matrixSteps.addStep("");
+
         // Calculate the inverse of the coefficient matrix
-        Matrix inverseMatrix = coefficientMatrix.inverse();
+        matrixSteps.addStep("======================= Calculate Inverse ======================");
         matrixSteps.addStep("Coefficient Matrix A");
         matrixSteps.addMatrixState(coefficientMatrix.getString());
-
+        
+        double determinantOfA = coefficientMatrix.determinant();
+        matrixSteps.addStep("Determinant of A: " + determinantOfA + "\n");
+        if (Math.abs(determinantOfA) < 1e-10) {
+            matrixSteps.addStep("The determinant of A is 0, the system does not have a unique solution.");
+            throw new IllegalArgumentException("The determinant of A is 0, the system does not have a unique solution.");
+        }
+        
+        Matrix inverseMatrix = coefficientMatrix.inverse();
         matrixSteps.addStep("Inverse of Matrix A");
         matrixSteps.addMatrixState(inverseMatrix.getString());
 
         matrixSteps.addStep("Constant Matrix B");
         matrixSteps.addMatrixState(constantMatrix.getString());
+        matrixSteps.addStep("");
 
+        matrixSteps.addStep("======================= Calculate Solution ======================");
         // Multiply the inverse of the coefficient matrix by the constant matrix to find the solution
         Matrix solutionMatrix = Matrix.multiply(inverseMatrix, constantMatrix);
         matrixSteps.addStep("Multiply Inverse of Matrix A with Matrix B");
         matrixSteps.addMatrixState(solutionMatrix.getString());
+        matrixSteps.addStep("");
 
         // Extract the solution from the resulting matrix
         double[] solutions = new double[solutionMatrix.getRowCount()];

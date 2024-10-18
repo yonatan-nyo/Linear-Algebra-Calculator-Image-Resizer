@@ -1,5 +1,6 @@
 package chisli.utils.spl;
 
+import chisli.utils.floats.SmallFloat;
 import chisli.utils.matrix.Matrix;
 import chisli.utils.matrix.MatrixSteps;
 
@@ -36,7 +37,7 @@ public class GaussJordan {
             if(pivotValue != 0){
                 for (int col = pivotRow; col < columnCount; col++) {
                     
-                    augmentedMatrix.set(pivotRow, col, augmentedMatrix.get(pivotRow, col) / pivotValue);
+                    augmentedMatrix.set(pivotRow, col, SmallFloat.handleMinus0(augmentedMatrix.get(pivotRow, col) / pivotValue));
                 }
                 matrixSteps.addStep(String.format("Normalize row %d by dividing by %.4f", pivotRow + 1, pivotValue));
                 matrixSteps.addMatrixState(augmentedMatrix.getString()); 
@@ -47,7 +48,7 @@ public class GaussJordan {
                 if (targetRow != pivotRow) {  // Don't eliminate the pivot row itself
                     double eliminationFactor = augmentedMatrix.get(targetRow, pivotRow);
                     for (int col = pivotRow; col < columnCount; col++) {
-                        augmentedMatrix.set(targetRow, col, augmentedMatrix.get(targetRow, col) - eliminationFactor * augmentedMatrix.get(pivotRow, col));
+                        augmentedMatrix.set(targetRow, col, SmallFloat.handleMinus0(augmentedMatrix.get(targetRow, col) - eliminationFactor * augmentedMatrix.get(pivotRow, col)));
                     }
                     matrixSteps.addStep(String.format("Eliminating row %d using row %d with factor %.4f", targetRow + 1, pivotRow + 1, eliminationFactor));
                     matrixSteps.addMatrixState(augmentedMatrix.getString()); 

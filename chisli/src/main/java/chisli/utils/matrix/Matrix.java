@@ -178,4 +178,81 @@ public class Matrix {
         }
         return det;
     }
+
+    
+    // Helper method to check if two rows are proportional (identical up to a scalar multiple)
+    private boolean areRowsIdentical(int row1, int row2) {
+        double ratio = 0;
+        boolean firstNonZeroFound = false;
+
+        for (int col = 0; col < cols; col++) {
+            double val1 = data[row1][col];
+            double val2 = data[row2][col];
+
+            // Skip if both values are zero (don't affect proportionality)
+            if (val1 == 0 && val2 == 0) {
+                continue;
+            }
+
+            // If one is zero and the other is not, they are not proportional
+            if (val1 == 0 || val2 == 0) {
+                return false;
+            }
+
+            // Calculate the ratio for the first non-zero pair of elements
+            if (!firstNonZeroFound) {
+                ratio = val1 / val2;
+                firstNonZeroFound = true;
+            } else {
+                // For subsequent non-zero elements, check if the ratio is the same
+                if (val1 / val2 != ratio) {
+                    return false;
+                }
+            }
+        }
+
+        return firstNonZeroFound; // Ensure there's at least one non-zero element for proportionality
+    }
+    
+    // Helper method to clear (set to zero) a row
+    private void clearRow(int row) {
+        for (int col = 0; col < cols; col++) {
+            data[row][col] = 0;
+        }
+    }
+    
+    // Helper method to check if a row contains only zeros
+    private boolean isZeroRow(int row) {
+        for (int col = 0; col < cols; col++) {
+            if (data[row][col] != 0) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    public Matrix getCleanedMatrix() {
+        int lowestNonZeroRow = rows - 1;  // Start tracking the lowest non-zero row from the last row
+    
+        // Loop over all pairs of rows to check for identical rows
+        for (int i1 = 0; i1 < rows; i1++) {
+            for (int i2 = i1 + 1; i2 < rows; i2++) {
+                if (areRowsIdentical(i1, i2)) {
+                    // If two rows are identical, set one to zero
+                    clearRow(i2);
+                }
+            }
+        }
+    
+        // Move zero rows to the bottom
+        for (int i = 0; i < rows-1; i++) {
+            if (isZeroRow(i)) {
+                swapRows(i, lowestNonZeroRow);
+                lowestNonZeroRow--;
+            }
+        }
+    
+        return new Matrix(data);
+    }
+    
 }
