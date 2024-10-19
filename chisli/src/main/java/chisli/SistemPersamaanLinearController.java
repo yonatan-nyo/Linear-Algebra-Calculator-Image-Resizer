@@ -36,8 +36,8 @@ public class SistemPersamaanLinearController {
     private boolean isDeterminantModeAdjoint;
 
     private void updateModeLabel() {
-        String mode = isDeterminantModeAdjoint ? "Adjoint" : "Standard";
-        selectedModeLabel.setText("Selected Mode: " + mode);
+        String mode = isDeterminantModeAdjoint ? "Adjoint" : "OBE";
+        selectedModeLabel.setText("Selected Mode for Cramer and Inverse: " + mode);
     }
 
     // Initialize method (optional)
@@ -104,6 +104,14 @@ public class SistemPersamaanLinearController {
     private void switchToBicubicSplineInterpolation() {
         try {
             Router.navigateToBicubicSplineInterpolation();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+    @FXML
+    private void switchToImageResize() {
+        try {
+            Router.navigateToImageResize();
         } catch (IOException e) {
             e.printStackTrace();
         }

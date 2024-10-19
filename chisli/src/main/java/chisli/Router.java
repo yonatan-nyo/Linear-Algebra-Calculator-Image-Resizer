@@ -28,7 +28,7 @@ public class Router {
     public static void navigateToRegresiKuadratikBerganda() throws IOException {
         navigate("regresi-kuadratik-berganda");
     }
-
+    
     @FXML
     public static void navigateToBicubicSplineInterpolation() throws IOException {
         navigate("bicubic-spline-interpolation");

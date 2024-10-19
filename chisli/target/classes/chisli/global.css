@@ -13,6 +13,7 @@
   -fx-border-color: #555555;
 }
 
+
 .button {
   -fx-pref-width: 150px;
   -fx-background-color: #444444;
@@ -28,6 +29,15 @@
   -fx-background-color: #212121;
   -fx-text-fill: white;
 }
+
+.scroll-pane {
+  -fx-background-color: inherit;
+}
+
+.scroll-pane .viewport {
+  -fx-background-color: inherit;
+}
+
 
 .sidebar {
   -fx-background-color: #171717;
