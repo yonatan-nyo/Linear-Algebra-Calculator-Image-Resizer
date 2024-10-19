@@ -123,14 +123,7 @@ public class Matrix {
         return new Matrix(result);
     }
 
-    // Helper method to calculate determinant using recursion
-    public double determinant() {
-        if (rows != cols) {
-            throw new IllegalArgumentException("Matrix must be square to calculate determinant.");
-        }
-        return determinant(data);
-    }
-
+    
     public String getString() {
         Matrix matrix = new Matrix(data);
         StringBuilder sb = new StringBuilder();
@@ -152,30 +145,92 @@ public class Matrix {
         return sb.toString();
     }
 
-    // Recursive method to calculate determinant
-    private double determinant(double[][] matrix) {
-        int n = matrix.length;
-        if (n == 1) {
-            return matrix[0][0];
-        }
-        if (n == 2) {
-            return matrix[0][0] * matrix[1][1] - matrix[0][1] * matrix[1][0];
-        }
+    public double determinant() {
+        return determinant(true); // Default to using Laplace expansion
+    }
 
-        double det = 0;
-        for (int col = 0; col < n; col++) {
-            double[][] subMatrix = new double[n - 1][n - 1];
-            for (int i = 1; i < n; i++) {
-                for (int j = 0; j < n; j++) {
-                    if (j < col) {
-                        subMatrix[i - 1][j] = matrix[i][j];
-                    } else if (j > col) {
-                        subMatrix[i - 1][j - 1] = matrix[i][j];
-                    }
+    // Helper method to calculate determinant using recursion
+    public double determinant(boolean isByAdjoint) {
+        if (rows != cols) {
+            throw new IllegalArgumentException("Matrix must be square to calculate determinant.");
+        }
+        Matrix matrix = new Matrix(data);
+        return isByAdjoint? MatrixDeterminant.determinantByAdjoint(matrix): MatrixDeterminant.determinantByElementaryRowOperation(matrix);
+    }
+    
+    // Helper method to check if two rows are proportional (identical up to a scalar multiple)
+    private boolean areRowsIdentical(int row1, int row2) {
+        double ratio = 0;
+        boolean firstNonZeroFound = false;
+
+        for (int col = 0; col < cols; col++) {
+            double val1 = data[row1][col];
+            double val2 = data[row2][col];
+
+            // Skip if both values are zero (don't affect proportionality)
+            if (val1 == 0 && val2 == 0) {
+                continue;
+            }
+
+            // If one is zero and the other is not, they are not proportional
+            if (val1 == 0 || val2 == 0) {
+                return false;
+            }
+
+            // Calculate the ratio for the first non-zero pair of elements
+            if (!firstNonZeroFound) {
+                ratio = val1 / val2;
+                firstNonZeroFound = true;
+            } else {
+                // For subsequent non-zero elements, check if the ratio is the same
+                if (val1 / val2 != ratio) {
+                    return false;
                 }
             }
-            det += (col % 2 == 0 ? 1 : -1) * matrix[0][col] * determinant(subMatrix);
         }
-        return det;
+
+        return firstNonZeroFound; // Ensure there's at least one non-zero element for proportionality
     }
+    
+    // Helper method to clear (set to zero) a row
+    private void clearRow(int row) {
+        for (int col = 0; col < cols; col++) {
+            data[row][col] = 0;
+        }
+    }
+    
+    // Helper method to check if a row contains only zeros
+    private boolean isZeroRow(int row) {
+        for (int col = 0; col < cols; col++) {
+            if (data[row][col] != 0) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    public Matrix getCleanedMatrix() {
+        int lowestNonZeroRow = rows - 1;  // Start tracking the lowest non-zero row from the last row
+    
+        // Loop over all pairs of rows to check for identical rows
+        for (int i1 = 0; i1 < rows; i1++) {
+            for (int i2 = i1 + 1; i2 < rows; i2++) {
+                if (areRowsIdentical(i1, i2)) {
+                    // If two rows are identical, set one to zero
+                    clearRow(i2);
+                }
+            }
+        }
+    
+        // Move zero rows to the bottom
+        for (int i = 0; i < rows-1; i++) {
+            if (isZeroRow(i)) {
+                swapRows(i, lowestNonZeroRow);
+                lowestNonZeroRow--;
+            }
+        }
+    
+        return new Matrix(data);
+    }
+    
 }
