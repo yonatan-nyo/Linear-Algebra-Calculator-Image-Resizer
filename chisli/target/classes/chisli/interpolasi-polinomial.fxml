@@ -45,7 +45,7 @@
             <Button text="Hitung Interpolasi" onAction="#performInterpolation" styleClass="button-action" />
             
             <!-- Result display -->
-            <Text fx:id="resultLabel" text="" style="-fx-font-size: 18px; -fx-text-fill: green;" wrappingWidth="300.0" />
+            <Text fx:id="resultLabel" styleClass="result-text" wrappingWidth="300.0" />
         </children>
     </VBox>
 

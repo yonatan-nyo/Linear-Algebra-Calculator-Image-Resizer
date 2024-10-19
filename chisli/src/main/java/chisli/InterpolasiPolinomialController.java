@@ -5,8 +5,9 @@ import java.io.IOException;
 import chisli.utils.interpolasiPolinomial.InterpolasiPolinomial;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
-import javafx.scene.control.Label;
 import javafx.scene.control.TextArea;
+import javafx.scene.paint.Color;
+import javafx.scene.text.Text;
 
 public class InterpolasiPolinomialController {
     @FXML
@@ -16,12 +17,13 @@ public class InterpolasiPolinomialController {
     private TextArea dataInputField; 
 
     @FXML
-    private Label resultLabel;
+    private Text resultLabel;
 
     // Initialize method (optional)
     @FXML
     public void initialize() {
         // Any initialization if needed
+        resultLabel.setFill(Color.GREENYELLOW);
     }
 
     @FXML
@@ -68,6 +70,8 @@ public class InterpolasiPolinomialController {
             e.printStackTrace(); // Handle exception
         }
     }
+    
+    
     @FXML
     private void switchToImageResize() {
         try {
@@ -76,8 +80,6 @@ public class InterpolasiPolinomialController {
             e.printStackTrace();
         }
     }
-    
-
         // Helper method to parse fractions
     private double parseFraction(String input) {
         if (input.contains("/")) {
