@@ -36,8 +36,8 @@ public class SistemPersamaanLinearController {
     private boolean isDeterminantModeAdjoint;
 
     private void updateModeLabel() {
-        String mode = isDeterminantModeAdjoint ? "Adjoint" : "Standard";
-        selectedModeLabel.setText("Selected Mode: " + mode);
+        String mode = isDeterminantModeAdjoint ? "Adjoint" : "OBE";
+        selectedModeLabel.setText("Selected Mode for Cramer and Inverse: " + mode);
     }
 
     // Initialize method (optional)
