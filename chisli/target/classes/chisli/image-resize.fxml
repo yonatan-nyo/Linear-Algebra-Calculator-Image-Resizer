@@ -2,13 +2,10 @@
 
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
-<?import javafx.scene.control.TextField?>
-<?import javafx.scene.control.TextArea?>
+<?import javafx.scene.control.Slider?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
-<?import javafx.geometry.Insets?>
 <?import javafx.geometry.Pos?>
-<?import javafx.scene.layout.GridPane?>
 <?import javafx.scene.control.ScrollPane?>
 <?import javafx.scene.canvas.Canvas?>
 <?import javafx.scene.control.ProgressIndicator?>
@@ -37,10 +34,16 @@
                 <Button text="Choose Image" onAction="#chooseImage"/>
                 <HBox spacing="10" alignment="CENTER">
                     <children>
-                        <Label text="Width:" styleClass="text-white"/>
-                        <TextField fx:id="widthField"/>
-                        <Label text="Height:" styleClass="text-white"/>
-                        <TextField fx:id="heightField"/>
+                        <Label text="Width Resize Factor:" styleClass="text-white"/>
+                        <Slider fx:id="widthResizeFactorSlider" min="0.5" max="2.0" value="1.0" showTickLabels="true" showTickMarks="true" blockIncrement="0.1" />
+                        <Label fx:id="widthResizeFactorLabel" text="1.0" styleClass="text-white"/>
+                    </children>
+                </HBox>
+                <HBox spacing="10" alignment="CENTER">
+                    <children>
+                        <Label text="Height Resize Factor:" styleClass="text-white"/>
+                        <Slider fx:id="heightResizeFactorSlider" min="0.5" max="2.0" value="1.0" showTickLabels="true" showTickMarks="true" blockIncrement="0.1" />
+                        <Label fx:id="heightResizeFactorLabel" text="1.0" styleClass="text-white"/>
                     </children>
                 </HBox>
                 <Button text="Resize Image" onAction="#resizeImage"/>

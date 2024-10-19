@@ -61,7 +61,7 @@ public class ImageResizer {
             }
             
             long endTime = System.currentTimeMillis();
-            System.out.println("Row " + y + " time: " + (endTime - startTime) + " ms");
+            System.out.println("Row " + y + "/" + newHeight + " time: " + (endTime - startTime) + " ms");
         }
         
         long endTime = System.currentTimeMillis();

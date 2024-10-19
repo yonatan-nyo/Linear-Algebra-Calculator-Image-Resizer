@@ -9,9 +9,10 @@ import javafx.fxml.FXML;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.ContextMenu;
+import javafx.scene.control.Label;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.ProgressIndicator;
-import javafx.scene.control.TextField;
+import javafx.scene.control.Slider;
 import javafx.scene.image.Image;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
@@ -22,10 +23,16 @@ public class ImageResizeController {
     private Canvas imageCanvas;
 
     @FXML
-    private TextField widthField;
+    private Slider widthResizeFactorSlider; // New slider for width resizing factor
 
     @FXML
-    private TextField heightField;
+    private Label widthResizeFactorLabel; // Label to display the current width slider value
+
+    @FXML
+    private Slider heightResizeFactorSlider; // New slider for height resizing factor
+
+    @FXML
+    private Label heightResizeFactorLabel; // Label to display the current height slider value
 
     @FXML
     private ProgressIndicator loadingIndicator; 
@@ -33,10 +40,22 @@ public class ImageResizeController {
     private Image originalImage;
     private Image compressedImage; 
 
+    private static final int MAX_CANVAS_SIZE = 700; // Maximum size for the canvas
+
     @FXML
     public void initialize() {
-        // Any initialization if needed
+        // Initialize sliders and labels
         setupContextMenu();
+
+        // Update label whenever the width slider value changes
+        widthResizeFactorSlider.valueProperty().addListener((observable, oldValue, newValue) -> {
+            widthResizeFactorLabel.setText(String.format("%.1f", newValue.doubleValue()));
+        });
+
+        // Update label whenever the height slider value changes
+        heightResizeFactorSlider.valueProperty().addListener((observable, oldValue, newValue) -> {
+            heightResizeFactorLabel.setText(String.format("%.1f", newValue.doubleValue()));
+        });
     }
 
     @FXML
@@ -83,6 +102,7 @@ public class ImageResizeController {
             e.printStackTrace();
         }
     }
+    
     @FXML
     private void switchToImageResize() {
         try {
@@ -98,15 +118,18 @@ public class ImageResizeController {
         fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Image Files", "*.png", "*.jpg", "*.jpeg"));
         File file = fileChooser.showOpenDialog(new Stage());
         if (file != null) {
-            //set the image canvas width and height to maintain aspect ratio
             originalImage = new Image(file.toURI().toString());
-            double factor = 500.0 / originalImage.getHeight();
-            double newHeight = originalImage.getHeight() * factor;
+
+            double maxHeight = 500;
+            double maxWidth = 500;
+            double factor = Math.min(maxWidth / originalImage.getWidth(), maxHeight / originalImage.getHeight());
             double newWidth = originalImage.getWidth() * factor;
-            System.out.println("newHeight: " + newHeight);
-            System.out.println("newWidth: " + newWidth);
+            double newHeight = originalImage.getHeight() * factor;
+
             imageCanvas.setWidth(newWidth);
             imageCanvas.setHeight(newHeight);
+
+            // Draw the original image with scaling on the canvas
             drawImage(originalImage);
         }
     }
@@ -114,27 +137,32 @@ public class ImageResizeController {
     @FXML
     private void resizeImage() {
         if (originalImage != null) {
-            int newWidth = Integer.parseInt(widthField.getText());
-            int newHeight = Integer.parseInt(heightField.getText());
+            double widthResizeFactor = widthResizeFactorSlider.getValue(); // Get the current width slider value
+            double heightResizeFactor = heightResizeFactorSlider.getValue(); // Get the current height slider value
+
+            double newWidth = originalImage.getWidth() * widthResizeFactor;
+            double newHeight = originalImage.getHeight() * heightResizeFactor;
+            double maxHeight = 500;
+            double maxWidth = 500;
+            double factor = Math.min(maxWidth / newWidth, maxHeight / maxHeight);
+            double newCanvasWidth = newWidth * factor;
+            double newCanvasHeight = newHeight * factor;
 
             // Show loading indicator
             loadingIndicator.setVisible(true);
             new Thread(() -> {
                 // Resize the image and store it in the compressedImage variable
-                compressedImage = bicubicSplineInterpolationResize(originalImage, newWidth, newHeight);
+                compressedImage = bicubicSplineInterpolationResize(originalImage, (int)newWidth, (int)newHeight);
 
-                // Calculate the scaling factor to maintain a height of 500 pixels
-                double factor = 500.0 / newHeight;
-                double newCanvasHeight = newHeight * factor;
-                double newCanvasWidth = newWidth * factor;
-
+                System.out.println((int)newWidth + " " + (int)newHeight);
+                System.out.println(newCanvasWidth + " " + newCanvasHeight);
+                
                 // Update UI on the JavaFX Application Thread
                 javafx.application.Platform.runLater(() -> {
-                    // Adjust canvas size
-                    imageCanvas.setWidth((int)newCanvasWidth);
-                    imageCanvas.setHeight((int)newCanvasHeight);
-
-                    // Draw the resized image on the canvas
+                    // Draw the resized image with scaling on the canvas
+                    imageCanvas.setWidth(newCanvasWidth);
+                    imageCanvas.setHeight(newCanvasHeight);
+                    
                     drawImage(compressedImage); // Use compressedImage here
 
                     // Hide loading indicator
@@ -144,11 +172,24 @@ public class ImageResizeController {
         }
     }
 
-    
     private void drawImage(Image image) {
         GraphicsContext gc = imageCanvas.getGraphicsContext2D();
         gc.clearRect(0, 0, imageCanvas.getWidth(), imageCanvas.getHeight());
-        gc.drawImage(image, 0, 0, imageCanvas.getWidth(), imageCanvas.getHeight());
+
+        // Calculate scaling factor to fit the canvas size
+        double scaleX = Math.min(MAX_CANVAS_SIZE / image.getWidth(), 1);
+        double scaleY = Math.min(MAX_CANVAS_SIZE / image.getHeight(), 1);
+        double scale = Math.min(scaleX, scaleY); // Maintain aspect ratio
+
+        // Calculate the new width and height after scaling
+        double newWidth = image.getWidth() * scale;
+        double newHeight = image.getHeight() * scale;
+
+        // Draw the image centered on the canvas
+        double x = (imageCanvas.getWidth() - newWidth) / 2;
+        double y = (imageCanvas.getHeight() - newHeight) / 2;
+
+        gc.drawImage(image, x, y, newWidth, newHeight);
     }
 
     private Image bicubicSplineInterpolationResize(Image image, int newWidth, int newHeight) {
@@ -196,5 +237,4 @@ public class ImageResizeController {
             System.out.println("No compressed image available to save.");
         }
     }
-    
 }
