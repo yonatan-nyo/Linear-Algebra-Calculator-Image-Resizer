@@ -98,7 +98,15 @@ public class ImageResizeController {
         fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Image Files", "*.png", "*.jpg", "*.jpeg"));
         File file = fileChooser.showOpenDialog(new Stage());
         if (file != null) {
+            //set the image canvas width and height to maintain aspect ratio
             originalImage = new Image(file.toURI().toString());
+            double factor = 500.0 / originalImage.getHeight();
+            double newHeight = originalImage.getHeight() * factor;
+            double newWidth = originalImage.getWidth() * factor;
+            System.out.println("newHeight: " + newHeight);
+            System.out.println("newWidth: " + newWidth);
+            imageCanvas.setWidth(newWidth);
+            imageCanvas.setHeight(newHeight);
             drawImage(originalImage);
         }
     }
@@ -108,33 +116,34 @@ public class ImageResizeController {
         if (originalImage != null) {
             int newWidth = Integer.parseInt(widthField.getText());
             int newHeight = Integer.parseInt(heightField.getText());
-    
+
             // Show loading indicator
             loadingIndicator.setVisible(true);
             new Thread(() -> {
                 // Resize the image and store it in the compressedImage variable
                 compressedImage = bicubicSplineInterpolationResize(originalImage, newWidth, newHeight);
-    
-                // Calculate the scaling factor to maintain a height of 700 pixels
-                int factor = 700 / newHeight;
-                int newCanvasHeight = newHeight * factor;
-                int newCanvasWidth = newWidth * factor;
-    
+
+                // Calculate the scaling factor to maintain a height of 500 pixels
+                double factor = 500.0 / newHeight;
+                double newCanvasHeight = newHeight * factor;
+                double newCanvasWidth = newWidth * factor;
+
                 // Update UI on the JavaFX Application Thread
                 javafx.application.Platform.runLater(() -> {
                     // Adjust canvas size
-                    imageCanvas.setWidth(newCanvasWidth);
-                    imageCanvas.setHeight(newCanvasHeight);
-    
+                    imageCanvas.setWidth((int)newCanvasWidth);
+                    imageCanvas.setHeight((int)newCanvasHeight);
+
                     // Draw the resized image on the canvas
                     drawImage(compressedImage); // Use compressedImage here
-    
+
                     // Hide loading indicator
                     loadingIndicator.setVisible(false);
                 });
             }).start(); // Start a new thread to avoid blocking the UI
         }
     }
+
     
     private void drawImage(Image image) {
         GraphicsContext gc = imageCanvas.getGraphicsContext2D();

@@ -29,17 +29,17 @@
 
     <!-- Main content wrapped in a ScrollPane -->
     <ScrollPane fitToWidth="true" HBox.hgrow="ALWAYS">
-        <VBox alignment="CENTER" spacing="20.0" HBox.hgrow="ALWAYS" styleClass="padding-bottom">
+        <VBox alignment="CENTER" spacing="10.0" HBox.hgrow="ALWAYS" styleClass="padding-bottom">
             <children>
                 <Label text="Image Resizer" styleClass="title-label" />
-                <ProgressIndicator fx:id="loadingIndicator" visible="false" />
                 <Canvas fx:id="imageCanvas" width="400" height="400"/>
+                <ProgressIndicator fx:id="loadingIndicator" visible="false" />
                 <Button text="Choose Image" onAction="#chooseImage"/>
                 <HBox spacing="10" alignment="CENTER">
                     <children>
-                        <Label text="Width:"/>
+                        <Label text="Width:" styleClass="text-white"/>
                         <TextField fx:id="widthField"/>
-                        <Label text="Height:"/>
+                        <Label text="Height:" styleClass="text-white"/>
                         <TextField fx:id="heightField"/>
                     </children>
                 </HBox>
