@@ -20,10 +20,15 @@ public class Router {
     }
 
     @FXML
-    public static void navigateToRegresiBerganda() throws IOException {
-        navigate("regresi-berganda");
+    public static void navigateToRegresiLinierBerganda() throws IOException {
+        navigate("regresi-linier-berganda");
     }
 
+    @FXML
+    public static void navigateToRegresiKuadratikBerganda() throws IOException {
+        navigate("regresi-kuadratik-berganda");
+    }
+    
     @FXML
     public static void navigateToBicubicSplineInterpolation() throws IOException {
         navigate("bicubic-spline-interpolation");

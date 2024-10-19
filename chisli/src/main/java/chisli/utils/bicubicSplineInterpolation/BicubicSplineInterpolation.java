@@ -1,39 +1,40 @@
 package chisli.utils.bicubicSplineInterpolation;
 
 import chisli.utils.matrix.Matrix;
-import chisli.utils.spl.Gauss;
-import javafx.fxml.FXML;
-import javafx.scene.layout.GridPane;
+import chisli.utils.spl.GaussJordan;
 import chisli.utils.matrix.MatrixSteps;
 
 public class BicubicSplineInterpolation {
-
-    @FXML
-    private GridPane outputGrid;
-
     private double[][] matrix;
     private MatrixSteps matrixSteps;
+    private boolean trackSteps;
 
+    // Constructor with optional step tracking (default is true)
     public BicubicSplineInterpolation(double[][] matrix) {
+        this(matrix, true);
+    }
+
+    // Constructor with step tracking parameter
+    public BicubicSplineInterpolation(double[][] matrix, boolean trackSteps) {
         if (matrix.length != 4 || matrix[0].length != 4) {
             throw new IllegalArgumentException("Input matrix must be 4x4.");
         }
         this.matrix = matrix;
-        this.matrixSteps = new MatrixSteps();
+        this.trackSteps = trackSteps;
+        if (trackSteps) {
+            this.matrixSteps = new MatrixSteps();
+        }
     }
-    
 
     // Interpolate at point (x, y) using bicubic interpolation
     public double interpolate(double x, double y) {
-        // Assuming x and y are in the range [0, 3] (4x4 matrix)
-        
-        if(x < 0 || x > 1 || y < 0 || y > 1) {
+        if (x < 0 || x > 1 || y < 0 || y > 1) {
             throw new IllegalArgumentException("inputted x and y must be in range 0..1");
         }
 
         int row = 0;
         double[][] mtx = new double[16][17];
-        
+
         for (int i = 0; i < 2; i++) {
             for (int j = 0; j < 2; j++) {
                 eq1(j,i,row,mtx);
@@ -59,85 +60,47 @@ public class BicubicSplineInterpolation {
             }
         }
         getY(matrix, mtx);
-        
-        matrixSteps.addStep("X matrix:");
-        double[][] subMatrix = getSubMatrix(mtx, 16);
-        matrixSteps.addMatrixState(new Matrix(subMatrix).getString());
 
-        matrixSteps.addStep("y matrix:");
-        double[][] column17 = getColumn(mtx, 16); // Column index 16 is the 17th column
-        matrixSteps.addMatrixState(new Matrix(column17).getString());
+        // If step tracking is enabled, add steps
+        if (trackSteps) {
+            matrixSteps.addStep("X matrix:");
+            double[][] subMatrix = getSubMatrix(mtx, 16);
+            matrixSteps.addMatrixState(new Matrix(subMatrix).getString());
 
-        Matrix mtxMatrix = new Matrix(mtx);
-
-        // for testing
-        /* System.out.println("Matrix after getY:");
-        for (double[] rowArray : mtx) {
-            for (double value : rowArray) {
-                System.out.print(value + " ");
-            }
-            System.out.println();
-        } */
-
-        String[] solution = Gauss.solve(mtxMatrix);
-        
-        // for testing
-        /* for (int i=0;i<16;i++) {
-            System.out.println(solution[i]);
-        } */
-
-        /* System.out.println("Solution from Gauss.solve:");
-        for (String sol : solution) {
-            System.out.println(sol);
-        } */
-
-        double[] doubleSolution = new double[solution.length];
-        for (int i = 0; i < solution.length; i++) {
-            try {
-                // Split the string by "=" and trim any whitespace
-                String[] parts = solution[i].split("=");
-                if (parts.length == 2) {
-                    String valuePart = parts[1].trim();
-                    doubleSolution[i] = Double.parseDouble(valuePart);
-                    // System.out.println("Parsed double value: " + doubleSolution[i]);
-                } else {
-                    // System.out.println("Unexpected format in solution[" + i + "]: " + solution[i]);
-                }
-            } catch (NumberFormatException e) {
-                // System.out.println("Error parsing solution[" + i + "]: " + solution[i]);
-            }
+            matrixSteps.addStep("y matrix:");
+            double[][] column17 = getColumn(mtx, 16);
+            matrixSteps.addMatrixState(new Matrix(column17).getString());
         }
+        
+        Matrix mtxMatrix = new Matrix(mtx);
+        double[] doubleSolution = GaussJordan.solveWithoutSteps(mtxMatrix);
 
         double[][] mtxa = new double[4][4];
         int counter = 0;
-        for(int i=0;i<4;i++){
-            for(int j=0;j<4;j++){
-                mtxa[j][i] = doubleSolution[counter];
-                counter++;
+        for (int i = 0; i < 4; i++) {
+            for (int j = 0; j < 4; j++) {
+                mtxa[j][i] = doubleSolution[counter++];
             }
         }
 
-        matrixSteps.addStep("Matrix a solution (solved with gauss):");
-        matrixSteps.addMatrixState(new Matrix(mtxa).getString());
-
-        // for (double[] rowArray : mtxa) {
-        //     for (double value : rowArray) {
-        //         // System.out.print(value + " ");
-        //     }
-        //     // System.out.println();
-        // }
+        if (trackSteps) {
+            matrixSteps.addStep("Matrix a solution (solved with gauss):");
+            matrixSteps.addMatrixState(new Matrix(mtxa).getString());
+        }
 
         double answer = 0;
-
-        for(int i=0;i<4;i++){
-            for(int j=0;j<4;j++){
-                answer += mtxa[i][j]*(Math.pow(x, j)*(Math.pow(y, i)));
+        for (int i = 0; i < 4; i++) {
+            for (int j = 0; j < 4; j++) {
+                answer += mtxa[i][j] * (Math.pow(x, j) * Math.pow(y, i));
             }
         }
-        matrixSteps.addStep("Final interpolated answer: " + answer);
+
+        if (trackSteps) {
+            matrixSteps.addStep("Final interpolated answer: " + answer);
+        }
+
         return answer;
     }
-
 
     private void eq1(int x, int y, int row, double[][] matrix) {
         int k = 0;
@@ -222,8 +185,7 @@ public class BicubicSplineInterpolation {
         }
         return subMatrix;
     }
-    
-    // Method to extract a specific column from the matrix
+
     private double[][] getColumn(double[][] matrix, int column) {
         int rows = matrix.length;
         double[][] columnMatrix = new double[rows][1];
