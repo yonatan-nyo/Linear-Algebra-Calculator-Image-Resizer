@@ -108,6 +108,14 @@ public class SistemPersamaanLinearController {
             e.printStackTrace();
         }
     }
+    @FXML
+    private void switchToImageResize() {
+        try {
+            Router.navigateToImageResize();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 
     @FXML
     private TextField rowsInput;

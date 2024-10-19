@@ -18,6 +18,7 @@
             <Button fx:id="primaryButton" text="Regresi Linier Berganda" onAction="#switchToRegresiLinierBerganda" styleClass="sidebar-button-nav"/>
             <Button fx:id="primaryButton" text="Regresi Kuadratik Berganda" onAction="#switchToRegresiKuadratikBerganda" styleClass="sidebar-button-nav"/>
             <Button fx:id="primaryButton" text="Bicubic Spline Interpolation" onAction="#switchToBicubicSplineInterpolation" styleClass="sidebar-button-nav"/>
+            <Button fx:id="primaryButton" text="Image Resizer" onAction="#switchToImageResize" styleClass="sidebar-button-nav"/>
         </children>
     </VBox>
 

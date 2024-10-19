@@ -68,6 +68,14 @@ public class InterpolasiPolinomialController {
             e.printStackTrace(); // Handle exception
         }
     }
+    @FXML
+    private void switchToImageResize() {
+        try {
+            Router.navigateToImageResize();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
     
 
         // Helper method to parse fractions
