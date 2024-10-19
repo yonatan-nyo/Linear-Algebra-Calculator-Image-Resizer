@@ -40,8 +40,6 @@ public class ImageResizeController {
     private Image originalImage;
     private Image compressedImage; 
 
-    private static final int MAX_CANVAS_SIZE = 700; // Maximum size for the canvas
-
     @FXML
     public void initialize() {
         // Initialize sliders and labels
@@ -120,19 +118,15 @@ public class ImageResizeController {
         if (file != null) {
             originalImage = new Image(file.toURI().toString());
 
-            double maxHeight = 500;
-            double maxWidth = 500;
-            double factor = Math.min(maxWidth / originalImage.getWidth(), maxHeight / originalImage.getHeight());
-            double newWidth = originalImage.getWidth() * factor;
-            double newHeight = originalImage.getHeight() * factor;
+            // Set canvas size based on original image dimensions
+            updateCanvasSize(originalImage.getWidth(), originalImage.getHeight());
 
-            imageCanvas.setWidth(newWidth);
-            imageCanvas.setHeight(newHeight);
-
-            // Draw the original image with scaling on the canvas
-            drawImage(originalImage);
+            drawImage(originalImage); // This must be called after canvas is initialized
+        } else {
+            System.out.println("No file selected");
         }
     }
+    
 
     @FXML
     private void resizeImage() {
@@ -142,11 +136,6 @@ public class ImageResizeController {
 
             double newWidth = originalImage.getWidth() * widthResizeFactor;
             double newHeight = originalImage.getHeight() * heightResizeFactor;
-            double maxHeight = 500;
-            double maxWidth = 500;
-            double factor = Math.min(maxWidth / newWidth, maxHeight / maxHeight);
-            double newCanvasWidth = newWidth * factor;
-            double newCanvasHeight = newHeight * factor;
 
             // Show loading indicator
             loadingIndicator.setVisible(true);
@@ -154,15 +143,12 @@ public class ImageResizeController {
                 // Resize the image and store it in the compressedImage variable
                 compressedImage = bicubicSplineInterpolationResize(originalImage, (int)newWidth, (int)newHeight);
 
-                System.out.println((int)newWidth + " " + (int)newHeight);
-                System.out.println(newCanvasWidth + " " + newCanvasHeight);
-                
                 // Update UI on the JavaFX Application Thread
                 javafx.application.Platform.runLater(() -> {
-                    // Draw the resized image with scaling on the canvas
-                    imageCanvas.setWidth(newCanvasWidth);
-                    imageCanvas.setHeight(newCanvasHeight);
+                    // Update canvas size based on new image dimensions
+                    updateCanvasSize(newWidth, newHeight);
                     
+                    // Draw the resized image with scaling on the canvas
                     drawImage(compressedImage); // Use compressedImage here
 
                     // Hide loading indicator
@@ -173,25 +159,66 @@ public class ImageResizeController {
     }
 
     private void drawImage(Image image) {
+        if (image == null) {
+            System.err.println("Cannot draw image: image is null.");
+            return; // Exit the method if the image is null
+        }
+    
         GraphicsContext gc = imageCanvas.getGraphicsContext2D();
+        if (gc == null) {
+            System.err.println("Cannot draw image: graphics context is null.");
+            return; // Exit the method if the graphics context is null
+        }
+    
+        // Clear the canvas
         gc.clearRect(0, 0, imageCanvas.getWidth(), imageCanvas.getHeight());
-
+    
+        // Validate canvas dimensions
+        double canvasWidth = imageCanvas.getWidth();
+        double canvasHeight = imageCanvas.getHeight();
+        if (canvasWidth <= 0 || canvasHeight <= 0) {
+            System.err.println("Cannot draw image: invalid canvas dimensions.");
+            return; // Exit the method if the canvas dimensions are invalid
+        }
+    
         // Calculate scaling factor to fit the canvas size
-        double scaleX = Math.min(MAX_CANVAS_SIZE / image.getWidth(), 1);
-        double scaleY = Math.min(MAX_CANVAS_SIZE / image.getHeight(), 1);
+        double scaleX = Math.min(canvasWidth / image.getWidth(), 1);
+        double scaleY = Math.min(canvasHeight / image.getHeight(), 1);
         double scale = Math.min(scaleX, scaleY); // Maintain aspect ratio
-
+    
         // Calculate the new width and height after scaling
         double newWidth = image.getWidth() * scale;
         double newHeight = image.getHeight() * scale;
-
+    
         // Draw the image centered on the canvas
-        double x = (imageCanvas.getWidth() - newWidth) / 2;
-        double y = (imageCanvas.getHeight() - newHeight) / 2;
-
+        double x = (canvasWidth - newWidth) / 2;
+        double y = (canvasHeight - newHeight) / 2;
+    
         gc.drawImage(image, x, y, newWidth, newHeight);
     }
-
+    
+    private void updateCanvasSize(double width, double height) {
+        // Set the maximum width to 700
+        double maxWidth = 700;
+        
+        // If the width exceeds the maximum width, scale down proportionally
+        if (width > maxWidth) {
+            double scaleFactor = maxWidth / width;
+            width = maxWidth;
+            height = height * scaleFactor; // Scale height to maintain aspect ratio
+        }
+        
+        // Validate the dimensions before setting
+        if (width <= 0 || height <= 0) {
+            System.err.println("Invalid canvas dimensions: width = " + width + ", height = " + height);
+            return; // Avoid setting invalid dimensions
+        }
+        
+        // Set the canvas size with the adjusted width and height
+        imageCanvas.setWidth(width);
+        imageCanvas.setHeight(height);
+    }
+    
     private Image bicubicSplineInterpolationResize(Image image, int newWidth, int newHeight) {
         BufferedImage bufferedImage = SwingFXUtils.fromFXImage(image, null);
         BufferedImage resizedBufferedImage = ImageResizer.resizeBufferedImage(bufferedImage, newWidth, newHeight);

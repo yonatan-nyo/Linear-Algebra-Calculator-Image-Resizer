@@ -29,7 +29,7 @@
         <VBox alignment="CENTER" spacing="10.0" HBox.hgrow="ALWAYS" styleClass="padding-bottom">
             <children>
                 <Label text="Image Resizer" styleClass="title-label" />
-                <Canvas fx:id="imageCanvas" width="400" height="400"/>
+                <Canvas fx:id="imageCanvas" width="200" height="200"/>
                 <ProgressIndicator fx:id="loadingIndicator" visible="false" />
                 <Button text="Choose Image" onAction="#chooseImage"/>
                 <HBox spacing="10" alignment="CENTER">
