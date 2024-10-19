@@ -10,8 +10,6 @@ public class RegresiLinier {
 
     // Solve using Normal Estimation Equation for Multiple Linear Regression
     public double[] solve(double[][] xValues, double[] yValues) {
-        System.out.println("xValues: " + Arrays.deepToString(xValues));
-        System.out.println("yValues: " + Arrays.toString(yValues));
         int n = xValues.length; // Number of data points
         int m = xValues[0].length; // Number of features (x1, x2, ..., xm)
     
@@ -22,23 +20,38 @@ public class RegresiLinier {
             augMtxArray[i][m+1] = yValues[i];
             System.arraycopy(xValues[i], 0, augMtxArray[i], 1, m); // Copy the rest of the features
         }
-        System.out.println("Augmented Matrix: " + Arrays.deepToString(augMtxArray));
     
-        Matrix augMtx = new Matrix(augMtxArray);
-        augMtx.print();
+        Matrix augMtx = new Matrix(augMtxArray).getCleanedMatrix();
+        // check how many lines are non all zero
+        int count = 0;
+        for (int i = 0; i < augMtx.getRowCount(); i++) {
+            boolean allZero = true;
+            for (int j = 0; j < augMtx.getColumnCount(); j++) {
+                if (augMtx.get(i, j) != 0) {
+                    allZero = false;
+                    break;
+                }
+            }
+            if (!allZero) {
+                count++;
+                if(count == augMtx.getColumnCount() - 1) {
+                    break;
+                }
+            }
+        }
+        if(count ==1){
+            throw new IllegalArgumentException("Function cannot be calculated because only 1 unique point is provided.");
+        }
         String[] solution = Gauss.solve(augMtx);
-        System.out.println("solution: " + Arrays.toString(solution));
     
         // Store the solution in the instance variable `b` for later use in predict
         this.b = convertSolution(solution);
-        System.out.println("b values: " + Arrays.toString(this.b));
         
         return this.b;
     }
     
     // Predict value for new input xk
     public double predict(double[] xk) {
-        System.out.println("b values(for prediction): " + Arrays.toString(b));
         if (b == null || xk.length + 1 != b.length) {
             throw new IllegalArgumentException("Model has not been trained or invalid input size.");
         }

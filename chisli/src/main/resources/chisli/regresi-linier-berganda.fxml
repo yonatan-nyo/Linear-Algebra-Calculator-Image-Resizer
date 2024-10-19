@@ -7,6 +7,7 @@
 <?import javafx.scene.control.TextArea?>
 <?import javafx.scene.control.TextField?>
 <?import javafx.geometry.Insets?>
+<?import javafx.scene.text.Text?>
 
 <HBox xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="chisli.RegresiBergandaController">
     <!-- Sidebar with buttons -->
@@ -46,7 +47,8 @@
             <Button text="Regresi Linier" onAction="#performRegresiLinier" styleClass="button-action" />
             
             <!-- Result display -->
-            <Label fx:id="resultLabel" text="" style="-fx-font-size: 18px; -fx-text-fill: green;" />
+            <Text fx:id="resultLabel1" styleClass="result-text" wrappingWidth="300.0" />
+            <Text fx:id="resultLabel2" styleClass="result-text" wrappingWidth="300.0" />
         </children>
     </VBox>
 </HBox>

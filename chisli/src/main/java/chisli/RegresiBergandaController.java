@@ -9,8 +9,9 @@ import chisli.utils.regresi.RegresiKuadratik;
 import chisli.utils.regresi.RegresiLinier;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
-import javafx.scene.control.Label;
 import javafx.scene.control.TextArea;
+import javafx.scene.paint.Color;
+import javafx.scene.text.Text;
 
 
 public class RegresiBergandaController {
@@ -21,13 +22,19 @@ public class RegresiBergandaController {
     private TextArea dataInputField; 
 
     @FXML
-    private Label resultLabel;
+    private Text resultLabel1;
+
+    @FXML
+    private Text resultLabel2;
 
     // Initialize method (optional)
     @FXML
     public void initialize() {
         // Any initialization if needed
+        resultLabel1.setFill(Color.GREENYELLOW);
+        resultLabel2.setFill(Color.GREENYELLOW);
     }
+
 
     @FXML
     private void switchToSistemPersamaanLinear() {
@@ -109,7 +116,8 @@ public class RegresiBergandaController {
             for (int i = 0; i < lines.length - 1; i++) {
                 String[] columns = lines[i].trim().split("\\s+");
                 if (columns.length != expectedColumns) {
-                    resultLabel.setText("Error: Row " + (i + 1) + " must contain exactly " + expectedColumns + " columns.");
+                    resultLabel1.setText("Error: Row " + (i + 1) + " must contain exactly " + expectedColumns + " columns.");
+                    resultLabel2.setText("");
                     return;
                 }
             }
@@ -117,7 +125,8 @@ public class RegresiBergandaController {
             // Check if the last row has one less column than the first row
             String[] lastLineNumbers = lines[lines.length - 1].trim().split("\\s+");
             if (lastLineNumbers.length != expectedColumns - 1) {
-                resultLabel.setText("Error: The last row must contain exactly " + (expectedColumns - 1) + " columns.");
+                resultLabel1.setText("Error: The last row must contain exactly " + (expectedColumns - 1) + " columns.");
+                resultLabel2.setText("");
                 return;
             }
     
@@ -162,12 +171,13 @@ public class RegresiBergandaController {
     
             // Check if all coefficients are zero
             if (Arrays.stream(coefficients).allMatch(coef -> coef == 0)) {
-                resultLabel.setText(String.format("The system has free variables. Please try making at least %d dependent equations.", coefficients.length));
+                resultLabel1.setText(String.format("The system has free variables. Please try making at least %d dependent equations.", coefficients.length));
+                resultLabel2.setText("");
                 return; // Exit the method
             }
     
             // Construct the prediction equation for f(xk)
-            StringBuilder predictionEquation = new StringBuilder("f(xk) = ");
+            StringBuilder predictionEquation = new StringBuilder("Solution = ");
             predictionEquation.append(String.format("%.4f", coefficients[0])); // Intercept
     
             for (int i = 0; i < xk.length; i++) {
@@ -184,11 +194,14 @@ public class RegresiBergandaController {
             predictionEquation.append(" = ").append(String.format("%.4f", prediction));
     
             // Display results
-            resultLabel.setText(equation.toString() + "\n" + predictionEquation.toString());
+            resultLabel1.setText(equation.toString());
+            resultLabel2.setText(predictionEquation.toString());
         } catch (NumberFormatException e) {
-            resultLabel.setText("Error: Please enter valid numbers.");
+            resultLabel1.setText("Error: Please enter valid numbers.");
+            resultLabel2.setText("");
         } catch (IllegalArgumentException e) {
-            resultLabel.setText(e.getMessage());
+            resultLabel1.setText(e.getMessage());
+            resultLabel2.setText("");
         }
     }
     
@@ -201,15 +214,17 @@ public class RegresiBergandaController {
             for (int i = 0; i < lines.length - 1; i++) {
                 String[] columns = lines[i].trim().split("\\s+");
                 if (columns.length != 3) {
-                    resultLabel.setText("Error: Row " + (i + 1) + " must contain exactly 3 columns.");
-                    return;
+                    resultLabel1.setText("Error: Row " + (i + 1) + " must contain exactly 3 columns.");
+                    resultLabel2.setText("");
+                    return; 
                 }
             }
     
             // Check if the last row has exactly 2 columns
             String[] lastLineNumbers = lines[lines.length - 1].trim().split("\\s+");
             if (lastLineNumbers.length != 2) {
-                resultLabel.setText("Error: The last row must contain exactly 2 columns.");
+                resultLabel1.setText("Error: The last row must contain exactly 2 columns.");
+                resultLabel2.setText("");
                 return;
             }
     
@@ -239,12 +254,13 @@ public class RegresiBergandaController {
     
             // Check if all coefficients are zero
             if (Arrays.stream(coefficients).allMatch(coef -> coef == 0)) {
-                resultLabel.setText("The system has free variables. Please try making at least 6 dependent equations.");
+                resultLabel1.setText("The system has free variables. Please try making at least 6 dependent equations.");
+                resultLabel2.setText("");
                 return; // Exit the method
             }
     
             // Construct the regression equation string
-            StringBuilder equation = new StringBuilder("f(x) = ");
+            StringBuilder equation = new StringBuilder("f(x1,x2) = ");
             equation.append(String.format("%.4f", coefficients[0])); // Intercept (b0)
     
             // Construct the terms based on the coefficients
@@ -272,7 +288,7 @@ public class RegresiBergandaController {
             }
     
             // Construct the prediction equation for f(xk)
-            StringBuilder predictionEquation = new StringBuilder("f(xk) = ");
+            StringBuilder predictionEquation = new StringBuilder(String.format("f(%d,%d) = ", (int) xk[0], (int) xk[1]));
             predictionEquation.append(String.format("%.4f", coefficients[0])); // Intercept
     
             // Add terms for the prediction equation
@@ -296,11 +312,14 @@ public class RegresiBergandaController {
             predictionEquation.append(" = ").append(String.format("%.4f", prediction)); // Final prediction
     
             // Display results
-            resultLabel.setText(equation.toString() + "\n" + predictionEquation.toString());
+            resultLabel1.setText(equation.toString());
+            resultLabel2.setText(predictionEquation.toString());
         } catch (NumberFormatException e) {
-            resultLabel.setText("Error: Please enter valid numbers.");
+            resultLabel1.setText("Error: Please enter valid numbers.");
+            resultLabel2.setText("");
         } catch (IllegalArgumentException e) {
-            resultLabel.setText(e.getMessage());
+            resultLabel1.setText(e.getMessage());
+            resultLabel2.setText("");
         }
     }
 }

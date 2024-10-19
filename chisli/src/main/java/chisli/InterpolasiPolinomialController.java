@@ -8,6 +8,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.TextArea;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
+import java.util.List;
 
 public class InterpolasiPolinomialController {
     @FXML
@@ -17,13 +18,17 @@ public class InterpolasiPolinomialController {
     private TextArea dataInputField; 
 
     @FXML
-    private Text resultLabel;
+    private Text resultLabel1;
+
+    @FXML
+    private Text resultLabel2;
 
     // Initialize method (optional)
     @FXML
     public void initialize() {
         // Any initialization if needed
-        resultLabel.setFill(Color.GREENYELLOW);
+        resultLabel1.setFill(Color.GREENYELLOW);
+        resultLabel2.setFill(Color.GREENYELLOW);
     }
 
     @FXML
@@ -105,15 +110,17 @@ public class InterpolasiPolinomialController {
             for (int i = 0; i < lines.length - 1; i++) {
                 String[] columns = lines[i].trim().split("\\s+");
                 if (columns.length != 2) {
-                    resultLabel.setText("Error: Row " + (i + 1) + " must contain exactly 2 columns.");
+                    resultLabel1.setText("Error: Row " + (i + 1) + " must contain exactly 2 columns.");
+                    resultLabel2.setText("");
                     return;
                 }
             }
-    
+
             // Check if the last row has exactly 1 column
             String[] lastLineNumbers = lines[lines.length - 1].trim().split("\\s+");
             if (lastLineNumbers.length != 1) {
-                resultLabel.setText("Error: The last row must contain exactly 1 column.");
+                resultLabel1.setText("Error: The last row must contain exactly 1 column.");
+                resultLabel2.setText("");
                 return;
             }
     
@@ -128,14 +135,17 @@ public class InterpolasiPolinomialController {
             }
     
             double xToEvaluate = parseFraction(lines[lines.length - 1].trim());
-    
+            
             // Call the interpolation method
-            String result = InterpolasiPolinomial.solve(xValues, yValues, xToEvaluate);
-            resultLabel.setText(result);
+            List<String> result = InterpolasiPolinomial.solve(xValues, yValues, xToEvaluate);
+            resultLabel1.setText(result.get(0));
+            resultLabel2.setText(result.get(1));
         } catch (NumberFormatException e) {
-            resultLabel.setText("Error: Please enter valid numbers.");
+            resultLabel1.setText("Error: Please enter valid numbers.");
+            resultLabel2.setText("");
         } catch (IllegalArgumentException e) {
-            resultLabel.setText(e.getMessage());
+            resultLabel1.setText(e.getMessage());
+            resultLabel2.setText("");
         }
     }
 }

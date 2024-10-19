@@ -9,8 +9,6 @@ public class RegresiKuadratik {
 
     // Solve using Normal Estimation Equation for Multiple Linear Regression
     public double[] solve(double[][] xValues, double[] yValues) {
-        System.out.println("xValues: " + Arrays.deepToString(xValues));
-        System.out.println("yValues: " + Arrays.toString(yValues));
         int n = xValues.length; // Number of data points
         int m = xValues[0].length; // Number of features (x1, x2, ..., xm)
     
@@ -26,23 +24,38 @@ public class RegresiKuadratik {
             augMtxArray[i][6] = yValues[i]; // Target y
         }
 
-        System.out.println("Augmented Matrix: " + Arrays.deepToString(augMtxArray));
     
-        Matrix augMtx = new Matrix(augMtxArray);
-        augMtx.print();
+        Matrix augMtx = new Matrix(augMtxArray).getCleanedMatrix();
+        // check how many lines are non all zero
+        int count = 0;
+        for (int i = 0; i < augMtx.getRowCount(); i++) {
+            boolean allZero = true;
+            for (int j = 0; j < augMtx.getColumnCount(); j++) {
+                if (augMtx.get(i, j) != 0) {
+                    allZero = false;
+                    break;
+                }
+            }
+            if (!allZero) {
+                count++;
+                if(count == augMtx.getColumnCount() - 1) {
+                    break;
+                }
+            }
+        }
+        if(count ==1){
+            throw new IllegalArgumentException("Function cannot be calculated because only 1 unique point is provided.");
+        }
         String[] solution = Gauss.solve(augMtx);
-        System.out.println("solution: " + Arrays.toString(solution));
     
         // Store the solution in the instance variable `coef` for later use in predict
         this.coef = convertSolution(solution);
-        System.out.println("coef values: " + Arrays.toString(this.coef));
         
         return this.coef;
     }
     
     // Predict value for new input xk
     public double predict(double[] xk) {
-        System.out.println("coef values(for prediction): " + Arrays.toString(coef));
         if (coef == null || xk.length != 2) {
             throw new IllegalArgumentException("Model has not been trained or invalid input size.");
         }

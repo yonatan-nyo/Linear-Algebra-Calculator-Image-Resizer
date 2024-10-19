@@ -3,10 +3,13 @@ package chisli.utils.interpolasiPolinomial;
 import chisli.utils.matrix.Matrix;
 import chisli.utils.spl.Gauss;
 
+import java.util.Arrays;
+import java.util.List;
+
 public class InterpolasiPolinomial {
 
     // Method to perform polynomial interpolation using Gauss elimination
-    public static String solve(double[] xValues, double[] yValues, double xToEvaluate) {
+    public static List<String> solve(double[] xValues, double[] yValues, double xToEvaluate) {
         if (xValues.length != yValues.length) {
             throw new IllegalArgumentException("xValues and yValues must have the same length.");
         }
@@ -24,8 +27,31 @@ public class InterpolasiPolinomial {
             augmentedMatrix[i][n] = yValues[i]; // Augmented column (y-values)
         }
 
+
         // Convert the augmented matrix into a Matrix object and solve it using Gauss
-        Matrix matrix = new Matrix(augmentedMatrix);
+        Matrix matrix = new Matrix(augmentedMatrix).getCleanedMatrix();
+        // check how many lines are non all zero
+        int count = 0;
+        for (int i = 0; i < matrix.getRowCount(); i++) {
+            boolean allZero = true;
+            for (int j = 0; j < matrix.getColumnCount(); j++) {
+                if (matrix.get(i, j) != 0) {
+                    allZero = false;
+                    break;
+                }
+            }
+            if (!allZero) {
+                count++;
+                if(count == matrix.getColumnCount() - 1) {
+                    break;
+                }
+            }
+        }
+        if(count ==1){
+            throw new IllegalArgumentException("Function cannot be calculated because only 1 unique point is provided.");
+        }
+
+
         String[] solution = Gauss.solve(matrix);
 
         // Convert the solution to double array
@@ -44,10 +70,15 @@ public class InterpolasiPolinomial {
                 polynomial.append("x^").append(i).append(" ");
             }
         }
+        
+        if (Arrays.stream(coefficients).allMatch(coef -> coef == 0)) {
+            polynomial = new StringBuilder("");
+            return Arrays.asList("The system has free variables.", "");
+        }
 
         // Use the coefficients to evaluate the polynomial at xToEvaluate
         double result = evaluatePolynomial(coefficients, xToEvaluate);
-        return polynomial.toString() + ", f(" + xToEvaluate + ") = " + result;
+        return Arrays.asList(polynomial.toString(), String.format("f(%.4f) = %.4f", xToEvaluate, result));
     }
 
     // Helper method to evaluate the polynomial at a given x
@@ -63,17 +94,37 @@ public class InterpolasiPolinomial {
 
     // Helper method to convert the solution to a double array
     private static double[] convertSolution(String[] solution) {
-        int numVars = solution.length;
-        double[] result = new double[numVars];
-
+        int numVars = solution.length; // Number of variables
+        double[] result = new double[numVars]; // Array to hold double solutions
+    
         for (int i = 0; i < numVars; i++) {
-            String[] parts = solution[i].split("=");
+            String sol = solution[i];
+    
+            // Check if the solution contains "free variable"
+            if (sol.contains("free variable")) {
+                // If there is a free variable, return an array of zeros
+                Arrays.fill(result, 0.0);
+                return result;
+            }
+    
+            // Extract the numerical value from the solution string
+            String[] parts = sol.split("="); // Split at '='
             if (parts.length > 1) {
-                result[i] = Double.parseDouble(parts[1].trim());
+                try {
+                    // Parse the entire right-hand side of the equation (after '='), including negative numbers
+                    String valueStr = parts[1].trim();
+                    double value = Double.parseDouble(valueStr);
+                    result[i] = value; // Store the double value
+                } catch (NumberFormatException e) {
+                    // Handle parsing error if the value is not a number
+                    result[i] = 0.0;
+                }
             } else {
+                // If the solution format is unexpected, set to zero
                 result[i] = 0.0;
             }
         }
+    
         return result;
-    }
+    }    
 }
