@@ -31,17 +31,17 @@ public class InterpolasiPolinomial {
         // Convert the solution to double array
         double[] coefficients = convertSolution(solution);
 
-        // Build the polynomial string, limiting to x^2
+        // Build the polynomial string for degree n
         StringBuilder polynomial = new StringBuilder("f(x) = ");
-        for (int i = 0; i < coefficients.length && i <= 2; i++) { // Limit to x^2
+        for (int i = 0; i < coefficients.length; i++) {
             if (i > 0 && coefficients[i] >= 0) {
                 polynomial.append("+");
             }
             polynomial.append(String.format("%.4f", coefficients[i]));
             if (i == 1) {
                 polynomial.append("x ");
-            } else if (i == 2) {
-                polynomial.append("x^2 ");
+            } else if (i > 1) {
+                polynomial.append("x^").append(i).append(" ");
             }
         }
 
@@ -54,7 +54,7 @@ public class InterpolasiPolinomial {
     private static double evaluatePolynomial(double[] coefficients, double x) {
         double result = 0;
         double power = 1;
-        for (int i = 0; i < coefficients.length && i <= 2; i++) { // Limit to x^2
+        for (int i = 0; i < coefficients.length; i++) {
             result += coefficients[i] * power;
             power *= x;
         }
