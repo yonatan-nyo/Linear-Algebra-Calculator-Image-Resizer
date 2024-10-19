@@ -129,7 +129,6 @@ public class SistemPersamaanLinearController {
 
     private List<TextField> matrixFields = new ArrayList<>();
     
-
     @FXML
     public void generateMatrix() {
         matrixGrid.getChildren().clear();
@@ -165,8 +164,28 @@ public class SistemPersamaanLinearController {
         return true;
     }
 
-     // Utility function to prepare the matrix
-     private Matrix prepareMatrix(int rows, int columns) {
+    // Utility function to parse a fraction string
+    private double parseFraction(String input) {
+        if (input.contains("/")) {
+            String[] parts = input.split("/");
+            if (parts.length == 2) {
+                try {
+                    double numerator = Double.parseDouble(parts[0]);
+                    double denominator = Double.parseDouble(parts[1]);
+                    return numerator / denominator;
+                } catch (NumberFormatException e) {
+                    throw new IllegalArgumentException("Invalid fraction format");
+                }
+            } else {
+                throw new IllegalArgumentException("Invalid fraction format");
+            }
+        } else {
+            return Double.parseDouble(input);
+        }
+    }
+
+    // Utility function to prepare the matrix
+    private Matrix prepareMatrix(int rows, int columns) {
         double[][] matrixData = new double[rows][columns];
         Matrix matrix = new Matrix(matrixData);
         for (int row = 0; row < rows; row++) {
@@ -180,8 +199,13 @@ public class SistemPersamaanLinearController {
                     displayError("Invalid matrix: All fields must be filled");
                     return null;
                 }
-                double value = Double.parseDouble(field.getText());
-                matrix.set(row, col, value);
+                try {
+                    double value = parseFraction(field.getText());
+                    matrix.set(row, col, value);
+                } catch (IllegalArgumentException e) {
+                    displayError("Invalid input: Please enter valid fractions or numbers");
+                    return null;
+                }
             }
         }
         return matrix;
