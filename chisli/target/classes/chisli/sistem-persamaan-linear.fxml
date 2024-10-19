@@ -25,7 +25,7 @@
     </VBox>
 
     <!-- Main content wrapped in a ScrollPane -->
-    <ScrollPane fitToWidth="true">
+    <ScrollPane fitToWidth="true" HBox.hgrow="ALWAYS">
         <VBox alignment="CENTER" spacing="20.0" HBox.hgrow="ALWAYS">
             <children>
                 <Label text="Sistem Persamaan Linear" styleClass="title-label" />

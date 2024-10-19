@@ -58,7 +58,7 @@ public class BicubicSplineInterpolation {
                 row += 1;
             }
         }
-        gety(matrix, mtx);
+        getY(matrix, mtx);
         
         matrixSteps.addStep("X matrix:");
         double[][] subMatrix = getSubMatrix(mtx, 16);
@@ -71,7 +71,7 @@ public class BicubicSplineInterpolation {
         Matrix mtxMatrix = new Matrix(mtx);
 
         // for testing
-        /* System.out.println("Matrix after gety:");
+        /* System.out.println("Matrix after getY:");
         for (double[] rowArray : mtx) {
             for (double value : rowArray) {
                 System.out.print(value + " ");
@@ -186,7 +186,7 @@ public class BicubicSplineInterpolation {
         }
     }
 
-    private void gety(double[][] matrix1, double[][] matrix2) {
+    private void getY(double[][] matrix1, double[][] matrix2) {
         int i = 0;
         for(int j=1;j<3;j++){
             for(int k=1;k<3;k++){
