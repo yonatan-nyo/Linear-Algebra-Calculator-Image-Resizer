@@ -1,23 +1,23 @@
 package chisli;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+
 import chisli.utils.matrix.Matrix;
-import chisli.utils.spl.Gauss;
-import chisli.utils.spl.GaussJordan; 
+import chisli.utils.matrix.MatrixSteps; 
 import chisli.utils.spl.Cramer;
+import chisli.utils.spl.Gauss;
+import chisli.utils.spl.GaussJordan;
 import chisli.utils.spl.SplInverse;
-import chisli.utils.matrix.MatrixSteps;
 import javafx.fxml.FXML;
+import javafx.scene.control.Button;
+import javafx.scene.control.ComboBox;
+import javafx.scene.control.Label;
+import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.control.ToggleButton;
 import javafx.scene.layout.GridPane;
-import javafx.scene.control.Label;
-import javafx.scene.control.TextArea;
-import javafx.scene.control.ComboBox;
-import javafx.scene.control.Button;
-
-import java.util.ArrayList;
-import java.util.List;
 
 public class SistemPersamaanLinearController {
 
@@ -83,9 +83,18 @@ public class SistemPersamaanLinearController {
     }
 
     @FXML
-    private void switchToRegresiBerganda() {
+    private void switchToRegresiLinierBerganda() {
         try {
-            Router.navigateToRegresiBerganda();
+            Router.navigateToRegresiLinierBerganda();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @FXML
+    private void switchToRegresiKuadratikBerganda() {
+        try {
+            Router.navigateToRegresiKuadratikBerganda();
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -221,7 +230,7 @@ public class SistemPersamaanLinearController {
             displaySteps(matrixSteps.getSteps());
         }
     }
-
+    
     @FXML
     public void solveCramer(){
         if (!isValidInput()) return;
@@ -266,7 +275,7 @@ public class SistemPersamaanLinearController {
             displaySteps(matrixSteps.getSteps());
         }
     }
-
+    
     @FXML
     public void inverse(){
         if (!isValidInput()) return;
