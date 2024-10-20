@@ -4,12 +4,12 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import chisli.utils.matrix.Matrix;
-import chisli.utils.matrix.MatrixSteps; 
-import chisli.utils.spl.Cramer;
-import chisli.utils.spl.Gauss;
-import chisli.utils.spl.GaussJordan;
-import chisli.utils.spl.SplInverse;
+import chislib.matrix.Matrix;
+import chislib.matrix.MatrixSteps; 
+import chislib.spl.Cramer;
+import chislib.spl.Gauss;
+import chislib.spl.GaussJordan;
+import chislib.spl.SplInverse;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;

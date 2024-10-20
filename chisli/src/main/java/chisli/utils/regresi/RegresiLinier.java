@@ -1,8 +1,8 @@
 package chisli.utils.regresi;
 import java.util.Arrays;
 
-import chisli.utils.matrix.Matrix;
-import chisli.utils.spl.Gauss;
+import chislib.matrix.Matrix;
+import chislib.spl.Gauss;
 
 public class RegresiLinier {
 
