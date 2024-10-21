@@ -56,6 +56,43 @@ public class GaussJordan {
                     if (isCaptureSteps) {
                         matrixSteps.addStep(String.format("Eliminating row %d using row %d with factor %.4f", targetRow + 1, pivotRow + 1, eliminationFactor));
                         matrixSteps.addMatrixState(augmentedMatrix.getString());
+
+                    }
+                }
+            }
+
+            // Sorting is not mandatory to get the correct solution, do it if steps are captured
+            if(isCaptureSteps){
+                // Sort the rows to ensure that rows with smaller leading elements are at the top
+                for (int i = 0; i < rowCount - 1; i++) {
+                    for (int j = 0; j < rowCount - i - 1; j++) {
+                        int firstLeadingCol = -1;
+                        int secondLeadingCol = -1;
+    
+                        // Find the first leading non-zero column in row j
+                        for (int col = 0; col < columnCount; col++) {
+                            if (Math.abs(augmentedMatrix.get(j, col)) > 1e-4) {
+                                firstLeadingCol = col;
+                                break;
+                            }
+                        }
+    
+                        // Find the first leading non-zero column in row j+1
+                        for (int col = 0; col < columnCount; col++) {
+                            if (Math.abs(augmentedMatrix.get(j + 1, col)) > 1e-4) {
+                                secondLeadingCol = col;
+                                break;
+                            }
+                        }
+    
+                        // If the leading column index of row j+1 is smaller, swap the rows
+                        if (secondLeadingCol != -1 && (firstLeadingCol == -1 || secondLeadingCol < firstLeadingCol)) {
+                            augmentedMatrix.swapRows(j, j + 1);
+                            if (isCaptureSteps) {
+                                matrixSteps.addStep(String.format("Swap row %d with row %d", j + 1, j + 2));
+                                matrixSteps.addMatrixState(augmentedMatrix.getString());
+                            }
+                        }
                     }
                 }
             }
@@ -118,7 +155,7 @@ public class GaussJordan {
             for (int col = leadingColIdx + 1; col < variableCount; col++) {
                 double coefficient = rrefMatrix.get(row, col);
                 if (Math.abs(coefficient) > 1e-4) {
-                    equationBuilder.append(String.format(" - (%.4f * (%s))", coefficient, strSolution[col]));
+                    equationBuilder.append(String.format(" - (%.4f * (%s))", coefficient, strSolution[col].replace(" (free variable)", "")));
                     if (!isVariablesCalculated[col]) {
                         strSolution[col] = String.format("x%d (free variable)", col + 1);
                         isFreeVariable[col] = true;

@@ -140,8 +140,8 @@ public class Gauss {
             for (int col = firstColIdxNot0 + 1; col < variableCount; col++) {
                 double coefficient = echelonMatrix.get(row, col);
                 
-                if(coefficient != 0 ){
-                    equationBuilder.append(String.format(" - (%.4f * (%s))", coefficient, strSolution[col]));
+                if(coefficient != 0 && !(!isFreeVariable[col] && doubleSolution[col] == 0)){
+                    equationBuilder.append(String.format(" - (%.4f * (%s))", coefficient, strSolution[col].replace(" (free variable)", "")));
                     if(!isVariablesCalculated[col]){
                         isDependantVarCalculated[firstColIdxNot0]=false;
                         isVariablesCalculated[col]=true;
