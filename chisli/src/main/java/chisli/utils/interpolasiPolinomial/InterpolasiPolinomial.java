@@ -1,7 +1,7 @@
 package chisli.utils.interpolasiPolinomial;
 
-import chisli.utils.matrix.Matrix;
-import chisli.utils.spl.Gauss;
+import chislib.matrix.Matrix;
+import chislib.spl.Gauss;
 
 import java.util.Arrays;
 import java.util.List;

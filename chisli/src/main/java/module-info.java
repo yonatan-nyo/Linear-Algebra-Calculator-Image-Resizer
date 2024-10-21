@@ -1,6 +1,7 @@
 module chisli {
-    requires transitive javafx.graphics;
+    requires chislib;
     
+    requires transitive javafx.graphics;
     requires javafx.controls;
     requires javafx.fxml;
 

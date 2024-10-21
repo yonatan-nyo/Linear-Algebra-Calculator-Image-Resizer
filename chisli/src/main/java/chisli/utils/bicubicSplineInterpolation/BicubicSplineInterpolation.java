@@ -1,8 +1,8 @@
 package chisli.utils.bicubicSplineInterpolation;
 
-import chisli.utils.matrix.Matrix;
-import chisli.utils.spl.GaussJordan;
-import chisli.utils.matrix.MatrixSteps;
+import chislib.matrix.Matrix;
+import chislib.spl.GaussJordan;
+import chislib.matrix.MatrixSteps;
 
 public class BicubicSplineInterpolation {
     private double[][] matrix;
