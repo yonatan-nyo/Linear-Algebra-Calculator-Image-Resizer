@@ -1,5 +1,6 @@
 package chisli;
 
+import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
@@ -130,6 +131,11 @@ public class ImageResizeController {
 
     @FXML
     private void resizeImage() {
+        if (originalImage == null || originalImage.getWidth() == 0 || originalImage.getHeight() == 0) {
+            System.err.println("Invalid image: Image is null or has zero dimensions.");
+            return;
+        }
+        
         if (originalImage != null) {
             double widthResizeFactor = widthResizeFactorSlider.getValue(); // Get the current width slider value
             double heightResizeFactor = heightResizeFactorSlider.getValue(); // Get the current height slider value
@@ -220,10 +226,34 @@ public class ImageResizeController {
     }
     
     private Image bicubicSplineInterpolationResize(Image image, int newWidth, int newHeight) {
+        // Convert the Image to BufferedImage
         BufferedImage bufferedImage = SwingFXUtils.fromFXImage(image, null);
+    
+        // Check if the image is already in a standard format. If not, convert it to ARGB format.
+        if (bufferedImage.getType() == BufferedImage.TYPE_CUSTOM || 
+            bufferedImage.getType() != BufferedImage.TYPE_INT_RGB && 
+            bufferedImage.getType() != BufferedImage.TYPE_INT_ARGB) {
+            
+            // Create a new BufferedImage with a standard format
+            BufferedImage tempImage = new BufferedImage(bufferedImage.getWidth(), bufferedImage.getHeight(), BufferedImage.TYPE_INT_ARGB);
+            
+            // Draw the original image onto the new standard-format image
+            Graphics2D g2d = tempImage.createGraphics();
+            g2d.drawImage(bufferedImage, 0, 0, null);
+            g2d.dispose(); // Always dispose Graphics2D objects when done
+            
+            // Use the converted image from now on
+            bufferedImage = tempImage;
+        }
+    
+        // Now, proceed with the resizing logic
         BufferedImage resizedBufferedImage = ImageResizer.resizeBufferedImage(bufferedImage, newWidth, newHeight);
+        
+        // Convert back to JavaFX Image
         return SwingFXUtils.toFXImage(resizedBufferedImage, null);
     }
+    
+    
 
     private void setupContextMenu() {
         ContextMenu contextMenu = new ContextMenu();
