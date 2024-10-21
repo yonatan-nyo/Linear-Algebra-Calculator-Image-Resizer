@@ -26,6 +26,23 @@ public class BicubicSplineInterpolation {
         }
     }
 
+    private void populatePowers(double[][][] xPowers, double[][][] yPowers) {
+        for (int i = 0; i < 2; i++) {
+            for (int j = 0; j < 2; j++) {
+                double xPower = 1;
+                double yPower = 1;
+                xPowers[i][j][0] = 1;
+                yPowers[i][j][0] = 1;
+                for (int k = 1; k < 4; k++) {
+                    xPower *= i;
+                    yPower *= j;
+                    xPowers[i][j][k] = xPower;
+                    yPowers[i][j][k] = yPower;
+                }
+            }
+        }
+    }
+
     // Interpolate at point (x, y) using bicubic interpolation
     public double interpolate(double x, double y) {
         if (x < 0 || x > 1 || y < 0 || y > 1) {
@@ -35,28 +52,14 @@ public class BicubicSplineInterpolation {
         int row = 0;
         double[][] mtx = new double[16][17];
 
+        double[][][] xPowers = new double[2][2][4];
+        double[][][] yPowers = new double[2][2][4];
+        populatePowers(xPowers, yPowers);
+
         for (int i = 0; i < 2; i++) {
             for (int j = 0; j < 2; j++) {
-                eq1(j,i,row,mtx);
-                row += 1;
-            }
-        }
-        for (int i = 0; i < 2; i++) {
-            for (int j = 0; j < 2; j++) {
-                eq2(j,i,row,mtx);
-                row += 1;
-            }
-        }
-        for (int i = 0; i < 2; i++) {
-            for (int j = 0; j < 2; j++) {
-                eq3(j,i,row,mtx);
-                row += 1;
-            }
-        }
-        for (int i = 0; i < 2; i++) {
-            for (int j = 0; j < 2; j++) {
-                eq4(j,i,row,mtx);
-                row += 1;
+                eq(j, i, row, mtx, xPowers[i][j], yPowers[i][j]);
+                row++;
             }
         }
         getY(matrix, mtx);
@@ -89,9 +92,18 @@ public class BicubicSplineInterpolation {
         }
 
         double answer = 0;
+        double[] xPowersa = new double[4];
+        double[] yPowersa = new double[4];
+        xPowersa[0] = 1;
+        yPowersa[0] = 1;
+        for (int i = 1; i < 4; i++) {
+            xPowersa[i] = xPowersa[i - 1] * x;
+            yPowersa[i] = yPowersa[i - 1] * y;
+        }
+        
         for (int i = 0; i < 4; i++) {
             for (int j = 0; j < 4; j++) {
-                answer += mtxa[i][j] * (Math.pow(x, j) * Math.pow(y, i));
+                answer += mtxa[i][j] * (xPowersa[j] * yPowersa[i]);
             }
         }
 
@@ -102,47 +114,19 @@ public class BicubicSplineInterpolation {
         return answer;
     }
 
-    private void eq1(int x, int y, int row, double[][] matrix) {
+    private void eq(int x, int y, int row, double[][] matrix, double[] xPowers, double[] yPowers) {
         int k = 0;
         for (int i = 0; i < 4; i++) {
             for (int j = 0; j < 4; j++) {
-                matrix[row][k] = Math.pow(x, j)*Math.pow(y, i);
-                k += 1;
-            }
-        }
-    }
-
-    private void eq2(int x, int y, int row, double[][] matrix) {
-        int k = 0;
-        for (int i = 0; i < 4; i++) {
-            for (int j = 0; j < 4; j++) {
-                if (j != 0){
-                    matrix[row][k] = j*Math.pow(x, j-1)*Math.pow(y, i);
+                matrix[row][k] = xPowers[j] * yPowers[i];
+                if (j != 0) {
+                    matrix[row+4][k] = j * xPowers[j - 1] * yPowers[i];
                 }
-                k += 1;
-            }
-        }
-    }
-
-    private void eq3(int x, int y, int row, double[][] matrix) {
-        int k = 0;
-        for (int i = 0; i < 4; i++) {
-            for (int j = 0; j < 4; j++) {
                 if (i != 0) {
-                    matrix[row][k] = i*Math.pow(x, j)*Math.pow(y, i-1);
+                    matrix[row+8][k] = i * xPowers[j] * yPowers[i - 1];
                 }
-                k += 1;
-            }
-        }
-    }
-    
-
-    private void eq4(int x, int y, int row, double[][] matrix) {
-        int k = 0;
-        for (int i = 0; i < 4; i++) {
-            for (int j = 0; j < 4; j++) {
                 if (i != 0 && j != 0) {
-                    matrix[row][k] = i*j*Math.pow(x, j-1)*Math.pow(y, i-1);
+                    matrix[row+12][k] = i * j * xPowers[j - 1] * yPowers[i - 1];
                 }
                 k += 1;
             }

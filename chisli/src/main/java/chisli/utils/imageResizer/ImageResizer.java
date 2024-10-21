@@ -60,8 +60,10 @@ public class ImageResizer {
                 resizedImage.setRGB(x, y, rgb);
             }
             
-            long endTime = System.currentTimeMillis();
-            System.out.println("Row " + y + "/" + newHeight + " time: " + (endTime - startTime) + " ms");
+            if(y % 10 == 0) {
+                long endTime = System.currentTimeMillis();
+                System.out.println("Row " + y + "/" + newHeight + " time: " + (endTime - startTime) + " ms");
+            }
         }
         
         long endTime = System.currentTimeMillis();
