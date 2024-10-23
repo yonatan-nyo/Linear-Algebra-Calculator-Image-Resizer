@@ -37,7 +37,7 @@
                 <Label text="y value:" styleClass="text-white"/>
                 <TextField fx:id="yInput" promptText="Enter y value"/>
                 <Button text="Solve Spline" onAction="#solveSpline" styleClass="button-action"/>
-                <Button fx:id="fileUploadButton" text="(Input dari file)" onAction="#handleFileUpload" styleClass="button-action" />
+                <Button fx:id="fileUploadButton" text="(Input dari file)" onAction="#handleFileUpload" styleClass="button-file" />
             </HBox>
 
             <VBox alignment="CENTER" spacing="10.0">

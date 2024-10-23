@@ -69,64 +69,57 @@ public class MatrixDeterminant {
     // Method to calculate determinant using adjoint method
     public static double determinantByAdjoint(Matrix matrix) {
         double[][] data = matrix.data;
-        int rows = matrix.getRowCount();
-        int cols = matrix.getColumnCount();
-        
-        if (rows != cols) {
+        int rowCount = matrix.getRowCount();
+        int columnCount = matrix.getColumnCount();
+    
+        if (rowCount != columnCount) {
             throw new IllegalArgumentException("Matrix must be square to calculate determinant.");
         }
+    
+        // Call the fixed adjoint determinant method
         return determinantByAdjoint(data);
     }
-
-    // Method to calculate determinant using adjoint method
-    private static double determinantByAdjoint(double[][] matrix) {
-        int n = matrix.length;
-        if (n == 1) {
-            return matrix[0][0];
+    
+    private static double determinantByAdjoint(double[][] data) {
+        int size = data.length;
+    
+        if (size == 1) {
+            return data[0][0];
+        } else if (size == 2) {
+            return data[0][0] * data[1][1] - data[0][1] * data[1][0];
         }
-        if (n == 2) {
-            return matrix[0][0] * matrix[1][1] - matrix[0][1] * matrix[1][0];
+    
+        double determinant = 0.0;
+    
+        // Use cofactor expansion on the first row
+        for (int j = 0; j < size; j++) {
+            determinant += data[0][j] * cofactor(data, 0, j);
         }
-
-        double[][] cofactorMatrix = new double[n][n];
-        for (int i = 0; i < n; i++) {
-            for (int j = 0; j < n; j++) {
-                cofactorMatrix[i][j] = cofactor(matrix, i, j);
-            }
-        }
-
-        double[][] adjointMatrix = transpose(cofactorMatrix);
-        double det = 0;
-        for (int i = 0; i < n; i++) {
-            det += matrix[0][i] * adjointMatrix[0][i];
-        }
-        return SmallFloat.handleMinus0(det);
+    
+        return SmallFloat.handleMinus0(determinant);
     }
-
-    // Method to calculate cofactor of a matrix element
+    
     private static double cofactor(double[][] matrix, int row, int col) {
-        int n = matrix.length;
-        double[][] subMatrix = new double[n - 1][n - 1];
-        for (int i = 0, subI = 0; i < n; i++) {
-            if (i == row) continue;
-            for (int j = 0, subJ = 0; j < n; j++) {
-                if (j == col) continue;
-                subMatrix[subI][subJ++] = matrix[i][j];
+        int size = matrix.length;
+        double[][] subMatrix = new double[size - 1][size - 1];
+        int subRow = 0;
+    
+        for (int i = 0; i < size; i++) {
+            if (i == row) {
+                continue;
             }
-            subI++;
-        }
-        return ((row + col) % 2 == 0 ? 1 : -1) * determinantByElementaryRowOperation(new Matrix(subMatrix));
-    }
-
-    // Method to transpose a matrix
-    private static double[][] transpose(double[][] matrix) {
-        int n = matrix.length;
-        double[][] transposed = new double[n][n];
-        for (int i = 0; i < n; i++) {
-            for (int j = 0; j < n; j++) {
-                transposed[i][j] = matrix[j][i];
+    
+            int subCol = 0;
+            for (int j = 0; j < size; j++) {
+                if (j == col) {
+                    continue;
+                }
+    
+                subMatrix[subRow][subCol++] = matrix[i][j];
             }
+            subRow++;
         }
-        return transposed;
+    
+        return (row + col) % 2 == 0 ? determinantByAdjoint(subMatrix) : -determinantByAdjoint(subMatrix);
     }
 }
