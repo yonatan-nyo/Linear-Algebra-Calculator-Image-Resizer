@@ -40,6 +40,9 @@ public class SistemPersamaanLinearController {
     @FXML
     private Button fileUploadButton;
 
+    @FXML
+    private Label inputFloatLabel;
+
     private boolean isDeterminantModeAdjoint;
 
     private void updateModeLabel() {
@@ -155,6 +158,7 @@ public class SistemPersamaanLinearController {
         // Check if the input fields are empty
         if (rowsInputString.isEmpty() || columnsInputString.isEmpty()) {
             displayError("Invalid matrix: Row size and column size must be filled");
+            inputFloatLabel.setVisible(false);
             return;
         }
     
@@ -169,6 +173,7 @@ public class SistemPersamaanLinearController {
                 matrixGrid.add(field, col, row);
             }
         }
+        inputFloatLabel.setVisible(true);
     }
 
     // Utility function to check input validity

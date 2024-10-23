@@ -30,6 +30,7 @@
             
             <!-- Instructions Label -->
             <Label text="Masukkan x dan y (pisahkan dengan baris), Contoh:" styleClass="text-white" />
+            <Label text="Input float gunakan . bukan , contoh 1.1 ✓ 1,1 X" styleClass="text-white"/>
             <VBox alignment="TOP_LEFT" spacing="0.0" maxWidth="30.0" >
                 <Label text="1 2" styleClass="text-white"/>
                 <Label text="2 3" styleClass="text-white"/>
