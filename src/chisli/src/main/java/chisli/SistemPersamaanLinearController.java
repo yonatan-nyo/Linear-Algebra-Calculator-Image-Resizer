@@ -1,5 +1,8 @@
 package chisli;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -18,6 +21,7 @@ import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.control.ToggleButton;
 import javafx.scene.layout.GridPane;
+import javafx.stage.FileChooser;
 
 public class SistemPersamaanLinearController {
 
@@ -32,6 +36,9 @@ public class SistemPersamaanLinearController {
 
     @FXML
     private Label selectedModeLabel;
+
+    @FXML
+    private Button fileUploadButton;
 
     private boolean isDeterminantModeAdjoint;
 
@@ -390,5 +397,46 @@ public class SistemPersamaanLinearController {
         outputGrid.getChildren().clear();
         Label errorLabel = new Label(message);
         outputGrid.add(errorLabel, 0, 0);
+    }
+
+    @FXML
+    private void handleFileUpload() {
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Text Files", "*.txt"));
+        
+        // Open the file chooser
+        File file = fileChooser.showOpenDialog(primaryButton.getScene().getWindow());
+        
+        if (file != null) {
+            try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
+                List<String> lines = new ArrayList<>();
+                String line;
+                while ((line = reader.readLine()) != null) {
+                    lines.add(line);
+                }
+                
+                // Determine the number of rows and columns
+                int rows = lines.size();
+                int columns = lines.get(0).trim().split("\\s+").length;
+                
+                // Set the rows and columns input fields
+                rowsInput.setText(String.valueOf(rows));
+                columnsInput.setText(String.valueOf(columns));
+                
+                // Generate the matrix grid
+                generateMatrix();
+                
+                // Fill the matrix grid with values from the file
+                for (int row = 0; row < rows; row++) {
+                    String[] values = lines.get(row).trim().split("\\s+");
+                    for (int col = 0; col < columns; col++) {
+                        TextField field = matrixFields.get(row * columns + col);
+                        field.setText(values[col]);
+                    }
+                }
+            } catch (IOException e) {
+                displayError("Error reading file: " + e.getMessage());
+            }
+        }
     }
 }

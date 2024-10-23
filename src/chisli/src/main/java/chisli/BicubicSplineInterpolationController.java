@@ -1,16 +1,20 @@
 package chisli;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
 import java.io.IOException;
-import chisli.utils.bicubicSplineInterpolation.BicubicSplineInterpolation;
 import java.util.ArrayList;
 import java.util.List;
 
+import chisli.utils.bicubicSplineInterpolation.BicubicSplineInterpolation;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.GridPane;
+import javafx.stage.FileChooser;
 
 public class BicubicSplineInterpolationController {
     // Initialize method (optional)
@@ -18,6 +22,9 @@ public class BicubicSplineInterpolationController {
     public void initialize() {
         generateSpline();
     }
+
+    @FXML
+    private Button fileUploadButton;
 
     @FXML
     private void switchToSistemPersamaanLinear() {
@@ -183,5 +190,54 @@ public class BicubicSplineInterpolationController {
         outputGrid.getChildren().clear();
         Label errorLabel = new Label(message);
         outputGrid.add(errorLabel, 0, 0);
+    }
+
+    @FXML
+    private void handleFileUpload() {
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Text Files", "*.txt"));
+        
+        // Open the file chooser
+        File file = fileChooser.showOpenDialog(primaryButton.getScene().getWindow());
+        
+        if (file != null) {
+            try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
+                List<String> lines = new ArrayList<>();
+                String line;
+                while ((line = reader.readLine()) != null) {
+                    lines.add(line);
+                }
+                
+                // Determine the number of rows and columns
+                int rows = lines.size();
+                int columns = lines.get(0).trim().split("\\s+").length;
+                
+                // Clear existing grid and fields
+                matrixGrid.getChildren().clear();
+                matrixFields.clear();
+                
+                // Generate the matrix grid
+                for (int row = 0; row < rows; row++) {
+                    for (int col = 0; col < columns; col++) {
+                        TextField field = new TextField();
+                        field.setPrefWidth(50);
+                        field.setStyle("-fx-text-fill: white;");
+                        matrixFields.add(field);
+                        matrixGrid.add(field, col, row);
+                    }
+                }
+                
+                // Fill the matrix grid with values from the file
+                for (int row = 0; row < rows; row++) {
+                    String[] values = lines.get(row).trim().split("\\s+");
+                    for (int col = 0; col < columns; col++) {
+                        TextField field = matrixFields.get(row * columns + col);
+                        field.setText(values[col]);
+                    }
+                }
+            } catch (IOException e) {
+                displayError("Error reading file: " + e.getMessage());
+            }
+        }
     }
 }

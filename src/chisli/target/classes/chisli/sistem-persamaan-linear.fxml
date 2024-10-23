@@ -39,6 +39,7 @@
                         <Label text="Columns:" styleClass="text-white"/>
                         <TextField fx:id="columnsInput" prefWidth="50" styleClass="text-field"/>
                         <Button text="Generate Matrix" onAction="#generateMatrix" styleClass="button-action"/>
+                        <Button fx:id="fileUploadButton" text="(Input dari file)" onAction="#handleFileUpload" styleClass="button-action" />
                     </children>
                 </HBox>
 
