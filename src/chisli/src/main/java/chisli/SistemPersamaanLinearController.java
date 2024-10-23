@@ -141,10 +141,19 @@ public class SistemPersamaanLinearController {
     public void generateMatrix() {
         matrixGrid.getChildren().clear();
         matrixFields.clear();
-
-        int rows = Integer.parseInt(rowsInput.getText());
-        int columns = Integer.parseInt(columnsInput.getText());
-
+    
+        String rowsInputString = rowsInput.getText().trim();
+        String columnsInputString = columnsInput.getText().trim();
+    
+        // Check if the input fields are empty
+        if (rowsInputString.isEmpty() || columnsInputString.isEmpty()) {
+            displayError("Invalid matrix: Row size and column size must be filled");
+            return;
+        }
+    
+        int rows = Integer.parseInt(rowsInputString);
+        int columns = Integer.parseInt(columnsInputString);
+    
         for (int row = 0; row < rows; row++) {
             for (int col = 0; col < columns; col++) {
                 TextField field = new TextField();

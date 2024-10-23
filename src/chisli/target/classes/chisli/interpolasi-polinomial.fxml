@@ -42,6 +42,7 @@
             <TextArea fx:id="dataInputField" wrapText="true" prefHeight="200.0" maxWidth="300.0"  />
 
             <!-- Button to perform interpolation -->
+            <Button fx:id="fileUploadButton" text="(Input dari file)" onAction="#handleFileUpload" styleClass="button-action" />
             <Button text="Hitung Interpolasi" onAction="#performInterpolation" styleClass="button-action" />
             
             <!-- Result display -->

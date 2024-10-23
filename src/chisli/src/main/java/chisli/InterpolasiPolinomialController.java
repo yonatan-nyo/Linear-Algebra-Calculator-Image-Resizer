@@ -1,6 +1,10 @@
 package chisli;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
 import java.io.IOException;
+import java.util.List;
 
 import chisli.utils.interpolasiPolinomial.InterpolasiPolinomial;
 import javafx.fxml.FXML;
@@ -8,7 +12,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.TextArea;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
-import java.util.List;
+import javafx.stage.FileChooser;
 
 public class InterpolasiPolinomialController {
     @FXML
@@ -22,6 +26,9 @@ public class InterpolasiPolinomialController {
 
     @FXML
     private Text resultLabel2;
+
+    @FXML
+    private Button fileUploadButton;
 
     // Initialize method (optional)
     @FXML
@@ -101,10 +108,19 @@ public class InterpolasiPolinomialController {
         }
     }
     
-    @FXML
+        @FXML
     public void performInterpolation() {
         try {
-            String[] lines = dataInputField.getText().split("\n");
+            String inputData = dataInputField.getText().trim();
+            
+            // Check if the input field is empty
+            if (inputData.isEmpty()) {
+                resultLabel1.setText("Error: Input field is empty.");
+                resultLabel2.setText("");
+                return;
+            }
+    
+            String[] lines = inputData.split("\n");
     
             // Check if each row from 0 to lines.length - 2 has exactly 2 columns
             for (int i = 0; i < lines.length - 1; i++) {
@@ -115,7 +131,7 @@ public class InterpolasiPolinomialController {
                     return;
                 }
             }
-
+    
             // Check if the last row has exactly 1 column
             String[] lastLineNumbers = lines[lines.length - 1].trim().split("\\s+");
             if (lastLineNumbers.length != 1) {
@@ -135,7 +151,7 @@ public class InterpolasiPolinomialController {
             }
     
             double xToEvaluate = parseFraction(lines[lines.length - 1].trim());
-            
+    
             // Call the interpolation method
             List<String> result = InterpolasiPolinomial.solve(xValues, yValues, xToEvaluate);
             resultLabel1.setText(result.get(0));
@@ -146,6 +162,30 @@ public class InterpolasiPolinomialController {
         } catch (IllegalArgumentException e) {
             resultLabel1.setText(e.getMessage());
             resultLabel2.setText("");
+        }
+    }
+
+    @FXML
+    private void handleFileUpload() {
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Text Files", "*.txt"));
+        
+        // Open the file chooser
+        File file = fileChooser.showOpenDialog(primaryButton.getScene().getWindow());
+        
+        if (file != null) {
+            try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
+                StringBuilder content = new StringBuilder();
+                String line;
+                while ((line = reader.readLine()) != null) {
+                    content.append(line).append("\n");
+                }
+                // Set the content to the TextArea
+                dataInputField.setText(content.toString());
+            } catch (IOException e) {
+                resultLabel1.setText("Error reading file: " + e.getMessage());
+                resultLabel2.setText("");
+            }
         }
     }
 }
