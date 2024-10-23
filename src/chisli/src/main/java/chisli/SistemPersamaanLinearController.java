@@ -312,13 +312,12 @@ public class SistemPersamaanLinearController {
         // take from matrix first then split into matrix1 and matrix2
         Matrix matrix = prepareMatrix(rows, columns);
         if (matrix == null) return;
-        matrix = matrix.getCleanedMatrix();
 
-        double[][] matrixData1 = new double[columns-1][columns-1];
-        double[][] matrixData2 = new double[columns-1][1];
+        double[][] matrixData1 = new double[rows][columns-1];
+        double[][] matrixData2 = new double[rows][1];
 
         // set matrixData1 and matrixData2 from matrix
-        for (int row = 0; row < columns-1; row++) {
+        for (int row = 0; row < rows; row++) {
             for (int col = 0; col < columns; col++) {
                 if (col == columns-1) {
                     matrixData2[row][0] = matrix.get(row, col);
@@ -354,16 +353,15 @@ public class SistemPersamaanLinearController {
             return;
         }
 
-        // take from matrix first then split into matrix1 and matrix2
+         // take from matrix first then split into matrix1 and matrix2
         Matrix matrix = prepareMatrix(rows, columns);
         if (matrix == null) return;
-        matrix = matrix.getCleanedMatrix();
 
-        double[][] matrixData1 = new double[columns-1][columns-1];
-        double[][] matrixData2 = new double[columns-1][1];
+        double[][] matrixData1 = new double[rows][columns-1];
+        double[][] matrixData2 = new double[rows][1];
 
         // set matrixData1 and matrixData2 from matrix
-        for (int row = 0; row < columns-1; row++) {
+        for (int row = 0; row < rows; row++) {
             for (int col = 0; col < columns; col++) {
                 if (col == columns-1) {
                     matrixData2[row][0] = matrix.get(row, col);

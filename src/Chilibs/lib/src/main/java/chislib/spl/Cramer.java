@@ -7,7 +7,7 @@ import chislib.matrix.MatrixSteps;
 public class Cramer {
     private static MatrixSteps matrixSteps;
 
-    public static double[] solve(Matrix coefficientMatrix, Matrix constantMatrix, boolean isDeterminantModeAdjoint) {
+    public static double[] solve(Matrix coefficientMatrix, Matrix constantMatrix, boolean isByCofactorExpansion) {
         matrixSteps = new MatrixSteps();
 
         matrixSteps.addStep("======================= Matrix given ======================");
@@ -19,18 +19,29 @@ public class Cramer {
         int numberOfEquations = coefficientMatrix.getRowCount();
         int numberOfVariables = coefficientMatrix.getColumnCount();
 
-        // Check for extra equations
-        if (numberOfEquations > numberOfVariables) {
-            matrixSteps.addStep("Warning: The number of equations is greater than the number of variables. There may be extra equations.");
-            throw new IllegalArgumentException("The number of equations is greater than the number of variables. Please provide a valid system.");
+        // Check for underdetermined system (fewer equations than variables)
+        if (numberOfEquations < numberOfVariables) {
+            throw new IllegalArgumentException("The system is underdetermined: fewer equations than variables.");
         }
-        matrixSteps.addStep("");
 
         matrixSteps.addStep("======================= Calculate determinant ======================");
-        double determinantOfA = coefficientMatrix.determinant(isDeterminantModeAdjoint);
+        // If rows > cols, cut the rows to calculate the determinant
+        Matrix cutMatrix;
+        if (numberOfEquations > numberOfVariables) {
+            matrixSteps.addStep("The system has extra equations. The determinant will be calculated for the first " + numberOfVariables + " rows.");
+            double[][] cutData = new double[numberOfVariables][numberOfVariables];
+            for (int i = 0; i < numberOfVariables; i++) {
+                for (int j = 0; j < numberOfVariables; j++) {
+                    cutData[i][j] = coefficientMatrix.get(i, j);
+                }
+            }
+            cutMatrix = new Matrix(cutData); // Reduced matrix
+        } else {
+            cutMatrix = coefficientMatrix; // No need to cut the matrix if rows == cols
+        }
 
-        matrixSteps.addStep("Coefficient Matrix A");
-        matrixSteps.addMatrixState(coefficientMatrix.getString());
+        matrixSteps.addMatrixState(cutMatrix.getString());
+        double determinantOfA = cutMatrix.determinant(isByCofactorExpansion);
         matrixSteps.addStep("Determinant of A: " + determinantOfA + "\n");
 
         if (Math.abs(determinantOfA) < 1e-10) {
@@ -38,48 +49,54 @@ public class Cramer {
             throw new IllegalArgumentException("The determinant of A is 0, the system does not have a unique solution.");
         }
 
-        matrixSteps.addStep("Constant Matrix B");
-        matrixSteps.addMatrixState(constantMatrix.getString());
-        matrixSteps.addStep("");
-
         matrixSteps.addStep("======================= Calculate Solution ======================");
-        // Prepare an array to store solutions
-        double[] solutions = new double[numberOfEquations];
+        double[] solutions = new double[numberOfVariables];
 
-        // Step 2: For each variable, calculate the determinant of modified matrix
-        for (int variableIndex = 0; variableIndex < numberOfEquations; variableIndex++) {
-            // Create a new matrix for Ai
-            double[][] modifiedMatrixData = new double[numberOfEquations][numberOfVariables];
+        // For each variable, calculate the determinant of modified matrix
+        for (int variableIndex = 0; variableIndex < numberOfVariables; variableIndex++) {
+            double[][] modifiedMatrixData = new double[numberOfVariables][numberOfVariables];
 
-            // Copy A, replacing the variableIndex-th column with B
-            for (int equationIndex = 0; equationIndex < numberOfEquations; equationIndex++) {
+            // Copy the original coefficient matrix, replacing the variableIndex-th column with constant matrix values
+            for (int rowIndex = 0; rowIndex < numberOfVariables; rowIndex++) {
                 for (int columnIndex = 0; columnIndex < numberOfVariables; columnIndex++) {
                     if (columnIndex == variableIndex) {
-                        modifiedMatrixData[equationIndex][columnIndex] = constantMatrix.get(equationIndex, 0); // Replace with B's values
+                        modifiedMatrixData[rowIndex][columnIndex] = constantMatrix.get(rowIndex, 0);
                     } else {
-                        modifiedMatrixData[equationIndex][columnIndex] = coefficientMatrix.get(equationIndex, columnIndex);
+                        modifiedMatrixData[rowIndex][columnIndex] = coefficientMatrix.get(rowIndex, columnIndex);
                     }
                 }
             }
 
-            // Create the modified matrix Ai
             Matrix modifiedMatrix = new Matrix(modifiedMatrixData);
-
-            // Step 3: Calculate the determinant of Ai
-            matrixSteps.addStep("Modified Matrix A_" + (variableIndex + 1) + " (replacing column " + (variableIndex + 1) + " of A with B):");
-            double determinantOfModifiedMatrix = modifiedMatrix.determinant(isDeterminantModeAdjoint);
-            matrixSteps.addMatrixState(modifiedMatrix.getString());  // Assuming Matrix has a toString() method to display the matrix
+            double determinantOfModifiedMatrix = modifiedMatrix.determinant(isByCofactorExpansion);
             matrixSteps.addStep("Determinant of A_" + (variableIndex + 1) + ": " + determinantOfModifiedMatrix);
 
-            // Step 4: Solve for the variable
             solutions[variableIndex] = determinantOfModifiedMatrix / determinantOfA;
             solutions[variableIndex] = SmallFloat.handleMinus0(solutions[variableIndex]);
-            matrixSteps.addStep(String.format("x%d = %.4f / %.4f = %.4f\n", variableIndex+1, determinantOfModifiedMatrix, determinantOfA,solutions[variableIndex]));
+            // show calculation step
+            matrixSteps.addStep(String.format("x%d = %.4f/%.4f", variableIndex + 1, determinantOfModifiedMatrix, determinantOfA));
+            matrixSteps.addStep(String.format("x%d = %.4f\n", variableIndex + 1, solutions[variableIndex]));
         }
 
-        matrixSteps.addStep("Final solution:");
-        for (int i = 0; i < solutions.length; i++) {
-            matrixSteps.addStep(String.format("x%d = %.4f", i + 1, solutions[i]));
+        // Step 3: Check extra equations for consistency
+        if (numberOfEquations > numberOfVariables) {
+            matrixSteps.addStep("======================= Verifying Extra Equations ======================");
+            for (int extraEqIndex = numberOfVariables; extraEqIndex < numberOfEquations; extraEqIndex++) {
+                double leftHandSide = 0;
+                for (int varIndex = 0; varIndex < numberOfVariables; varIndex++) {
+                    leftHandSide += coefficientMatrix.get(extraEqIndex, varIndex) * solutions[varIndex];
+                }
+                double rightHandSide = constantMatrix.get(extraEqIndex, 0);
+
+                if (SmallFloat.handleMinus0(leftHandSide - rightHandSide) != 0.0) {
+                    matrixSteps.addStep(String.format("Equation %d: %.4f ≠ %.4f", extraEqIndex + 1, leftHandSide, rightHandSide));
+                    matrixSteps.addStep("The system is inconsistent: the extra equation does not match the solution.");
+                    throw new IllegalArgumentException("Inconsistent system: extra equation does not match the solution.");
+                } else {
+                    matrixSteps.addStep(String.format("Equation %d: %.4f = %.4f", extraEqIndex + 1, leftHandSide, rightHandSide));
+                }
+            }
+            matrixSteps.addStep("All extra equations are consistent.");
         }
 
         return solutions;
