@@ -8,12 +8,10 @@ untuk menjalankan project menggunakan laptop/PC, pastikan memiliki
 - Vscode
 - Extension JavaFX vscode
 
-```sh
-  cd src/chisli    # masuk ke dalam directory project
-```
+## How to run
 
 ```sh
-  code chisli      # buka vscode khusus untuk project (dengan root folder chisli)
+code src/chisli   # buka vscode khusus untuk project (dengan root folder chisli)
 ```
 
 lalu buka App.java
