@@ -150,12 +150,13 @@ public class Matrix {
     }
 
     // Helper method to calculate determinant using recursion
-    public double determinant(boolean isByAdjoint) {
-        if (rows != cols) {
-            throw new IllegalArgumentException("Matrix must be square to calculate determinant.");
-        }
+    public double determinant(boolean isByCofactorExpansion) {
+        return determinant(isByCofactorExpansion, false);
+    }
+
+    public double determinant(boolean isByCofactorExpansion, boolean isCaptureSteps) {
         Matrix matrix = new Matrix(data);
-        return isByAdjoint? MatrixDeterminant.determinantByAdjoint(matrix): MatrixDeterminant.determinantByElementaryRowOperation(matrix);
+        return isByCofactorExpansion? MatrixDeterminant.determinantByCofactorExpansion(matrix,isCaptureSteps): MatrixDeterminant.determinantByElementaryRowOperation(matrix,isCaptureSteps);
     }
     
     // Helper method to check if two rows are proportional (identical up to a scalar multiple)
