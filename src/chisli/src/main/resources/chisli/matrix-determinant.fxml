@@ -12,7 +12,7 @@
 <?import javafx.scene.control.ScrollPane?>
 <?import javafx.scene.control.ToggleButton?>
 
-<HBox xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="chisli.SistemPersamaanLinearController">
+<HBox xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="chisli.MatrixDeterminantController">
     <!-- Sidebar with buttons -->
     <VBox alignment="TOP_LEFT" spacing="20.0" styleClass="sidebar">
         <children>
@@ -48,10 +48,7 @@
                 <GridPane fx:id="matrixGrid" alignment="CENTER" hgap="10" vgap="10" />
 
                 <HBox alignment="CENTER" spacing="10.0">
-                    <Button text="Solve by Gauss" onAction="#solveGauss" styleClass="button-action"/>
-                    <Button text="Solve by Gauss-Jordan" onAction="#solveGaussJordan" styleClass="button-action"/>
-                    <Button text="Solve by cramer" onAction="#solveCramer" styleClass="button-action"/>
-                    <Button text="Solve by Inverse matrix" onAction="#inverse" styleClass="button-action"/>
+                    <Button text="Solve" onAction="#solveDeterminant" styleClass="button-action"/>
                 </HBox>
 
             <HBox alignment="CENTER" spacing="10.0">
@@ -62,8 +59,6 @@
             </HBox>
 
             <Label fx:id="selectedModeLabel" text="Selected Mode: Standard" styleClass="text-white" />
-
-
                 <VBox alignment="CENTER" spacing="10.0">
                     <Label text="Output" styleClass="output-label"/>
                     <GridPane fx:id="outputGrid" alignment="CENTER" hgap="10" vgap="10" styleClass="grid-pane"/>
