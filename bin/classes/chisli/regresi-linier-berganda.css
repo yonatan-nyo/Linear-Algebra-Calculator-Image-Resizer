@@ -1,0 +1,4 @@
+.result-text {
+  -fx-font-size: 18px;
+  -fx-wrap-text: true;
+}

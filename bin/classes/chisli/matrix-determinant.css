@@ -1,0 +1,16 @@
+.output-label,
+.steps-label {
+  -fx-font-size: 18px;
+  -fx-font-weight: bold;
+  -fx-text-fill: white;
+}
+
+.text-field {
+  -fx-text-fill: white;
+  -fx-padding: 5px;
+  -fx-font-size: 14px;
+}
+
+.combo-box .text {
+  -fx-opacity: 1; /* Ensure text is visible */
+}

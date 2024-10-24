@@ -17,7 +17,7 @@ code src/chisli   # buka vscode khusus untuk project (dengan root folder chisli)
 lalu buka App.java
 
 ```
-chisli/
+src/chisli/
 └── src/main/java/chisli/App.java
 ```
 

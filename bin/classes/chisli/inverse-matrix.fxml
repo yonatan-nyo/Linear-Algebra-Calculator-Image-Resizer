@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.control.TextArea?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.geometry.Insets?>
+<?import javafx.geometry.Pos?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.ToggleButton?>
+
+<HBox xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="chisli.InverseMatrixController">
+    <!-- Sidebar with buttons -->
+    <VBox alignment="TOP_LEFT" spacing="20.0" styleClass="sidebar">
+        <children>
+            <Label text="Menu" styleClass="sidebar-title" />
+            <Button fx:id="primaryButton" text="Sistem Persamaan Linear" onAction="#switchToSistemPersamaanLinear" styleClass="sidebar-button-nav"/>
+            <Button fx:id="primaryButton" text="Inverse Matrix" onAction="#switchToInverseMatrix" styleClass="sidebar-button-nav"/>
+            <Button fx:id="primaryButton" text="Matrix Determinant" onAction="#switchToMatrixDeterminant" styleClass="sidebar-button-nav"/>
+            <Button fx:id="primaryButton" text="Interpolasi Polinomial" onAction="#switchToInterpolasiPolinomial" styleClass="sidebar-button-nav"/>
+            <Button fx:id="primaryButton" text="Regresi Linier Berganda" onAction="#switchToRegresiLinierBerganda" styleClass="sidebar-button-nav"/>
+            <Button fx:id="primaryButton" text="Regresi Kuadratik Berganda" onAction="#switchToRegresiKuadratikBerganda" styleClass="sidebar-button-nav"/>
+            <Button fx:id="primaryButton" text="Bicubic Spline Interpolation" onAction="#switchToBicubicSplineInterpolation" styleClass="sidebar-button-nav"/>
+            <Button fx:id="primaryButton" text="Image Resizer" onAction="#switchToImageResize" styleClass="sidebar-button-nav"/>
+        </children>
+    </VBox>
+
+    <!-- Main content wrapped in a ScrollPane -->
+    <ScrollPane fitToWidth="true" HBox.hgrow="ALWAYS">
+        <VBox alignment="CENTER" spacing="20.0" HBox.hgrow="ALWAYS">
+            <children>
+                <Label text="Inverse Matrix" styleClass="title-label" />
+                
+                <HBox alignment="CENTER" spacing="10.0">
+                    <children>
+                        <Label text="Rows:" styleClass="text-white"/>
+                        <TextField fx:id="rowsInput" prefWidth="50" styleClass="text-field"/>
+                        <Label text="Columns:" styleClass="text-white"/>
+                        <TextField fx:id="columnsInput" prefWidth="50" styleClass="text-field"/>
+                        <Button text="Generate Matrix" onAction="#generateMatrix" styleClass="button-action"/>
+                        <Button fx:id="fileUploadButton" text="(Input dari file)" onAction="#handleFileUpload" styleClass="button-file" />
+                    </children>
+                </HBox>
+
+                <GridPane fx:id="matrixGrid" alignment="CENTER" hgap="10" vgap="10" />
+
+                <HBox alignment="CENTER" spacing="10.0">
+                    <Button text="Solve" onAction="#solveInverse" styleClass="button-action"/>
+                </HBox>
+
+                <HBox alignment="CENTER" spacing="10.0">
+                    <children>
+                        <ToggleButton fx:id="standardModeToggle" text="OBE" selected="true"/>
+                        <ToggleButton fx:id="cofactorModeToggle" text="Cofactor Expansion"/>
+                    </children>
+                </HBox>
+
+                <Label fx:id="selectedModeLabel" text="Selected Mode: Standard" styleClass="text-white" />
+                <VBox alignment="CENTER" spacing="10.0">
+                    <Label text="Output" styleClass="output-label"/>
+                    <GridPane fx:id="outputGrid" alignment="CENTER" hgap="10" vgap="10" styleClass="grid-pane"/>
+                </VBox>
+                
+                <VBox alignment="CENTER" spacing="10.0" VBox.vgrow="ALWAYS" style="-fx-padding: 20px;">
+                    <Label text="Steps" styleClass="steps-label"/>
+                    <TextArea fx:id="stepsTextArea" prefWidth="400" prefHeight="200" wrapText="true" editable="false" VBox.vgrow="ALWAYS" styleClass="text-area" />
+                </VBox>
+
+                <!-- New Download Solution Button -->
+                <HBox alignment="CENTER" spacing="10.0">
+                    <Button text="Download Solution" onAction="#downloadSolution" styleClass="button-action"/>
+                </HBox>
+            </children>
+        </VBox>
+    </ScrollPane>
+</HBox>

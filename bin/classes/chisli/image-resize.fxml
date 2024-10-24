@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Slider?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.geometry.Pos?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.canvas.Canvas?>
+<?import javafx.scene.control.ProgressIndicator?>
+
+<HBox xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="chisli.ImageResizeController">
+    <!-- Sidebar with buttons -->
+    <VBox alignment="TOP_LEFT" spacing="20.0" styleClass="sidebar">
+        <children>
+            <Label text="Menu" styleClass="sidebar-title" />
+            <Button fx:id="primaryButton" text="Sistem Persamaan Linear" onAction="#switchToSistemPersamaanLinear" styleClass="sidebar-button-nav"/>
+            <Button fx:id="primaryButton" text="Inverse Matrix" onAction="#switchToInverseMatrix" styleClass="sidebar-button-nav"/>
+            <Button fx:id="primaryButton" text="Matrix Determinant" onAction="#switchToMatrixDeterminant" styleClass="sidebar-button-nav"/>
+            <Button fx:id="primaryButton" text="Interpolasi Polinomial" onAction="#switchToInterpolasiPolinomial" styleClass="sidebar-button-nav"/>
+            <Button fx:id="primaryButton" text="Regresi Linier Berganda" onAction="#switchToRegresiLinierBerganda" styleClass="sidebar-button-nav"/>
+            <Button fx:id="primaryButton" text="Regresi Kuadratik Berganda" onAction="#switchToRegresiKuadratikBerganda" styleClass="sidebar-button-nav"/>
+            <Button fx:id="primaryButton" text="Bicubic Spline Interpolation" onAction="#switchToBicubicSplineInterpolation" styleClass="sidebar-button-nav"/>
+            <Button fx:id="primaryButton" text="Image Resizer" onAction="#switchToImageResize" styleClass="sidebar-button-nav"/>
+        </children>
+    </VBox>
+
+    <!-- Main content wrapped in a ScrollPane -->
+    <ScrollPane fitToWidth="true" HBox.hgrow="ALWAYS">
+        <VBox alignment="CENTER" spacing="10.0" HBox.hgrow="ALWAYS" styleClass="padding-bottom">
+            <children>
+                <Label text="Image Resizer" styleClass="title-label" />
+                <Canvas fx:id="imageCanvas" width="200" height="200"/>
+                <ProgressIndicator fx:id="loadingIndicator" visible="false" />
+                <Button text="Choose Image" onAction="#chooseImage"/>
+                <HBox spacing="10" alignment="CENTER">
+                    <children>
+                        <Label text="Width Resize Factor:" styleClass="text-white"/>
+                        <Slider fx:id="widthResizeFactorSlider" min="0.5" max="2.0" value="1.0" showTickLabels="true" showTickMarks="true" blockIncrement="0.1" />
+                        <Label fx:id="widthResizeFactorLabel" text="1.0" styleClass="text-white"/>
+                    </children>
+                </HBox>
+                <HBox spacing="10" alignment="CENTER">
+                    <children>
+                        <Label text="Height Resize Factor:" styleClass="text-white"/>
+                        <Slider fx:id="heightResizeFactorSlider" min="0.5" max="2.0" value="1.0" showTickLabels="true" showTickMarks="true" blockIncrement="0.1" />
+                        <Label fx:id="heightResizeFactorLabel" text="1.0" styleClass="text-white"/>
+                    </children>
+                </HBox>
+                <Button text="Resize Image" onAction="#resizeImage"/>
+            </children>
+        </VBox>
+    </ScrollPane>
+</HBox>
