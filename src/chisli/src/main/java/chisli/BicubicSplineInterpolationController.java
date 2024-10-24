@@ -180,7 +180,7 @@ public class BicubicSplineInterpolationController {
 
             // Perform bicubic spline interpolation
             BicubicSplineInterpolation spline = new BicubicSplineInterpolation(matrixData);
-            double interpolatedValue = spline.interpolate(y, x);  // Interpolate at user-defined point
+            double interpolatedValue = spline.interpolate(x, y);  // Interpolate at user-defined point
 
             displaySolution(interpolatedValue, x, y);
 
