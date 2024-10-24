@@ -108,21 +108,23 @@ public class GaussJordan {
         double[] doubleSolution = new double[variableCount];  // For numeric solution
         boolean[] isFreeVariable = new boolean[variableCount];  // Track free variables
         boolean[] isVariablesCalculated = new boolean[variableCount]; // Track if a variable has been calculated
+        boolean[] isDependantVarCalculated = new boolean[variableCount]; //Track calculation
 
         // Initialize solution placeholders (x1, x2, etc.)
         for (int i = 0; i < variableCount; i++) {
             strSolution[i] = String.format("x%d", i + 1);
             isFreeVariable[i] = false;  // Initially assume all are not free variables
-            isVariablesCalculated[i] = false;
+            isVariablesCalculated[i]=false;
+            isDependantVarCalculated[i]=true;
         }
-
+        
         // Back substitution
         for (int row = rowCount - 1; row >= 0; row--) {
             double rhs = rrefMatrix.get(row, columnCount - 1);  // Right-hand side value
             int leadingColIdx = -1;
             boolean allZeroCoefficients = true;
 
-            // Check if row contains all zero coefficients
+            // Check if row doesnt contain all zero coefficients
             for (int col = row; col < variableCount; col++) {
                 if (Math.abs(rrefMatrix.get(row, col)) > 1e-4) {
                     allZeroCoefficients = false;
@@ -147,6 +149,31 @@ public class GaussJordan {
             // If no leading coefficient is found, move to the next row (free variable)
             if (leadingColIdx == -1) continue;
 
+            // If all coefficients are zero but the RHS is not zero, it's inconsistent
+            if (allZeroCoefficients && Math.abs(rhs) > 1e-4) {
+                matrixSteps.addStep(String.format("All coefficient(s) on row %d are 0, but RHS is not 0", row + 1));
+                throw new IllegalArgumentException("The system has no solution due to inconsistency.");
+            }
+
+
+            // If the first non-zero element is not on the diagonal, mark it as a free variable
+            if (leadingColIdx != row && leadingColIdx != -1) {
+                isFreeVariable[row] = true;
+                for(int i=leadingColIdx+1;i<variableCount;i++){
+                    if(!isVariablesCalculated[i]){
+                        strSolution[i] = String.format("x%d (free variable)", i + 1);
+                        matrixSteps.addStep(String.format("x%d is a free variable", i + 1));
+                        isVariablesCalculated[i]=true;
+                        isFreeVariable[i] = true; 
+                    }
+                }
+            }
+            
+        
+            if(leadingColIdx != -1){
+                isVariablesCalculated[leadingColIdx]=true;
+            }
+
             // If the row has non-zero diagonal (pivot), perform back substitution
             StringBuilder equationBuilder = new StringBuilder(String.format("x%d = %.4f", leadingColIdx + 1, rhs));
             double backSubstitutionValue = rhs;
@@ -154,20 +181,38 @@ public class GaussJordan {
             // Back substitute and check dependencies on other variables
             for (int col = leadingColIdx + 1; col < variableCount; col++) {
                 double coefficient = rrefMatrix.get(row, col);
-                if (Math.abs(coefficient) > 1e-4) {
+
+                if (SmallFloat.handleMinus0(coefficient) != 0 && !strSolution[col].equals(String.format("x%d = 0.0000", col+1))) {
                     equationBuilder.append(String.format(" - (%.4f * (%s))", coefficient, strSolution[col].replace(" (free variable)", "")));
-                    if (!isVariablesCalculated[col]) {
-                        strSolution[col] = String.format("x%d (free variable)", col + 1);
+                    if(!isVariablesCalculated[col]){
+                        isDependantVarCalculated[leadingColIdx]=false;
+                        isVariablesCalculated[col]=true;
                         isFreeVariable[col] = true;
+                        strSolution[col] = String.format("x%d (free variable)", col + 1);
+                        matrixSteps.addStep(String.format("x%d is a free variable", col + 1));
                     }
-                    backSubstitutionValue -= coefficient * doubleSolution[col];
+                }
+
+                if(!isFreeVariable[col] && coefficient != 0){
+                    backSubstitutionValue -= coefficient * doubleSolution[col]; 
+                }else if(leadingColIdx!=-1 && coefficient != 0){
+                    isFreeVariable[leadingColIdx] = true;
                 }
             }
+            isVariablesCalculated[leadingColIdx] = true;
 
             // Update both symbolic and numeric solutions
-            strSolution[leadingColIdx] = equationBuilder.toString();
-            doubleSolution[leadingColIdx] = backSubstitutionValue;
-            isVariablesCalculated[leadingColIdx] = true;
+            if(leadingColIdx != -1){
+                strSolution[leadingColIdx] = equationBuilder.toString();
+                doubleSolution[leadingColIdx] = backSubstitutionValue;
+                
+                matrixSteps.addStep(String.format("Final equation for x%d: %s", leadingColIdx + 1, strSolution[leadingColIdx]));
+                
+                if(!isFreeVariable[leadingColIdx] && isDependantVarCalculated[leadingColIdx]){ 
+                    strSolution[leadingColIdx] = String.format("x%d = %.4f",leadingColIdx+1, backSubstitutionValue);
+                }
+            }
+            
 
             matrixSteps.addStep(String.format("Final equation for x%d: %s", leadingColIdx + 1, strSolution[leadingColIdx]));
         }
