@@ -49,61 +49,21 @@ public class Matrix {
     }
 
     // Method to calculate the inverse of the matrix
-    public Matrix inverse() {
-        if (rows != cols) {
-            throw new IllegalArgumentException("Matrix must be square to find its inverse.");
-        }
-
-        // Create an identity matrix of the same size
-        double[][] identity = new double[rows][cols];
-        for (int i = 0; i < rows; i++) {
-            identity[i][i] = 1;
-        }
-
-        // Augment the original matrix with the identity matrix
-        double[][] augmented = new double[rows][2 * cols];
-        for (int i = 0; i < rows; i++) {
-            for (int j = 0; j < cols; j++) {
-                augmented[i][j] = data[i][j];       // Original matrix
-                augmented[i][j + cols] = identity[i][j]; // Identity matrix
-            }
-        }
-
-        // Perform Gauss-Jordan elimination to reduce to reduced row echelon form (RREF)
-        for (int i = 0; i < rows; i++) {
-            // Step 1: Make the diagonal element 1 (pivot)
-            double pivot = augmented[i][i];
-            if (Math.abs(pivot) < 1e-10) {
-                throw new IllegalArgumentException("Matrix is singular and cannot be inverted.");
-            }
-
-            // Normalize the pivot row
-            for (int j = 0; j < 2 * cols; j++) {
-                augmented[i][j] /= pivot;
-            }
-
-            // Eliminate other entries in this column
-            for (int k = 0; k < rows; k++) {
-                if (k != i) { // Don't eliminate the pivot row itself
-                    double factor = augmented[k][i];
-                    for (int j = 0; j < 2 * cols; j++) {
-                        augmented[k][j] -= factor * augmented[i][j];
-                    }
-                }
-            }
-        }
-
-        // Extract the inverse matrix from the augmented matrix
-        double[][] inverseData = new double[rows][cols];
-        for (int i = 0; i < rows; i++) {
-            for (int j = 0; j < cols; j++) {
-                inverseData[i][j] = augmented[i][j + cols];
-            }
-        }
-
-        return new Matrix(inverseData);
+    public Matrix inverse(){
+        return inverse(true);
     }
 
+    public Matrix inverse(boolean isByAdjoint) {
+        return inverse(isByAdjoint, false);
+    }
+
+    public Matrix inverse(boolean isByAdjoint, boolean captureSteps) {
+        if (isByAdjoint) {
+            return InverseMatrix.inverseByAdjoin(this, captureSteps);
+        } else {
+            return InverseMatrix.inverseElementaryRowOperation(this, captureSteps);
+        }
+    }
     // Matrix multiplication method
     public static Matrix multiply(Matrix A, Matrix B) {
         if (A.getColumnCount() != B.getRowCount()) {

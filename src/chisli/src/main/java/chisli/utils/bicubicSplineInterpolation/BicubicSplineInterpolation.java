@@ -1,8 +1,8 @@
 package chisli.utils.bicubicSplineInterpolation;
 
 import chislib.matrix.Matrix;
-import chislib.spl.GaussJordan;
 import chislib.matrix.MatrixSteps;
+import chislib.spl.GaussJordan;
 
 public class BicubicSplineInterpolation {
     private double[][] matrix;
@@ -55,7 +55,7 @@ public class BicubicSplineInterpolation {
         double[][][] xPowers = new double[2][2][4];
         double[][][] yPowers = new double[2][2][4];
         populatePowers(xPowers, yPowers);
-
+        
         for (int i = 0; i < 2; i++) {
             for (int j = 0; j < 2; j++) {
                 eq(j, i, row, mtx, xPowers[i][j], yPowers[i][j]);
