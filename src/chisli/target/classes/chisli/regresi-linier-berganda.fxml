@@ -26,7 +26,7 @@
     </VBox>
 
     <!-- Main content area -->
-    <VBox alignment="CENTER" spacing="20.0" HBox.hgrow="ALWAYS" >
+    <VBox alignment="CENTER" spacing="20.0" HBox.hgrow="ALWAYS" style="-fx-padding:20 0">
         <children>
             <Label text="Regresi Linier Berganda" style="-fx-font-size: 24px;" styleClass="title-label" />
             
@@ -52,6 +52,11 @@
             <!-- Result display -->
             <Text fx:id="resultLabel1" styleClass="result-text" wrappingWidth="500.0" />
             <Text fx:id="resultLabel2" styleClass="result-text" wrappingWidth="500.0" />
+
+            <!-- New Download Solution Button -->
+            <HBox alignment="CENTER" spacing="10.0">
+                <Button text="Download Solution" onAction="#downloadSolution" styleClass="button-action"/>
+            </HBox>
         </children>
     </VBox>
 </HBox>
