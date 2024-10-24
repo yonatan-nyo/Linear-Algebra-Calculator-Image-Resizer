@@ -54,7 +54,7 @@
                 <HBox alignment="CENTER" spacing="10.0">
                     <children>
                         <ToggleButton fx:id="standardModeToggle" text="OBE" selected="true"/>
-                        <ToggleButton fx:id="cofactorModeToggle" text="Cofactor Expansion"/>
+                        <ToggleButton fx:id="adjointModeToggle" text="Adjoint"/>
                     </children>
                 </HBox>
 

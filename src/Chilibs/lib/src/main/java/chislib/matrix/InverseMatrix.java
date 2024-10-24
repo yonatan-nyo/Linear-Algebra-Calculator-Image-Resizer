@@ -1,5 +1,7 @@
 package chislib.matrix;
 
+import chislib.floats.SmallFloat;
+
 public class InverseMatrix {
   private static MatrixSteps matrixSteps;
   
@@ -53,6 +55,7 @@ public class InverseMatrix {
         // Normalize the pivot row
         for (int j = 0; j < 2 * cols; j++) {
             augmented[i][j] /= pivot;
+            augmented[i][j] = SmallFloat.handleMinus0(augmented[i][j]);
         }
 
         if (captureSteps) {
@@ -66,6 +69,7 @@ public class InverseMatrix {
                 double factor = augmented[k][i];
                 for (int j = 0; j < 2 * cols; j++) {
                     augmented[k][j] -= factor * augmented[i][j];
+                    augmented[k][j] = SmallFloat.handleMinus0(augmented[k][j]);
                 }
                 if (captureSteps) {
                     matrixSteps.addStep(String.format("Eliminated entry in row %d using row %d:", k + 1, i + 1));
@@ -80,6 +84,7 @@ public class InverseMatrix {
     for (int i = 0; i < rows; i++) {
         for (int j = 0; j < cols; j++) {
             inverseData[i][j] = augmented[i][j + cols];
+            inverseData[i][j] = SmallFloat.handleMinus0(inverseData[i][j]);
         }
     }
 
@@ -129,6 +134,7 @@ public class InverseMatrix {
     for (int i = 0; i < size; i++) {
         for (int j = 0; j < size; j++) {
             adjoint[j][i] = cofactors[i][j]; // Transpose
+            adjoint[j][i] = SmallFloat.handleMinus0(adjoint[j][i]);
         }
     }
 
@@ -153,6 +159,7 @@ public class InverseMatrix {
     for (int i = 0; i < size; i++) {
         for (int j = 0; j < size; j++) {
             inverseData[i][j] = adjoint[i][j] / determinant;
+            inverseData[i][j] = SmallFloat.handleMinus0(inverseData[i][j]);
         }
     }
 

@@ -29,7 +29,7 @@ public class InverseMatrixController {
     private Button primaryButton, fileUploadButton;
 
     @FXML
-    private ToggleButton standardModeToggle, cofactorModeToggle;
+    private ToggleButton standardModeToggle, adjointModeToggle;
 
     @FXML
     private Label selectedModeLabel;
@@ -47,7 +47,7 @@ public class InverseMatrixController {
     private ComboBox<String> determinantModeComboBox;
 
     private List<TextField> matrixFields = new ArrayList<>();
-    private boolean isDeterminantModeCofactorExpansion;
+    private boolean isInverseByAdjoin;
 
     @FXML
     public void initialize() {
@@ -56,23 +56,23 @@ public class InverseMatrixController {
 
         standardModeToggle.setOnAction(event -> {
             if (standardModeToggle.isSelected()) {
-                cofactorModeToggle.setSelected(false);
-                isDeterminantModeCofactorExpansion = false;
+                adjointModeToggle.setSelected(false);
+                isInverseByAdjoin = false;
                 updateModeLabel();
             }
         });
 
-        cofactorModeToggle.setOnAction(event -> {
-            if (cofactorModeToggle.isSelected()) {
+        adjointModeToggle.setOnAction(event -> {
+            if (adjointModeToggle.isSelected()) {
                 standardModeToggle.setSelected(false);
-                isDeterminantModeCofactorExpansion = true;
+                isInverseByAdjoin = true;
                 updateModeLabel();
             }
         });
     }
 
     private void updateModeLabel() {
-        String mode = isDeterminantModeCofactorExpansion ? "Cofactor Expansion" : "OBE";
+        String mode = isInverseByAdjoin ? "Adjoint" : "OBE";
         selectedModeLabel.setText("Selected Mode for Determinant: " + mode);
     }
 
@@ -228,7 +228,7 @@ public class InverseMatrixController {
 
         try {
             Matrix inverseMatrix;
-            if (isDeterminantModeCofactorExpansion) {
+            if (isInverseByAdjoin) {
                 inverseMatrix = InverseMatrix.inverseByAdjoin(matrix, true);
             } else {
                 inverseMatrix = InverseMatrix.inverseElementaryRowOperation(matrix, true);
@@ -334,27 +334,31 @@ public class InverseMatrixController {
         outputGrid.add(errorLabel, 0, 0);
     }
 
-
     @FXML
     public void downloadSolution() {
         StringBuilder solutionText = new StringBuilder();
-
-        // Retrieve text from outputGrid
-        outputGrid.getChildren().forEach(node -> {
-            if (node instanceof Label) {
-                Label label = (Label) node;
-                solutionText.append(label.getText()).append("\n");
+    
+        // Retrieve matrix dimensions
+        int rows = Integer.parseInt(rowsInput.getText());
+        int columns = Integer.parseInt(columnsInput.getText());
+    
+        // Retrieve text from outputGrid and format it as a square matrix
+        for (int row = 0; row < rows; row++) {
+            for (int col = 0; col < columns; col++) {
+                Label label = (Label) outputGrid.getChildren().get(row * columns + col);
+                solutionText.append(label.getText()).append("\t");
             }
-        });
-
+            solutionText.append("\n");
+        }
+    
         // Create a file chooser
         JFileChooser fileChooser = new JFileChooser();
         fileChooser.setDialogTitle("Save Solution");
         fileChooser.setFileFilter(new FileNameExtensionFilter("Text Files", "txt"));
-
+    
         // Show save dialog
         int userSelection = fileChooser.showSaveDialog(null);
-
+    
         if (userSelection == JFileChooser.APPROVE_OPTION) {
             try (FileWriter fileWriter = new FileWriter(fileChooser.getSelectedFile() + ".txt")) {
                 fileWriter.write(solutionText.toString());
