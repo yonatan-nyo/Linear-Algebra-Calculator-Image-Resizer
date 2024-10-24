@@ -3,9 +3,13 @@ package chisli;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+
+import javax.swing.JFileChooser;
+import javax.swing.filechooser.FileNameExtensionFilter;
 
 import chislib.matrix.InverseMatrix;
 import chislib.matrix.Matrix;
@@ -323,16 +327,40 @@ public class InverseMatrixController {
         }
     }
 
-    private void displaySolution(double solution) {
-        outputGrid.getChildren().clear();
-        Label resultLabel = new Label(String.format("determinant = %.4f", solution));
-        outputGrid.add(resultLabel, 0, 0);
-    }
-
     private void displayError(String message) {
         stepsTextArea.clear();
         outputGrid.getChildren().clear();
         Label errorLabel = new Label(message);
         outputGrid.add(errorLabel, 0, 0);
+    }
+
+
+    @FXML
+    public void downloadSolution() {
+        StringBuilder solutionText = new StringBuilder();
+
+        // Retrieve text from outputGrid
+        outputGrid.getChildren().forEach(node -> {
+            if (node instanceof Label) {
+                Label label = (Label) node;
+                solutionText.append(label.getText()).append("\n");
+            }
+        });
+
+        // Create a file chooser
+        JFileChooser fileChooser = new JFileChooser();
+        fileChooser.setDialogTitle("Save Solution");
+        fileChooser.setFileFilter(new FileNameExtensionFilter("Text Files", "txt"));
+
+        // Show save dialog
+        int userSelection = fileChooser.showSaveDialog(null);
+
+        if (userSelection == JFileChooser.APPROVE_OPTION) {
+            try (FileWriter fileWriter = new FileWriter(fileChooser.getSelectedFile() + ".txt")) {
+                fileWriter.write(solutionText.toString());
+            } catch (IOException e) {
+                displayError("Error: Unable to save the file.");
+            }
+        }
     }
 }
