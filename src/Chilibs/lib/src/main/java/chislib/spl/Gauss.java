@@ -130,36 +130,33 @@ public class Gauss {
         
             if(firstColIdxNot0 != -1){
                 isVariablesCalculated[firstColIdxNot0]=true;
-            }
+                // If the row has non-zero diagonal, perform back substitution
+                StringBuilder equationBuilder = new StringBuilder(String.format("x%d = %.4f", firstColIdxNot0 + 1, rhs));
+                double backSubstitutionValue = rhs;
 
-            // If the row has non-zero diagonal, perform back substitution
-            StringBuilder equationBuilder = new StringBuilder(String.format("x%d = %.4f", firstColIdxNot0 + 1, rhs));
-            double backSubstitutionValue = rhs;
+                // Back substitute, finding dependencies on other variables
+                for (int col = firstColIdxNot0 + 1; col < variableCount; col++) {
+                    double coefficient = echelonMatrix.get(row, col);
+                    
+                    if(SmallFloat.handleMinus0(coefficient) != 0 && !strSolution[col].equals(String.format("x%d = 0.0000", col+1))){
+                        equationBuilder.append(String.format(" - (%.4f * (%s))", coefficient, strSolution[col].replace(" (free variable)", "")));
+                        if(!isVariablesCalculated[col]){
+                            isDependantVarCalculated[firstColIdxNot0]=false;
+                            isVariablesCalculated[col]=true;
+                            isFreeVariable[col] = true;
+                            strSolution[col] = String.format("x%d (free variable)", col + 1);
+                            matrixSteps.addStep(String.format("x%d is a free variable", col + 1));
+                        }
+                    }
 
-            // Back substitute, finding dependencies on other variables
-            for (int col = firstColIdxNot0 + 1; col < variableCount; col++) {
-                double coefficient = echelonMatrix.get(row, col);
-                
-                if(coefficient != 0 && !(!isFreeVariable[col] && doubleSolution[col] == 0)){
-                    equationBuilder.append(String.format(" - (%.4f * (%s))", coefficient, strSolution[col].replace(" (free variable)", "")));
-                    if(!isVariablesCalculated[col]){
-                        isDependantVarCalculated[firstColIdxNot0]=false;
-                        isVariablesCalculated[col]=true;
-                        isFreeVariable[col] = true;
-                        strSolution[col] = String.format("x%d (free variable)", col + 1);
-                        matrixSteps.addStep(String.format("x%d is a free variable", col + 1));
+                    if(!isFreeVariable[col] && coefficient != 0){
+                        backSubstitutionValue -= coefficient * doubleSolution[col]; 
+                    }else if(firstColIdxNot0!=-1 && coefficient != 0){
+                        isFreeVariable[firstColIdxNot0] = true;
                     }
                 }
 
-                if(!isFreeVariable[col] && coefficient != 0){
-                    backSubstitutionValue -= coefficient * doubleSolution[col]; 
-                }else if(firstColIdxNot0!=-1 && coefficient != 0){
-                    isFreeVariable[firstColIdxNot0] = true;
-                }
-            }
-
-            // Update both symbolic and numeric solutions
-            if(firstColIdxNot0 != -1){
+                // Update both symbolic and numeric solutions
                 strSolution[firstColIdxNot0] = equationBuilder.toString();
                 doubleSolution[firstColIdxNot0] = backSubstitutionValue;
                 

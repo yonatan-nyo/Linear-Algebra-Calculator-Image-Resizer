@@ -118,15 +118,15 @@ public class BicubicSplineInterpolation {
         int k = 0;
         for (int i = 0; i < 4; i++) {
             for (int j = 0; j < 4; j++) {
-                matrix[row][k] = xPowers[j] * yPowers[i];
-                if (j != 0) {
-                    matrix[row+4][k] = j * xPowers[j - 1] * yPowers[i];
-                }
+                matrix[row][k] = xPowers[i] * yPowers[j];
                 if (i != 0) {
-                    matrix[row+8][k] = i * xPowers[j] * yPowers[i - 1];
+                    matrix[row+4][k] = i * xPowers[i - 1] * yPowers[j];
+                }
+                if (j != 0) {
+                    matrix[row+8][k] = j * xPowers[i] * yPowers[j - 1];
                 }
                 if (i != 0 && j != 0) {
-                    matrix[row+12][k] = i * j * xPowers[j - 1] * yPowers[i - 1];
+                    matrix[row+12][k] = j * i * xPowers[i - 1] * yPowers[j - 1];
                 }
                 k += 1;
             }

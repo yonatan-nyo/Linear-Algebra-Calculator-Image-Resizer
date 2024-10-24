@@ -3,10 +3,14 @@ package chisli;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+
+import javax.swing.JFileChooser;
+import javax.swing.filechooser.FileNameExtensionFilter;
 
 import chisli.utils.regresi.RegresiKuadratik;
 import chisli.utils.regresi.RegresiLinier;
@@ -205,7 +209,7 @@ public class RegresiBergandaController {
     
             // Check if all coefficients are zero
             if (Arrays.stream(coefficients).allMatch(coef -> coef == 0)) {
-                resultLabel1.setText(String.format("The system has free variables. Please try making at least %d dependent equations.", coefficients.length));
+                resultLabel1.setText("The system leads to a trivial solution, the result of any input is 0");
                 resultLabel2.setText("");
                 return; // Exit the method
             }
@@ -253,20 +257,21 @@ public class RegresiBergandaController {
     
             String[] lines = inputData.split("\n");
     
-            // Check if each row from 0 to lines.length - 2 has exactly 3 columns
+            // Check if each row from 0 to lines.length - 2 has the same number of columns
+            int numColumns = lines[0].trim().split("\\s+").length;
             for (int i = 0; i < lines.length - 1; i++) {
                 String[] columns = lines[i].trim().split("\\s+");
-                if (columns.length != 3) {
-                    resultLabel1.setText("Error: Row " + (i + 1) + " must contain exactly 3 columns.");
+                if (columns.length != numColumns) {
+                    resultLabel1.setText("Error: Row " + (i + 1) + " must contain exactly " + numColumns + " columns.");
                     resultLabel2.setText("");
                     return; 
                 }
             }
     
-            // Check if the last row has exactly 2 columns
+            // Check if the last row has exactly numColumns - 1 columns
             String[] lastLineNumbers = lines[lines.length - 1].trim().split("\\s+");
-            if (lastLineNumbers.length != 2) {
-                resultLabel1.setText("Error: The last row must contain exactly 2 columns.");
+            if (lastLineNumbers.length != numColumns - 1) {
+                resultLabel1.setText("Error: The last row must contain exactly " + (numColumns - 1) + " columns.");
                 resultLabel2.setText("");
                 return;
             }
@@ -297,61 +302,112 @@ public class RegresiBergandaController {
     
             // Check if all coefficients are zero
             if (Arrays.stream(coefficients).allMatch(coef -> coef == 0)) {
-                resultLabel1.setText("The system has free variables. Please try making at least 6 dependent equations.");
+                resultLabel1.setText("The system leads to a trivial solution, the result of any input is 0");
                 resultLabel2.setText("");
                 return; // Exit the method
             }
     
             // Construct the regression equation string
-            StringBuilder equation = new StringBuilder("f(x1,x2) = ");
+            StringBuilder equation = new StringBuilder("f(x1,x2,...,xn) = ");
             equation.append(String.format("%.4f", coefficients[0])); // Intercept (b0)
     
             // Construct the terms based on the coefficients
-            for (int i = 1; i < coefficients.length; i++) {
-                if (coefficients[i] < 0) {
+            int coefIndex = 1;
+            int numFeatures = xValues[0].length;
+    
+            // Linear terms
+            for (int i = 0; i < numFeatures; i++) {
+                if (coefficients[coefIndex] < 0) {
                     equation.append(" - ");
-                    equation.append(String.format("%.4f", Math.abs(coefficients[i])));
+                    equation.append(String.format("%.4f", Math.abs(coefficients[coefIndex])));
                 } else {
                     equation.append(" + ");
-                    equation.append(String.format("%.4f", coefficients[i]));
+                    equation.append(String.format("%.4f", coefficients[coefIndex]));
                 }
+                equation.append("x").append(i + 1);
+                coefIndex++;
+            }
     
-                // Determine which term to append
-                if (i == 1) {
-                    equation.append("x1"); // First linear term
-                } else if (i == 2) {
-                    equation.append("x2"); // Second linear term
-                } else if (i == 3) {
-                    equation.append(" * x1^2"); // Quadratic term for x1
-                } else if (i == 4) {
-                    equation.append(" * x2^2"); // Quadratic term for x2
-                } else if (i == 5) {
-                    equation.append(" * x1 * x2"); // Interaction term
+            // Quadratic terms
+            for (int i = 0; i < numFeatures; i++) {
+                if (coefficients[coefIndex] < 0) {
+                    equation.append(" - ");
+                    equation.append(String.format("%.4f", Math.abs(coefficients[coefIndex])));
+                } else {
+                    equation.append(" + ");
+                    equation.append(String.format("%.4f", coefficients[coefIndex]));
+                }
+                equation.append("x").append(i + 1).append("^2");
+                coefIndex++;
+            }
+    
+            // Interaction terms
+            for (int i = 0; i < numFeatures; i++) {
+                for (int j = i + 1; j < numFeatures; j++) {
+                    if (coefficients[coefIndex] < 0) {
+                        equation.append(" - ");
+                        equation.append(String.format("%.4f", Math.abs(coefficients[coefIndex])));
+                    } else {
+                        equation.append(" + ");
+                        equation.append(String.format("%.4f", coefficients[coefIndex]));
+                    }
+                    equation.append("x").append(i + 1).append("*x").append(j + 1);
+                    coefIndex++;
                 }
             }
     
             // Construct the prediction equation for f(xk)
-            StringBuilder predictionEquation = new StringBuilder(String.format("f(%d,%d) = ", (int) xk[0], (int) xk[1]));
+            StringBuilder predictionEquation = new StringBuilder("f(");
+            for (int i = 0; i < xk.length; i++) {
+                predictionEquation.append(String.format("%.4f", xk[i]));
+                if (i < xk.length - 1) {
+                    predictionEquation.append(",");
+                }
+            }
+            predictionEquation.append(") = ");
             predictionEquation.append(String.format("%.4f", coefficients[0])); // Intercept
     
             // Add terms for the prediction equation
+            coefIndex = 1;
             for (int i = 0; i < xk.length; i++) {
-                if (coefficients[i + 1] < 0) {
+                if (coefficients[coefIndex] < 0) {
                     predictionEquation.append(" - ");
-                    predictionEquation.append(String.format("%.4f", Math.abs(coefficients[i + 1])));
+                    predictionEquation.append(String.format("%.4f", Math.abs(coefficients[coefIndex])));
                 } else {
                     predictionEquation.append(" + ");
-                    predictionEquation.append(String.format("%.4f", coefficients[i + 1]));
+                    predictionEquation.append(String.format("%.4f", coefficients[coefIndex]));
                 }
-    
-                // Append the corresponding xk value
                 predictionEquation.append(" * ").append(String.format("%.4f", xk[i])); // b1 * xk1, b2 * xk2, ..., bn * xkn
+                coefIndex++;
             }
     
             // Add quadratic and interaction terms for prediction
-            predictionEquation.append(" + ").append(String.format("%.4f", coefficients[3])).append(" * ").append(String.format("%.4f", xk[0] * xk[0])); // b3 * x1^2
-            predictionEquation.append(" + ").append(String.format("%.4f", coefficients[4])).append(" * ").append(String.format("%.4f", xk[1] * xk[1])); // b4 * x2^2
-            predictionEquation.append(" + ").append(String.format("%.4f", coefficients[5])).append(" * ").append(String.format("%.4f", xk[0] * xk[1])); // b5 * x1 * x2
+            for (int i = 0; i < xk.length; i++) {
+                if (coefficients[coefIndex] < 0) {
+                    predictionEquation.append(" - ");
+                    predictionEquation.append(String.format("%.4f", Math.abs(coefficients[coefIndex])));
+                } else {
+                    predictionEquation.append(" + ");
+                    predictionEquation.append(String.format("%.4f", coefficients[coefIndex]));
+                }
+                predictionEquation.append(" * ").append(String.format("%.4f", xk[i] * xk[i])); // b3 * x1^2, b4 * x2^2, ...
+                coefIndex++;
+            }
+    
+            for (int i = 0; i < xk.length; i++) {
+                for (int j = i + 1; j < xk.length; j++) {
+                    if (coefficients[coefIndex] < 0) {
+                        predictionEquation.append(" - ");
+                        predictionEquation.append(String.format("%.4f", Math.abs(coefficients[coefIndex])));
+                    } else {
+                        predictionEquation.append(" + ");
+                        predictionEquation.append(String.format("%.4f", coefficients[coefIndex]));
+                    }
+                    predictionEquation.append(" * ").append(String.format("%.4f", xk[i] * xk[j])); // b5 * x1 * x2, ...
+                    coefIndex++;
+                }
+            }
+    
             predictionEquation.append(" = ").append(String.format("%.4f", prediction)); // Final prediction
     
             // Display results
@@ -385,6 +441,32 @@ public class RegresiBergandaController {
                 dataInputField.setText(content.toString());
             } catch (IOException e) {
                 resultLabel1.setText("Error reading file: " + e.getMessage());
+                resultLabel2.setText("");
+            }
+        }
+    }
+
+    @FXML
+    public void downloadSolution() {
+        String result1 = resultLabel1.getText();
+        String result2 = resultLabel2.getText();
+
+        // Create a file chooser
+        JFileChooser fileChooser = new JFileChooser();
+        fileChooser.setDialogTitle("Save Solution");
+        fileChooser.setFileFilter(new FileNameExtensionFilter("Text Files", "txt"));
+
+        // Show save dialog
+        int userSelection = fileChooser.showSaveDialog(null);
+
+        if (userSelection == JFileChooser.APPROVE_OPTION) {
+            try (FileWriter fileWriter = new FileWriter(fileChooser.getSelectedFile() + ".txt")) {
+                fileWriter.write("Result 1: " + result1 + "\n");
+                fileWriter.write("Result 2: " + result2 + "\n");
+                resultLabel1.setText("Solution downloaded successfully.");
+                resultLabel2.setText("");
+            } catch (IOException e) {
+                resultLabel1.setText("Error: Unable to save the file.");
                 resultLabel2.setText("");
             }
         }

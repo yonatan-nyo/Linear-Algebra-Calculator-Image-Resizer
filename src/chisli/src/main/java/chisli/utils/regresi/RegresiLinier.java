@@ -1,5 +1,4 @@
 package chisli.utils.regresi;
-import java.util.Arrays;
 
 import chislib.matrix.Matrix;
 import chislib.spl.Gauss;
@@ -13,15 +12,44 @@ public class RegresiLinier {
         int n = xValues.length; // Number of data points
         int m = xValues[0].length; // Number of features (x1, x2, ..., xm)
     
-        // Add a column of 1's for the intercept (b0)
-        double[][] augMtxArray = new double[n][m + 2];
+        // Create matrix X with an additional column for the intercept
+        double[][] X = new double[n][m + 1];
         for (int i = 0; i < n; i++) {
-            augMtxArray[i][0] = 1.0; // Intercept term
-            augMtxArray[i][m+1] = yValues[i];
-            System.arraycopy(xValues[i], 0, augMtxArray[i], 1, m); // Copy the rest of the features
+            X[i][0] = 1.0; // Intercept term (b0)
+            System.arraycopy(xValues[i], 0, X[i], 1, m); // Copy the features
         }
     
+        // Convert yValues to a column vector
+        double[][] Y = new double[n][1];
+        for (int i = 0; i < n; i++) {
+            Y[i][0] = yValues[i];
+        }
+    
+        // Transpose of matrix X (X^T)
+        Matrix xMatrix = new Matrix(X);
+        Matrix xTransposed = xMatrix.getTranspose();
+    
+        // X^T * X
+        Matrix xTx = Matrix.multiply(xTransposed, xMatrix);
+    
+        // X^T * Y
+        Matrix xTy = Matrix.multiply(xTransposed, new Matrix(Y));
+    
+        // Form the augmented matrix by combining (X^T * X) and (X^T * Y)
+        double[][] augMtxArray = new double[m + 1][m + 2]; // m+1 for b coefficients, m+2 for augmented column
+        for (int i = 0; i < m + 1; i++) {
+            // Fill in (X^T * X)
+            for (int j = 0; j < m + 1; j++) {
+                augMtxArray[i][j] = xTx.get(i, j);
+            }
+            // Append (X^T * Y) as the last column
+            augMtxArray[i][m + 1] = xTy.get(i, 0);
+        }
+    
+        // Convert augmented matrix to Matrix object and clean it
         Matrix augMtx = new Matrix(augMtxArray).getCleanedMatrix();
+    
+
         // check how many lines are non all zero
         int count = 0;
         for (int i = 0; i < augMtx.getRowCount(); i++) {
@@ -39,14 +67,16 @@ public class RegresiLinier {
                 }
             }
         }
-        if(count ==1){
+        if(count == 1){
             throw new IllegalArgumentException("Function cannot be calculated because only 1 unique point is provided.");
         }
+
+        // Use Gauss.solve to find the solution
         String[] solution = Gauss.solve(augMtx);
     
-        // Store the solution in the instance variable `b` for later use in predict
+        // Convert solution from Gauss solver into double array
         this.b = convertSolution(solution);
-        
+    
         return this.b;
     }
     
@@ -73,29 +103,28 @@ public class RegresiLinier {
     
             // Check if the solution contains "free variable"
             if (sol.contains("free variable")) {
-                // If there is a free variable, return an array of zeros
-                Arrays.fill(result, 0.0);
-                return result;
-            }
-    
-            // Extract the numerical value from the solution string
-            String[] parts = sol.split("="); // Split at '='
-            if (parts.length > 1) {
-                try {
-                    // Parse the entire right-hand side of the equation (after '='), including negative numbers
-                    String valueStr = parts[1].trim();
-                    double value = Double.parseDouble(valueStr);
-                    result[i] = value; // Store the double value
-                } catch (NumberFormatException e) {
-                    // Handle parsing error if the value is not a number
+                // If there is a free variable, set the current index to 0
+                result[i] = 0.0;
+            } else {
+                // Extract the numerical value from the solution string
+                String[] parts = sol.split("="); // Split at '='
+                if (parts.length > 1) {
+                    try {
+                        // Parse the entire right-hand side of the equation (after '='), including negative numbers
+                        String valueStr = parts[1].trim().split(" ")[0]; // Take only the first part after '='
+                        double value = Double.parseDouble(valueStr);
+                        result[i] = value; // Store the double value
+                    } catch (NumberFormatException e) {
+                        // Handle parsing error if the value is not a number
+                        result[i] = 0.0;
+                    }
+                } else {
+                    // If the solution format is unexpected, set to zero
                     result[i] = 0.0;
                 }
-            } else {
-                // If the solution format is unexpected, set to zero
-                result[i] = 0.0;
             }
         }
     
         return result;
-    }    
+    }  
 }
