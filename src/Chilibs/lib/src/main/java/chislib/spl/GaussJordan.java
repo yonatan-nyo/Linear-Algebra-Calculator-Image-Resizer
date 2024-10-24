@@ -172,49 +172,45 @@ public class GaussJordan {
         
             if(leadingColIdx != -1){
                 isVariablesCalculated[leadingColIdx]=true;
-            }
-
-            // If the row has non-zero diagonal (pivot), perform back substitution
-            StringBuilder equationBuilder = new StringBuilder(String.format("x%d = %.4f", leadingColIdx + 1, rhs));
-            double backSubstitutionValue = rhs;
-
-            // Back substitute and check dependencies on other variables
-            for (int col = leadingColIdx + 1; col < variableCount; col++) {
-                double coefficient = rrefMatrix.get(row, col);
-
-                if (SmallFloat.handleMinus0(coefficient) != 0 && !strSolution[col].equals(String.format("x%d = 0.0000", col+1))) {
-                    equationBuilder.append(String.format(" - (%.4f * (%s))", coefficient, strSolution[col].replace(" (free variable)", "")));
-                    if(!isVariablesCalculated[col]){
-                        isDependantVarCalculated[leadingColIdx]=false;
-                        isVariablesCalculated[col]=true;
-                        isFreeVariable[col] = true;
-                        strSolution[col] = String.format("x%d (free variable)", col + 1);
-                        matrixSteps.addStep(String.format("x%d is a free variable", col + 1));
+                    // If the row has non-zero diagonal (pivot), perform back substitution
+                    StringBuilder equationBuilder = new StringBuilder(String.format("x%d = %.4f", leadingColIdx + 1, rhs));
+                    double backSubstitutionValue = rhs;
+        
+                    // Back substitute and check dependencies on other variables
+                    for (int col = leadingColIdx + 1; col < variableCount; col++) {
+                        double coefficient = rrefMatrix.get(row, col);
+        
+                        if (SmallFloat.handleMinus0(coefficient) != 0 && !strSolution[col].equals(String.format("x%d = 0.0000", col+1))) {
+                            equationBuilder.append(String.format(" - (%.4f * (%s))", coefficient, strSolution[col].replace(" (free variable)", "")));
+                            if(!isVariablesCalculated[col]){
+                                isDependantVarCalculated[leadingColIdx]=false;
+                                isVariablesCalculated[col]=true;
+                                isFreeVariable[col] = true;
+                                strSolution[col] = String.format("x%d (free variable)", col + 1);
+                                matrixSteps.addStep(String.format("x%d is a free variable", col + 1));
+                            }
+                        }
+        
+                        if(!isFreeVariable[col] && coefficient != 0){
+                            backSubstitutionValue -= coefficient * doubleSolution[col]; 
+                        }else if(leadingColIdx!=-1 && coefficient != 0){
+                            isFreeVariable[leadingColIdx] = true;
+                        }
                     }
-                }
-
-                if(!isFreeVariable[col] && coefficient != 0){
-                    backSubstitutionValue -= coefficient * doubleSolution[col]; 
-                }else if(leadingColIdx!=-1 && coefficient != 0){
-                    isFreeVariable[leadingColIdx] = true;
-                }
+                    isVariablesCalculated[leadingColIdx] = true;
+        
+                    // Update both symbolic and numeric solutions
+                    strSolution[leadingColIdx] = equationBuilder.toString();
+                    doubleSolution[leadingColIdx] = backSubstitutionValue;
+                    
+                    matrixSteps.addStep(String.format("Final equation for x%d: %s", leadingColIdx + 1, strSolution[leadingColIdx]));
+                    
+                    if(!isFreeVariable[leadingColIdx] && isDependantVarCalculated[leadingColIdx]){ 
+                        strSolution[leadingColIdx] = String.format("x%d = %.4f",leadingColIdx+1, backSubstitutionValue);
+                    }
+                    
+                    matrixSteps.addStep(String.format("Final equation for x%d: %s", leadingColIdx + 1, strSolution[leadingColIdx]));
             }
-            isVariablesCalculated[leadingColIdx] = true;
-
-            // Update both symbolic and numeric solutions
-            if(leadingColIdx != -1){
-                strSolution[leadingColIdx] = equationBuilder.toString();
-                doubleSolution[leadingColIdx] = backSubstitutionValue;
-                
-                matrixSteps.addStep(String.format("Final equation for x%d: %s", leadingColIdx + 1, strSolution[leadingColIdx]));
-                
-                if(!isFreeVariable[leadingColIdx] && isDependantVarCalculated[leadingColIdx]){ 
-                    strSolution[leadingColIdx] = String.format("x%d = %.4f",leadingColIdx+1, backSubstitutionValue);
-                }
-            }
-            
-
-            matrixSteps.addStep(String.format("Final equation for x%d: %s", leadingColIdx + 1, strSolution[leadingColIdx]));
         }
 
         // Mark any variables that haven't been calculated as free

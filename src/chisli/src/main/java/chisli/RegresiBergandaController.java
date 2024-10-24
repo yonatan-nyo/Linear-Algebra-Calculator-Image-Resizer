@@ -3,10 +3,14 @@ package chisli;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+
+import javax.swing.JFileChooser;
+import javax.swing.filechooser.FileNameExtensionFilter;
 
 import chisli.utils.regresi.RegresiKuadratik;
 import chisli.utils.regresi.RegresiLinier;
@@ -437,6 +441,32 @@ public class RegresiBergandaController {
                 dataInputField.setText(content.toString());
             } catch (IOException e) {
                 resultLabel1.setText("Error reading file: " + e.getMessage());
+                resultLabel2.setText("");
+            }
+        }
+    }
+
+    @FXML
+    public void downloadSolution() {
+        String result1 = resultLabel1.getText();
+        String result2 = resultLabel2.getText();
+
+        // Create a file chooser
+        JFileChooser fileChooser = new JFileChooser();
+        fileChooser.setDialogTitle("Save Solution");
+        fileChooser.setFileFilter(new FileNameExtensionFilter("Text Files", "txt"));
+
+        // Show save dialog
+        int userSelection = fileChooser.showSaveDialog(null);
+
+        if (userSelection == JFileChooser.APPROVE_OPTION) {
+            try (FileWriter fileWriter = new FileWriter(fileChooser.getSelectedFile() + ".txt")) {
+                fileWriter.write("Result 1: " + result1 + "\n");
+                fileWriter.write("Result 2: " + result2 + "\n");
+                resultLabel1.setText("Solution downloaded successfully.");
+                resultLabel2.setText("");
+            } catch (IOException e) {
+                resultLabel1.setText("Error: Unable to save the file.");
                 resultLabel2.setText("");
             }
         }
