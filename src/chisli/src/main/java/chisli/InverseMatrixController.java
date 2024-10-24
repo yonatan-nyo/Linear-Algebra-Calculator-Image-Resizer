@@ -7,8 +7,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import chislib.matrix.InverseMatrix;
 import chislib.matrix.Matrix;
-import chislib.matrix.MatrixDeterminant;
 import chislib.matrix.MatrixSteps;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
@@ -152,13 +152,19 @@ public class InverseMatrixController {
         String rowsInputString = rowsInput.getText().trim();
         String columnsInputString = columnsInput.getText().trim();
 
+        int rows = Integer.parseInt(rowsInput.getText());
+        int columns = Integer.parseInt(columnsInput.getText());
+
+        if (rows != columns) {
+            displayError("Matrix must be square to calculate inverse.");
+            return;
+        }
+
+
         if (rowsInputString.isEmpty() || columnsInputString.isEmpty()) {
             displayError("Invalid matrix: Row size and column size must be filled");
             return;
         }
-
-        int rows = Integer.parseInt(rowsInputString);
-        int columns = Integer.parseInt(columnsInputString);
 
         for (int row = 0; row < rows; row++) {
             for (int col = 0; col < columns; col++) {
@@ -207,7 +213,7 @@ public class InverseMatrixController {
     }
 
     @FXML
-    public void solveDeterminant() {
+    public void solveInverse() {
         if (!isValidInput()) return;
 
         int rows = Integer.parseInt(rowsInput.getText());
@@ -217,12 +223,35 @@ public class InverseMatrixController {
         if (matrix == null) return;
 
         try {
-            double determinant = matrix.determinant(isDeterminantModeCofactorExpansion, true);
-            displaySolution(determinant);
+            Matrix inverseMatrix;
+            if (isDeterminantModeCofactorExpansion) {
+                inverseMatrix = InverseMatrix.inverseByAdjoin(matrix, true);
+            } else {
+                inverseMatrix = InverseMatrix.inverseElementaryRowOperation(matrix, true);
+            }
+            String inverseMatrixString = inverseMatrix.getString();
+        
+            // Display the inverse matrix string in the TextArea
+            stepsTextArea.setText("Inverse Matrix:\n" + inverseMatrixString);
+            outputGrid.getChildren().clear();
+
+            // Display the inverse matrix in the outputGrid
+            for (int row = 0; row < rows; row++) {
+                for (int col = 0; col < columns; col++) {
+                    // Get the inverse matrix value and format it
+                    String matrixValue = String.format("%.4f", inverseMatrix.get(row, col));
+
+                    // Create a new Label for this value
+                    Label label = new Label(matrixValue);
+
+                    // Add the Label to the grid at the correct position
+                    outputGrid.add(label, col, row);
+                }
+            }
         } catch (IllegalArgumentException e) {
             displayError("Error: " + e.getMessage());
         } finally {
-            MatrixSteps matrixSteps = MatrixDeterminant.getMatrixSteps();
+            MatrixSteps matrixSteps = InverseMatrix.getMatrixSteps();
             displaySteps(matrixSteps.getSteps());
         }
     }
