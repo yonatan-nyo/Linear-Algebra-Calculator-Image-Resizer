@@ -153,20 +153,20 @@ public class ImageResizeController {
             System.err.println("Invalid image: Image is null or has zero dimensions.");
             return;
         }
-        
+    
         if (originalImage != null) {
             double widthResizeFactor = widthResizeFactorSlider.getValue(); // Get the current width slider value
             double heightResizeFactor = heightResizeFactorSlider.getValue(); // Get the current height slider value
-
+    
             double newWidth = originalImage.getWidth() * widthResizeFactor;
             double newHeight = originalImage.getHeight() * heightResizeFactor;
-
+    
             // Show loading indicator
             loadingIndicator.setVisible(true);
             new Thread(() -> {
                 // Resize the image and store it in the compressedImage variable
                 compressedImage = bicubicSplineInterpolationResize(originalImage, (int)newWidth, (int)newHeight);
-
+    
                 // Update UI on the JavaFX Application Thread
                 javafx.application.Platform.runLater(() -> {
                     // Update canvas size based on new image dimensions
@@ -174,13 +174,17 @@ public class ImageResizeController {
                     
                     // Draw the resized image with scaling on the canvas
                     drawImage(compressedImage); // Use compressedImage here
-
+    
+                    // Update originalImage to be the resized one
+                    originalImage = compressedImage;
+    
                     // Hide loading indicator
                     loadingIndicator.setVisible(false);
                 });
             }).start(); // Start a new thread to avoid blocking the UI
         }
     }
+    
 
     private void drawImage(Image image) {
         if (image == null) {
