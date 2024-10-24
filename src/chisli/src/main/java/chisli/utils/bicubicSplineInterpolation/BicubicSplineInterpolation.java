@@ -138,24 +138,9 @@ public class BicubicSplineInterpolation {
         for(int j=1;j<3;j++){
             for(int k=1;k<3;k++){
                 matrix2[i][16] = matrix1[k][j];
-                i += 1;
-            }
-        }
-        for(int j=1;j<3;j++){
-            for(int k=1;k<3;k++){
-                matrix2[i][16] = (matrix1[k+1][j]-matrix1[k-1][j])/2;
-                i += 1;
-            }
-        }
-        for(int j=1;j<3;j++){
-            for(int k=1;k<3;k++){
-                matrix2[i][16] = (matrix1[k][j+1]-matrix1[k][j-1])/2;
-                i += 1;
-            }
-        }
-        for(int j=1;j<3;j++){
-            for(int k=1;k<3;k++){
-                matrix2[i][16] = (matrix1[k+1][j+1]-matrix1[k-1][j]-matrix1[k][j-1]-matrix1[k][j])/4;
+                matrix2[i+4][16] = (matrix1[k+1][j]-matrix1[k-1][j])/2;
+                matrix2[i+8][16] = (matrix1[k][j+1]-matrix1[k][j-1])/2;
+                matrix2[i+12][16] = (matrix1[k+1][j+1]-matrix1[k-1][j]-matrix1[k][j-1]-matrix1[k][j])/4;
                 i += 1;
             }
         }
