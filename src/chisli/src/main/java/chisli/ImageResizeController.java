@@ -112,6 +112,24 @@ public class ImageResizeController {
     }
 
     @FXML
+    private void switchToMatrixDeterminant() {
+        try {
+            Router.navigateToMatrixDeterminant();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @FXML
+    private void switchToInverseMatrix(){
+        try {
+            Router.navigateToInverseMatrix();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    @FXML
     private void chooseImage() {
         FileChooser fileChooser = new FileChooser();
         fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Image Files", "*.png", "*.jpg", "*.jpeg"));

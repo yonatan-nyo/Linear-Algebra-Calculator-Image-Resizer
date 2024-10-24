@@ -15,6 +15,16 @@ public class Router {
     }
 
     @FXML
+    public static void navigateToMatrixDeterminant() throws IOException {
+        navigate("matrix-determinant");
+    }
+
+    @FXML
+    public static void navigateToInverseMatrix() throws IOException {
+        navigate("inverse-matrix");
+    }
+
+    @FXML
     public static void navigateToInterpolasiPolinomial() throws IOException {
         navigate("interpolasi-polinomial");
     }

@@ -18,6 +18,8 @@
         <children>
             <Label text="Menu" styleClass="sidebar-title" />
             <Button fx:id="primaryButton" text="Sistem Persamaan Linear" onAction="#switchToSistemPersamaanLinear" styleClass="sidebar-button-nav"/>
+            <Button fx:id="primaryButton" text="Inverse Matrix" onAction="#switchToInverseMatrix" styleClass="sidebar-button-nav"/>
+            <Button fx:id="primaryButton" text="Matrix Determinant" onAction="#switchToMatrixDeterminant" styleClass="sidebar-button-nav"/>
             <Button fx:id="primaryButton" text="Interpolasi Polinomial" onAction="#switchToInterpolasiPolinomial" styleClass="sidebar-button-nav"/>
             <Button fx:id="primaryButton" text="Regresi Linier Berganda" onAction="#switchToRegresiLinierBerganda" styleClass="sidebar-button-nav"/>
             <Button fx:id="primaryButton" text="Regresi Kuadratik Berganda" onAction="#switchToRegresiKuadratikBerganda" styleClass="sidebar-button-nav"/>
@@ -39,6 +41,10 @@
                         <Label text="Columns:" styleClass="text-white"/>
                         <TextField fx:id="columnsInput" prefWidth="50" styleClass="text-field"/>
                         <Button text="Generate Matrix" onAction="#generateMatrix" styleClass="button-action"/>
+<<<<<<< HEAD
+=======
+                        <Button fx:id="fileUploadButton" text="(Input dari file)" onAction="#handleFileUpload" styleClass="button-file" />
+>>>>>>> 969d652776d033a74dbf92c04bdd3a84ffb08f53
                     </children>
                 </HBox>
 
@@ -55,7 +61,7 @@
             <HBox alignment="CENTER" spacing="10.0">
                 <children>
                     <ToggleButton fx:id="standardModeToggle" text="OBE" selected="true"/>
-                    <ToggleButton fx:id="adjointModeToggle" text="Adjoint"/>
+                    <ToggleButton fx:id="cofactorModeToggle" text="Cofactor Expansion"/>
                 </children>
             </HBox>
 

@@ -32,7 +32,7 @@ public class SistemPersamaanLinearController {
     private ToggleButton standardModeToggle;
 
     @FXML
-    private ToggleButton adjointModeToggle;
+    private ToggleButton cofactorModeToggle;
 
     @FXML
     private Label selectedModeLabel;
@@ -40,13 +40,17 @@ public class SistemPersamaanLinearController {
     @FXML
     private Button fileUploadButton;
 
+<<<<<<< HEAD
     @FXML
     private Label inputFloatLabel;
 
     private boolean isDeterminantModeAdjoint;
+=======
+    private boolean isDeterminantModeCofactorExpansion;
+>>>>>>> 969d652776d033a74dbf92c04bdd3a84ffb08f53
 
     private void updateModeLabel() {
-        String mode = isDeterminantModeAdjoint ? "Adjoint" : "OBE";
+        String mode = isDeterminantModeCofactorExpansion ? "Cofactor Expansion" : "OBE";
         selectedModeLabel.setText("Selected Mode for Cramer and Inverse: " + mode);
     }
 
@@ -59,16 +63,16 @@ public class SistemPersamaanLinearController {
         
         standardModeToggle.setOnAction(event -> {
             if (standardModeToggle.isSelected()) {
-                adjointModeToggle.setSelected(false);
-                isDeterminantModeAdjoint = false;
+                cofactorModeToggle.setSelected(false);
+                isDeterminantModeCofactorExpansion = false;
                 updateModeLabel();
             }
         });
 
-        adjointModeToggle.setOnAction(event -> {
-            if (adjointModeToggle.isSelected()) {
+        cofactorModeToggle.setOnAction(event -> {
+            if (cofactorModeToggle.isSelected()) {
                 standardModeToggle.setSelected(false);
-                isDeterminantModeAdjoint = true;
+                isDeterminantModeCofactorExpansion = true;
                 updateModeLabel();
             }
         });
@@ -123,6 +127,24 @@ public class SistemPersamaanLinearController {
         try {
             Router.navigateToImageResize();
         } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @FXML
+    private void switchToMatrixDeterminant() {
+        try {
+            Router.navigateToMatrixDeterminant();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @FXML
+    private void switchToInverseMatrix(){
+        try {
+            Router.navigateToInverseMatrix();
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
@@ -299,13 +321,12 @@ public class SistemPersamaanLinearController {
         // take from matrix first then split into matrix1 and matrix2
         Matrix matrix = prepareMatrix(rows, columns);
         if (matrix == null) return;
-        matrix = matrix.getCleanedMatrix();
 
-        double[][] matrixData1 = new double[columns-1][columns-1];
-        double[][] matrixData2 = new double[columns-1][1];
+        double[][] matrixData1 = new double[rows][columns-1];
+        double[][] matrixData2 = new double[rows][1];
 
         // set matrixData1 and matrixData2 from matrix
-        for (int row = 0; row < columns-1; row++) {
+        for (int row = 0; row < rows; row++) {
             for (int col = 0; col < columns; col++) {
                 if (col == columns-1) {
                     matrixData2[row][0] = matrix.get(row, col);
@@ -319,7 +340,7 @@ public class SistemPersamaanLinearController {
         Matrix matrix2 = new Matrix(matrixData2);
 
         try {
-            double[] solution = Cramer.solve(matrix1, matrix2, isDeterminantModeAdjoint);
+            double[] solution = Cramer.solve(matrix1, matrix2, isDeterminantModeCofactorExpansion);
             displaySolution(solution, columns - 1);
         } catch (IllegalArgumentException e) {
             displayError("Error: " + e.getMessage());
@@ -341,16 +362,15 @@ public class SistemPersamaanLinearController {
             return;
         }
 
-        // take from matrix first then split into matrix1 and matrix2
+         // take from matrix first then split into matrix1 and matrix2
         Matrix matrix = prepareMatrix(rows, columns);
         if (matrix == null) return;
-        matrix = matrix.getCleanedMatrix();
 
-        double[][] matrixData1 = new double[columns-1][columns-1];
-        double[][] matrixData2 = new double[columns-1][1];
+        double[][] matrixData1 = new double[rows][columns-1];
+        double[][] matrixData2 = new double[rows][1];
 
         // set matrixData1 and matrixData2 from matrix
-        for (int row = 0; row < columns-1; row++) {
+        for (int row = 0; row < rows; row++) {
             for (int col = 0; col < columns; col++) {
                 if (col == columns-1) {
                     matrixData2[row][0] = matrix.get(row, col);
@@ -364,7 +384,7 @@ public class SistemPersamaanLinearController {
         Matrix matrix2 = new Matrix(matrixData2);
 
         try {
-            double[] solution = SplInverse.solve(matrix1, matrix2, isDeterminantModeAdjoint); // Get solution
+            double[] solution = SplInverse.solve(matrix1, matrix2, isDeterminantModeCofactorExpansion); // Get solution
             displaySolution(solution, columns - 1);
         } catch (IllegalArgumentException e) {
             displayError("Error: " + e.getMessage());

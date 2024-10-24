@@ -13,7 +13,6 @@
   -fx-border-color: #555555;
 }
 
-
 .button {
   -fx-pref-width: 150px;
   -fx-background-color: #444444;
@@ -37,7 +36,6 @@
 .scroll-pane .viewport {
   -fx-background-color: inherit;
 }
-
 
 .sidebar {
   -fx-background-color: #171717;
@@ -118,4 +116,26 @@
 
 .button-action:pressed {
   -fx-background-color: linear-gradient(#575757, #252a2e);
+}
+
+.button-file {
+  -fx-background-color: linear-gradient(#608aa5, #3a536c);
+  -fx-text-fill: white;
+  -fx-font-size: 13px;
+  -fx-padding: 10px 20px;
+  -fx-background-radius: 5px;
+  -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.3), 10, 0, 0, 2);
+  -fx-cursor: hand;
+  -fx-border-color: #3a536c;
+  -fx-min-width: 200px;
+  -fx-border-width: 1px;
+  -fx-border-radius: 5px;
+}
+
+.button-file:hover {
+  -fx-background-color: linear-gradient(#3a536c, #274d6d);
+}
+
+.button-file:pressed {
+  -fx-background-color: linear-gradient(#45455a, #181c29);
 }

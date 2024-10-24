@@ -15,6 +15,8 @@
         <children>
             <Label text="Menu" styleClass="sidebar-title" />
             <Button fx:id="primaryButton" text="Sistem Persamaan Linear" onAction="#switchToSistemPersamaanLinear" styleClass="sidebar-button-nav"/>
+            <Button fx:id="primaryButton" text="Inverse Matrix" onAction="#switchToInverseMatrix" styleClass="sidebar-button-nav"/>
+            <Button fx:id="primaryButton" text="Matrix Determinant" onAction="#switchToMatrixDeterminant" styleClass="sidebar-button-nav"/>
             <Button fx:id="primaryButton" text="Interpolasi Polinomial" onAction="#switchToInterpolasiPolinomial" styleClass="sidebar-button-nav"/>
             <Button fx:id="primaryButton" text="Regresi Linier Berganda" onAction="#switchToRegresiLinierBerganda" styleClass="sidebar-button-nav"/>
             <Button fx:id="primaryButton" text="Regresi Kuadratik Berganda" onAction="#switchToRegresiKuadratikBerganda" styleClass="sidebar-button-nav"/>
@@ -45,7 +47,7 @@
             <TextArea fx:id="dataInputField" wrapText="true" prefHeight="200.0" maxWidth="300.0"  />
 
             <!-- Button to perform interpolation -->
-            <Button fx:id="fileUploadButton" text="(Input dari file)" onAction="#handleFileUpload" styleClass="button-action" />
+            <Button fx:id="fileUploadButton" text="(Input dari file)" onAction="#handleFileUpload" styleClass="button-file" />
             <Button text="Regresi Kuadratik" onAction="#performRegresiKuadratik" styleClass="button-action" />
             
             <!-- Result display -->

@@ -93,6 +93,24 @@ public class InterpolasiPolinomialController {
             e.printStackTrace();
         }
     }
+
+    @FXML
+    private void switchToMatrixDeterminant() {
+        try {
+            Router.navigateToMatrixDeterminant();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @FXML
+    private void switchToInverseMatrix(){
+        try {
+            Router.navigateToInverseMatrix();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
         // Helper method to parse fractions
     private double parseFraction(String input) {
         if (input.contains("/")) {
