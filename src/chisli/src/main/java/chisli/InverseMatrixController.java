@@ -73,7 +73,7 @@ public class InverseMatrixController {
 
     private void updateModeLabel() {
         String mode = isInverseByAdjoin ? "Adjoint" : "OBE";
-        selectedModeLabel.setText("Selected Mode for Determinant: " + mode);
+        selectedModeLabel.setText("Selected Mode for Inverse: " + mode);
     }
 
     @FXML
