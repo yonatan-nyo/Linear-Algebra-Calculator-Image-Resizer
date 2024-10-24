@@ -205,7 +205,7 @@ public class RegresiBergandaController {
     
             // Check if all coefficients are zero
             if (Arrays.stream(coefficients).allMatch(coef -> coef == 0)) {
-                resultLabel1.setText(String.format("The system has free variables. Please try making at least %d dependent equations.", coefficients.length));
+                resultLabel1.setText("The system leads to a trivial solution, the result of any input is 0");
                 resultLabel2.setText("");
                 return; // Exit the method
             }
@@ -297,7 +297,7 @@ public class RegresiBergandaController {
     
             // Check if all coefficients are zero
             if (Arrays.stream(coefficients).allMatch(coef -> coef == 0)) {
-                resultLabel1.setText("The system has free variables. Please try making at least 6 dependent equations.");
+                resultLabel1.setText("The system leads to a trivial solution, the result of any input is 0");
                 resultLabel2.setText("");
                 return; // Exit the method
             }

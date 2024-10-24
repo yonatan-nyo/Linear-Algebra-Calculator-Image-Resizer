@@ -1,6 +1,4 @@
 package chisli.utils.regresi;
-import java.util.Arrays;
-
 import chislib.matrix.Matrix;
 import chislib.spl.Gauss;
 
@@ -73,29 +71,28 @@ public class RegresiLinier {
     
             // Check if the solution contains "free variable"
             if (sol.contains("free variable")) {
-                // If there is a free variable, return an array of zeros
-                Arrays.fill(result, 0.0);
-                return result;
-            }
-    
-            // Extract the numerical value from the solution string
-            String[] parts = sol.split("="); // Split at '='
-            if (parts.length > 1) {
-                try {
-                    // Parse the entire right-hand side of the equation (after '='), including negative numbers
-                    String valueStr = parts[1].trim();
-                    double value = Double.parseDouble(valueStr);
-                    result[i] = value; // Store the double value
-                } catch (NumberFormatException e) {
-                    // Handle parsing error if the value is not a number
+                // If there is a free variable, set the current index to 0
+                result[i] = 0.0;
+            } else {
+                // Extract the numerical value from the solution string
+                String[] parts = sol.split("="); // Split at '='
+                if (parts.length > 1) {
+                    try {
+                        // Parse the entire right-hand side of the equation (after '='), including negative numbers
+                        String valueStr = parts[1].trim().split(" ")[0]; // Take only the first part after '='
+                        double value = Double.parseDouble(valueStr);
+                        result[i] = value; // Store the double value
+                    } catch (NumberFormatException e) {
+                        // Handle parsing error if the value is not a number
+                        result[i] = 0.0;
+                    }
+                } else {
+                    // If the solution format is unexpected, set to zero
                     result[i] = 0.0;
                 }
-            } else {
-                // If the solution format is unexpected, set to zero
-                result[i] = 0.0;
             }
         }
     
         return result;
-    }    
+    }  
 }
