@@ -39,6 +39,8 @@ akan muncul tombol Run
   - Gauss Jordan
   - Cramer
   - Inverse
+- Menghitung Determinan Matriks
+- Menghitung Invers Matriks
 - Menghitung solusi Interpolasi Polinomial
 - Menghitung solusi Regresi Linier Berganda
 - Menghitung solusi Regresi Linier Kuadratik
