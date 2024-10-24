@@ -180,7 +180,7 @@ public class BicubicSplineInterpolationController {
 
             // Perform bicubic spline interpolation
             BicubicSplineInterpolation spline = new BicubicSplineInterpolation(matrixData);
-            double interpolatedValue = spline.interpolate(x, y);  // Interpolate at user-defined point
+            double interpolatedValue = spline.interpolate(y, x);  // Interpolate at user-defined point
 
             displaySolution(interpolatedValue, x, y);
 
@@ -229,34 +229,46 @@ public class BicubicSplineInterpolationController {
                 while ((line = reader.readLine()) != null) {
                     lines.add(line);
                 }
-                
+                if (lines.size() < 5) {
+                    displayError("The file must contain 5 lines (4x4 matrix and x, y values).");
+                    return;
+                }
+
                 // Determine the number of rows and columns
-                int rows = lines.size();
-                int columns = lines.get(0).trim().split("\\s+").length;
+                int rows = 4;
+                int columns = 4;
                 
                 // Clear existing grid and fields
                 matrixGrid.getChildren().clear();
                 matrixFields.clear();
-                
-                // Generate the matrix grid
-                for (int row = 0; row < rows; row++) {
-                    for (int col = 0; col < columns; col++) {
-                        TextField field = new TextField();
-                        field.setPrefWidth(50);
-                        field.setStyle("-fx-text-fill: white;");
-                        matrixFields.add(field);
-                        matrixGrid.add(field, col, row);
-                    }
-                }
+
+                generateSpline();
                 
                 // Fill the matrix grid with values from the file
                 for (int row = 0; row < rows; row++) {
                     String[] values = lines.get(row).trim().split("\\s+");
+                    
+                    // Ensure each line has exactly 4 columns
+                    if (values.length != columns) {
+                        displayError("Each row must contain exactly 4 numbers.");
+                        return;
+                    }
+                    
                     for (int col = 0; col < columns; col++) {
                         TextField field = matrixFields.get(row * columns + col);
                         field.setText(values[col]);
                     }
                 }
+    
+                // Read the last line (which should contain the x and y values)
+                String[] lastLineValues = lines.get(lines.size() - 1).trim().split("\\s+");
+                if (lastLineValues.length == 2) {
+                    xInput.setText(lastLineValues[0]);
+                    yInput.setText(lastLineValues[1]);
+                } else {
+                    displayError("The last line must contain exactly 2 numbers (x and y values).");
+                }
+                
             } catch (IOException e) {
                 displayError("Error reading file: " + e.getMessage());
             }

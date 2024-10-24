@@ -103,7 +103,7 @@ public class BicubicSplineInterpolation {
         
         for (int i = 0; i < 4; i++) {
             for (int j = 0; j < 4; j++) {
-                answer += mtxa[i][j] * (xPowersa[j] * yPowersa[i]);
+                answer += mtxa[j][i] * (xPowersa[j] * yPowersa[i]);
             }
         }
 
@@ -119,11 +119,11 @@ public class BicubicSplineInterpolation {
         for (int i = 0; i < 4; i++) {
             for (int j = 0; j < 4; j++) {
                 matrix[row][k] = xPowers[i] * yPowers[j];
-                if (i != 0) {
-                    matrix[row+4][k] = i * xPowers[i - 1] * yPowers[j];
-                }
                 if (j != 0) {
-                    matrix[row+8][k] = j * xPowers[i] * yPowers[j - 1];
+                    matrix[row+4][k] = j * xPowers[i] * yPowers[j - 1];
+                }
+                if (i != 0) {
+                    matrix[row+8][k] = i * xPowers[i - 1] * yPowers[j];
                 }
                 if (i != 0 && j != 0) {
                     matrix[row+12][k] = j * i * xPowers[i - 1] * yPowers[j - 1];
