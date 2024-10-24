@@ -8,6 +8,7 @@
 <?import javafx.scene.control.TextField?>
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.text.Text?>
+<?import javafx.scene.control.ScrollPane?>
 
 <HBox xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="chisli.RegresiBergandaController">
     <!-- Sidebar with buttons -->
@@ -26,32 +27,34 @@
     </VBox>
 
     <!-- Main content area -->
-    <VBox alignment="CENTER" spacing="20.0" HBox.hgrow="ALWAYS" >
-        <children>
-            <Label text="Regresi Kuadratik Berganda" style="-fx-font-size: 24px;" styleClass="title-label" />
-            
-            <!-- Instructions Label -->
-            <Label text="Masukkan x1, x2, dan y (pisahkan dengan baris), Contoh:" styleClass="text-white" />
-            <VBox alignment="TOP_LEFT" spacing="0.0" maxWidth="100.0" >
-                <Label text="x1 x2 y" styleClass="text-white"/>
-                <Label text="1 2 3" styleClass="text-white"/>
-                <Label text="2 3 4" styleClass="text-white"/>
-                <Label text="3 4 5" styleClass="text-white"/>
-                <Label text="4 5 6" styleClass="text-white"/>
-                <Label text="x1 x2 tanpa y" styleClass="text-white"/>
-                <Label text="6 7" styleClass="text-white"/>
-            </VBox>
+    <ScrollPane fitToWidth="true" HBox.hgrow="ALWAYS">
+        <VBox alignment="CENTER" spacing="20.0" HBox.hgrow="ALWAYS" >
+            <children>
+                <Label text="Regresi Kuadratik Berganda" style="-fx-font-size: 24px;" styleClass="title-label" />
+                
+                <!-- Instructions Label -->
+                <Label text="Masukkan x1, x2, dan y (pisahkan dengan baris), Contoh:" styleClass="text-white" />
+                <VBox alignment="TOP_LEFT" spacing="0.0" maxWidth="100.0" >
+                    <Label text="x1 ... xn y" styleClass="text-white"/>
+                    <Label text="1 2 3" styleClass="text-white"/>
+                    <Label text="2 3 4" styleClass="text-white"/>
+                    <Label text="3 4 5" styleClass="text-white"/>
+                    <Label text="4 5 6" styleClass="text-white"/>
+                    <Label text="x1 ... xn tanpa y" styleClass="text-white"/>
+                    <Label text="6 7" styleClass="text-white"/>
+                </VBox>
 
-            <!-- Input for x-values and y-values -->
-            <TextArea fx:id="dataInputField" wrapText="true" prefHeight="200.0" maxWidth="300.0"  />
+                <!-- Input for x-values and y-values -->
+                <TextArea fx:id="dataInputField" wrapText="true" prefHeight="200.0" maxWidth="300.0"  />
 
-            <!-- Button to perform interpolation -->
-            <Button fx:id="fileUploadButton" text="(Input dari file)" onAction="#handleFileUpload" styleClass="button-file" />
-            <Button text="Regresi Kuadratik" onAction="#performRegresiKuadratik" styleClass="button-action" />
-            
-            <!-- Result display -->
-            <Text fx:id="resultLabel1" styleClass="result-text" wrappingWidth="500.0" />
-            <Text fx:id="resultLabel2" styleClass="result-text" wrappingWidth="500.0" />
-        </children>
-    </VBox>
+                <!-- Button to perform interpolation -->
+                <Button fx:id="fileUploadButton" text="(Input dari file)" onAction="#handleFileUpload" styleClass="button-file" />
+                <Button text="Regresi Kuadratik" onAction="#performRegresiKuadratik" styleClass="button-action" />
+                
+                <!-- Result display -->
+                <Text fx:id="resultLabel1" styleClass="result-text" wrappingWidth="500.0" />
+                <Text fx:id="resultLabel2" styleClass="result-text" wrappingWidth="500.0" />
+            </children>
+        </VBox>
+    </ScrollPane>
 </HBox>

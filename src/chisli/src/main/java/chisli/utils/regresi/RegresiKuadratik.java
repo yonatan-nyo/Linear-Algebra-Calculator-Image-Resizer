@@ -10,20 +10,61 @@ public class RegresiKuadratik {
         int n = xValues.length; // Number of data points
         int m = xValues[0].length; // Number of features (x1, x2, ..., xm)
     
-        // Add a column of 1's for the intercept (b0)
-        double[][] augMtxArray = new double[n][m + 5]; // Augmented matrix with quadratic and interaction terms
+        // Calculate the size of the augmented matrix
+        int XCols = 1 + m + m + (m * (m - 1)) / 2; // Intercept + linear terms + quadratic terms + interaction terms
+        double[][] X = new double[n][XCols];
+
+        double[][] Y = new double[n][1];
         for (int i = 0; i < n; i++) {
-            augMtxArray[i][0] = 1.0; // Intercept term
-            augMtxArray[i][1] = xValues[i][0]; // Linear term x1
-            augMtxArray[i][2] = xValues[i][1]; // Linear term x2
-            augMtxArray[i][3] = xValues[i][0] * xValues[i][0]; // Quadratic term x1^2
-            augMtxArray[i][4] = xValues[i][1] * xValues[i][1]; // Quadratic term x2^2
-            augMtxArray[i][5] = xValues[i][0] * xValues[i][1]; // Interaction term x1 * x2
-            augMtxArray[i][6] = yValues[i]; // Target y
+            Y[i][0] = yValues[i];
         }
 
+        for (int i = 0; i < n; i++) {
+            int colIndex = 0;
+            X[i][colIndex++] = 1.0; // Intercept term
+
+            // Linear terms
+            for (int j = 0; j < m; j++) {
+                X[i][colIndex++] = xValues[i][j];
+            }
+
+            // Quadratic terms
+            for (int j = 0; j < m; j++) {
+                X[i][colIndex++] = xValues[i][j] * xValues[i][j];
+            }
+
+            // Interaction terms
+            for (int j = 0; j < m; j++) {
+                for (int k = j + 1; k < m; k++) {
+                    X[i][colIndex++] = xValues[i][j] * xValues[i][k];
+                }
+            }
+        }
+        
+        // Transpose of matrix X (X^T)
+        Matrix xMatrix = new Matrix(X);
+        Matrix xTransposed = xMatrix.getTranspose();
     
+        // X^T * X
+        Matrix xTx = Matrix.multiply(xTransposed, xMatrix);
+    
+        // X^T * Y
+        Matrix xTy = Matrix.multiply(xTransposed, new Matrix(Y));
+    
+        // Form the augmented matrix by combining (X^T * X) and (X^T * Y)
+        double[][] augMtxArray = new double[XCols][XCols + 1]; // XCols for b coefficients, XCols + 1 for augmented column
+        for (int i = 0; i < XCols; i++) {
+            // Fill in (X^T * X)
+            for (int j = 0; j < XCols; j++) {
+                augMtxArray[i][j] = xTx.get(i, j);
+            }
+            // Append (X^T * Y) as the last column
+            augMtxArray[i][XCols] = xTy.get(i, 0);
+        }
+        
+        // Convert augmented matrix to Matrix object and clean it
         Matrix augMtx = new Matrix(augMtxArray).getCleanedMatrix();
+
         // check how many lines are non all zero
         int count = 0;
         for (int i = 0; i < augMtx.getRowCount(); i++) {
@@ -44,8 +85,10 @@ public class RegresiKuadratik {
         if(count == 1){
             throw new IllegalArgumentException("Function cannot be calculated because only 1 unique point is provided.");
         }
+
+        // Use Gauss.solve to find the solution
         String[] solution = Gauss.solve(augMtx);
-    
+
         // Store the solution in the instance variable `coef` for later use in predict
         this.coef = convertSolution(solution);
         
@@ -54,17 +97,30 @@ public class RegresiKuadratik {
     
     // Predict value for new input xk
     public double predict(double[] xk) {
-        if (coef == null || xk.length != 2) {
+        if (coef == null) {
             throw new IllegalArgumentException("Model has not been trained or invalid input size.");
         }
     
         // Prediction formula for quadratic regression
         double result = coef[0]; // Intercept term
-        result += coef[1] * xk[0]; // Linear term x1
-        result += coef[2] * xk[1]; // Linear term x2
-        result += coef[3] * xk[0] * xk[0]; // Quadratic term x1^2
-        result += coef[4] * xk[1] * xk[1]; // Quadratic term x2^2
-        result += coef[5] * xk[0] * xk[1]; // Interaction term x1 * x2
+        int coefIndex = 1;
+
+        // Linear terms
+        for (int i = 0; i < xk.length; i++) {
+            result += coef[coefIndex++] * xk[i];
+        }
+
+        // Quadratic terms
+        for (int i = 0; i < xk.length; i++) {
+            result += coef[coefIndex++] * xk[i] * xk[i];
+        }
+
+        // Interaction terms
+        for (int i = 0; i < xk.length; i++) {
+            for (int j = i + 1; j < xk.length; j++) {
+                result += coef[coefIndex++] * xk[i] * xk[j];
+            }
+        }
     
         return result;
     }
