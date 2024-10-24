@@ -1,9 +1,12 @@
 package chisli;
 
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -19,6 +22,7 @@ import javafx.scene.control.TextField;
 import javafx.scene.control.ToggleButton;
 import javafx.scene.layout.GridPane;
 import javafx.stage.FileChooser;
+import javafx.stage.FileChooser.ExtensionFilter;
 
 public class MatrixDeterminantController {
     @FXML
@@ -305,5 +309,30 @@ public class MatrixDeterminantController {
         outputGrid.getChildren().clear();
         Label errorLabel = new Label(message);
         outputGrid.add(errorLabel, 0, 0);
+    }
+
+    @FXML
+    private void downloadSolution() {
+        // Retrieve the solution from the outputGrid
+        StringBuilder solutionBuilder = new StringBuilder();
+        for (int i = 0; i < outputGrid.getChildren().size(); i++) {
+            Label label = (Label) outputGrid.getChildren().get(i);
+            solutionBuilder.append(label.getText()).append("\n");
+        }
+        String solution = solutionBuilder.toString();
+
+        // Open a FileChooser to select the save location
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.getExtensionFilters().add(new ExtensionFilter("Text Files", "*.txt"));
+        fileChooser.setInitialFileName("solution.txt");
+        File file = fileChooser.showSaveDialog(primaryButton.getScene().getWindow());
+
+        if (file != null) {
+            try (PrintWriter writer = new PrintWriter(new BufferedWriter(new FileWriter(file)))) {
+                writer.write(solution);
+            } catch (IOException e) {
+                displayError("Error saving file: " + e.getMessage());
+            }
+        }
     }
 }

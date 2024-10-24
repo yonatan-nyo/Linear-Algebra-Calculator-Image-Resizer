@@ -3,9 +3,13 @@ package chisli;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
+
+import javax.swing.JFileChooser;
+import javax.swing.filechooser.FileNameExtensionFilter;
 
 import chisli.utils.interpolasiPolinomial.InterpolasiPolinomial;
 import javafx.fxml.FXML;
@@ -128,71 +132,71 @@ public class InterpolasiPolinomialController {
     }
     
     @FXML
-public void performInterpolation() {
-    try {
-        String inputData = dataInputField.getText().trim();
-        
-        // Check if the input field is empty
-        if (inputData.isEmpty()) {
-            resultLabel1.setText("Error: Input field is empty.");
-            resultLabel2.setText("");
-            return;
-        }
-
-        String[] lines = inputData.split("\n");
-
-        // Check if each row from 0 to lines.length - 2 has exactly 2 columns
-        for (int i = 0; i < lines.length - 1; i++) {
-            String[] columns = lines[i].trim().split("\\s+");
-            if (columns.length != 2) {
-                resultLabel1.setText("Error: Row " + (i + 1) + " must contain exactly 2 columns.");
+    public void performInterpolation() {
+        try {
+            String inputData = dataInputField.getText().trim();
+            
+            // Check if the input field is empty
+            if (inputData.isEmpty()) {
+                resultLabel1.setText("Error: Input field is empty.");
                 resultLabel2.setText("");
                 return;
             }
-        }
 
-        // Check if the last row has exactly 1 column
-        String[] lastLineNumbers = lines[lines.length - 1].trim().split("\\s+");
-        if (lastLineNumbers.length != 1) {
-            resultLabel1.setText("Error: The last row must contain exactly 1 column.");
+            String[] lines = inputData.split("\n");
+
+            // Check if each row from 0 to lines.length - 2 has exactly 2 columns
+            for (int i = 0; i < lines.length - 1; i++) {
+                String[] columns = lines[i].trim().split("\\s+");
+                if (columns.length != 2) {
+                    resultLabel1.setText("Error: Row " + (i + 1) + " must contain exactly 2 columns.");
+                    resultLabel2.setText("");
+                    return;
+                }
+            }
+
+            // Check if the last row has exactly 1 column
+            String[] lastLineNumbers = lines[lines.length - 1].trim().split("\\s+");
+            if (lastLineNumbers.length != 1) {
+                resultLabel1.setText("Error: The last row must contain exactly 1 column.");
+                resultLabel2.setText("");
+                return;
+            }
+
+            double[] xValues = new double[lines.length - 1];
+            double[] yValues = new double[lines.length - 1];
+
+            // Parse each line to get x and y values
+            for (int i = 0; i < lines.length - 1; i++) {
+                String[] parts = lines[i].trim().split(" ");
+                xValues[i] = parseFraction(parts[0]);
+                yValues[i] = parseFraction(parts[1]);
+            }
+
+            double xToEvaluate = parseFraction(lines[lines.length - 1].trim());
+
+            // Check if xToEvaluate is within the range of xValues
+            double minX = Arrays.stream(xValues).min().orElse(Double.NaN);
+            double maxX = Arrays.stream(xValues).max().orElse(Double.NaN);
+
+            if (xToEvaluate < minX || xToEvaluate > maxX) {
+                resultLabel1.setText("Error: The last row value must be between " + minX + " and " + maxX + ".");
+                resultLabel2.setText("");
+                return;
+            }
+
+            // Call the interpolation method
+            List<String> result = InterpolasiPolinomial.solve(xValues, yValues, xToEvaluate);
+            resultLabel1.setText(result.get(0));
+            resultLabel2.setText(result.get(1));
+        } catch (NumberFormatException e) {
+            resultLabel1.setText("Error: Please enter valid numbers.");
             resultLabel2.setText("");
-            return;
-        }
-
-        double[] xValues = new double[lines.length - 1];
-        double[] yValues = new double[lines.length - 1];
-
-        // Parse each line to get x and y values
-        for (int i = 0; i < lines.length - 1; i++) {
-            String[] parts = lines[i].trim().split(" ");
-            xValues[i] = parseFraction(parts[0]);
-            yValues[i] = parseFraction(parts[1]);
-        }
-
-        double xToEvaluate = parseFraction(lines[lines.length - 1].trim());
-
-        // Check if xToEvaluate is within the range of xValues
-        double minX = Arrays.stream(xValues).min().orElse(Double.NaN);
-        double maxX = Arrays.stream(xValues).max().orElse(Double.NaN);
-
-        if (xToEvaluate < minX || xToEvaluate > maxX) {
-            resultLabel1.setText("Error: The last row value must be between " + minX + " and " + maxX + ".");
+        } catch (IllegalArgumentException e) {
+            resultLabel1.setText(e.getMessage());
             resultLabel2.setText("");
-            return;
         }
-
-        // Call the interpolation method
-        List<String> result = InterpolasiPolinomial.solve(xValues, yValues, xToEvaluate);
-        resultLabel1.setText(result.get(0));
-        resultLabel2.setText(result.get(1));
-    } catch (NumberFormatException e) {
-        resultLabel1.setText("Error: Please enter valid numbers.");
-        resultLabel2.setText("");
-    } catch (IllegalArgumentException e) {
-        resultLabel1.setText(e.getMessage());
-        resultLabel2.setText("");
     }
-}
 
     @FXML
     private void handleFileUpload() {
@@ -213,6 +217,32 @@ public void performInterpolation() {
                 dataInputField.setText(content.toString());
             } catch (IOException e) {
                 resultLabel1.setText("Error reading file: " + e.getMessage());
+                resultLabel2.setText("");
+            }
+        }
+    }
+
+    @FXML
+    public void downloadSolution() {
+        String result1 = resultLabel1.getText();
+        String result2 = resultLabel2.getText();
+
+        // Create a file chooser
+        JFileChooser fileChooser = new JFileChooser();
+        fileChooser.setDialogTitle("Save Solution");
+        fileChooser.setFileFilter(new FileNameExtensionFilter("Text Files", "txt"));
+
+        // Show save dialog
+        int userSelection = fileChooser.showSaveDialog(null);
+
+        if (userSelection == JFileChooser.APPROVE_OPTION) {
+            try (FileWriter fileWriter = new FileWriter(fileChooser.getSelectedFile() + ".txt")) {
+                fileWriter.write("Result 1: " + result1 + "\n");
+                fileWriter.write("Result 2: " + result2 + "\n");
+                resultLabel1.setText("Solution downloaded successfully.");
+                resultLabel2.setText("");
+            } catch (IOException e) {
+                resultLabel1.setText("Error: Unable to save the file.");
                 resultLabel2.setText("");
             }
         }
