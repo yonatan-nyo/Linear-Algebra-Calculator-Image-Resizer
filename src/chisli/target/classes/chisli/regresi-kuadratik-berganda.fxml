@@ -50,8 +50,8 @@
             <Button text="Regresi Kuadratik" onAction="#performRegresiKuadratik" styleClass="button-action" />
             
             <!-- Result display -->
-            <Text fx:id="resultLabel1" styleClass="result-text" wrappingWidth="300.0" />
-            <Text fx:id="resultLabel2" styleClass="result-text" wrappingWidth="300.0" />
+            <Text fx:id="resultLabel1" styleClass="result-text" wrappingWidth="500.0" />
+            <Text fx:id="resultLabel2" styleClass="result-text" wrappingWidth="500.0" />
         </children>
     </VBox>
 </HBox>
